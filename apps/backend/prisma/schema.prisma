@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  websites Website[]
+
+  @@map("users")
+}
+
+model Website {
+  id        String   @id @default(cuid())
+  userId    String
+  domain    String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apiKeys       ApiKey[]
+  conversations Conversation[]
+
+  @@map("websites")
+}
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  websiteId String
+  hashedKey String   @unique
+  name      String?  // Optional name for the API key
+  createdAt DateTime @default(now())
+  lastUsed  DateTime?
+
+  // Relations
+  website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@map("api_keys")
+}
+
+model Conversation {
+  id        String              @id @default(cuid())
+  websiteId String
+  visitorId String              // Anonymous visitor ID
+  status    String  @default("ACTIVE") // ACTIVE, CLOSED, ARCHIVED
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  // Relations
+  website  Website   @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  conversationId String
+  senderType     String // VISITOR, AGENT, SYSTEM
+  content        String
+  createdAt      DateTime    @default(now())
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+// Note: SQLite doesn't support enums, so we use String with validation in the app
+// enum ConversationStatus {
+//   ACTIVE
+//   CLOSED
+//   ARCHIVED
+// }
+
+// enum SenderType {
+//   VISITOR
+//   AGENT
+//   SYSTEM
+// }

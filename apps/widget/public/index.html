@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Widget Demo - Test Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: white;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    
+    .header h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+    
+    .demo-section {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .demo-section h2 {
+      margin-top: 0;
+      color: #fff;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .feature {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .feature h3 {
+      margin-top: 0;
+      color: #fff;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+    
+    .feature p {
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    
+    .code-block {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      color: #f8f8f2;
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .code-block pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .control-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .control-group {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .control-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: white;
+    }
+    
+    .control-group input,
+    .control-group select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      font-size: 14px;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: #4f46e5;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #4338ca;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #4b5563;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+    }
+    
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #b91c1c;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+    }
+    
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      border-left: 4px solid #4f46e5;
+      color: white;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      opacity: 0.8;
+    }
+    
+    .highlight {
+      color: #fbbf24;
+      font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .control-panel {
+        grid-template-columns: 1fr;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚀 Live Chat Widget</h1>
+      <p>Embeddable chat widget với real-time messaging</p>
+    </div>
+
+    <div class="demo-section">
+      <h2>✨ Tính năng nổi bật</h2>
+      <div class="features">
+        <div class="feature">
+          <h3>🔒 Shadow DOM Isolation</h3>
+          <p>Widget được cô lập hoàn toàn, không ảnh hưởng đến CSS của website chính</p>
+        </div>
+        <div class="feature">
+          <h3>⚡ Real-time Messaging</h3>
+          <p>Tin nhắn được gửi và nhận ngay lập tức thông qua Socket.IO</p>
+        </div>
+        <div class="feature">
+          <h3>🎨 Tùy chỉnh giao diện</h3>
+          <p>Có thể thay đổi màu sắc, vị trí, và theme theo ý muốn</p>
+        </div>
+        <div class="feature">
+          <h3>📱 Responsive Design</h3>
+          <p>Hoạt động tốt trên tất cả các thiết bị từ desktop đến mobile</p>
+        </div>
+        <div class="feature">
+          <h3>🔐 API Key Authentication</h3>
+          <p>Bảo mật cao với hệ thống xác thực API key</p>
+        </div>
+        <div class="feature">
+          <h3>💾 Lưu trữ lịch sử</h3>
+          <p>Tất cả cuộc trò chuyện được lưu trữ và có thể truy xuất</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>🎮 Widget Control Panel</h2>
+      <div class="control-panel">
+        <div class="control-group">
+          <label for="apiKey">API Key:</label>
+          <input type="text" id="apiKey" value="demo-api-key-12345" placeholder="Nhập API key của bạn">
+        </div>
+        
+        <div class="control-group">
+          <label for="domain">Domain:</label>
+          <input type="text" id="domain" value="localhost" placeholder="Ví dụ: example.com">
+        </div>
+        
+        <div class="control-group">
+          <label for="theme">Theme:</label>
+          <select id="theme">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="position">Vị trí:</label>
+          <select id="position">
+            <option value="bottom-right">Bottom Right</option>
+            <option value="bottom-left">Bottom Left</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="primaryColor">Màu chính:</label>
+          <input type="color" id="primaryColor" value="#2563eb">
+        </div>
+        
+        <div class="control-group">
+          <label for="welcomeMessage">Tin nhắn chào:</label>
+          <input type="text" id="welcomeMessage" value="Xin chào! Tôi có thể giúp gì cho bạn?" placeholder="Tin nhắn chào mừng">
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button class="btn btn-primary" onclick="mountWidget()">🚀 Mount Widget</button>
+        <button class="btn btn-secondary" onclick="updateWidget()">🔄 Update Config</button>
+        <button class="btn btn-danger" onclick="unmountWidget()">❌ Unmount Widget</button>
+      </div>
+      
+      <div id="status" class="status">
+        <strong>Status:</strong> <span id="statusText">Chưa mount widget</span>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>💻 Cách sử dụng</h2>
+      
+      <h3>1. Tự động mount (khuyến nghị):</h3>
+      <div class="code-block">
+        <pre>&lt;!-- Thêm script này vào website của bạn --&gt;
+&lt;script 
+  src="https://your-domain.com/chat-widget.js"
+  data-chat-widget-api-key="<span class="highlight">your-api-key</span>"
+  data-chat-widget-domain="<span class="highlight">your-domain.com</span>"
+  data-chat-widget-theme="light"
+  data-chat-widget-position="bottom-right"
+  data-chat-widget-color="#2563eb"
+  data-chat-widget-welcome="Xin chào! Tôi có thể giúp gì cho bạn?"
+&gt;&lt;/script&gt;</pre>
+      </div>
+      
+      <h3>2. Manual mount:</h3>
+      <div class="code-block">
+        <pre>&lt;script src="https://your-domain.com/chat-widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  window.ChatWidget.mount('chat-widget-container', {
+    apiKey: '<span class="highlight">your-api-key</span>',
+    domain: '<span class="highlight">your-domain.com</span>',
+    theme: 'light',
+    position: 'bottom-right',
+    primaryColor: '#2563eb',
+    welcomeMessage: 'Xin chào! Tôi có thể giúp gì cho bạn?'
+  });
+&lt;/script&gt;</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>💡 <strong>Lưu ý:</strong> Widget này đang ở chế độ demo. Để sử dụng thực tế, bạn cần backend server và API key hợp lệ.</p>
+  </div>
+
+  <!-- Load the widget script (would be from CDN in production) -->
+  <script>
+    // Simulate loading the widget script
+    // In production, this would be loaded from your CDN
+    
+    let widgetMounted = false;
+    let currentConfig = {};
+
+    function updateStatus(message, isError = false) {
+      const statusText = document.getElementById('statusText');
+      statusText.textContent = message;
+      statusText.style.color = isError ? '#ff6b6b' : '#51cf66';
+    }
+
+    function mountWidget() {
+      if (widgetMounted) {
+        updateStatus('Widget đã được mount rồi!', true);
+        return;
+      }
+
+      const config = {
+        apiKey: document.getElementById('apiKey').value,
+        domain: document.getElementById('domain').value,
+        theme: document.getElementById('theme').value,
+        position: document.getElementById('position').value,
+        primaryColor: document.getElementById('primaryColor').value,
+        welcomeMessage: document.getElementById('welcomeMessage').value
+      };
+
+      if (!config.apiKey) {
+        updateStatus('Vui lòng nhập API key!', true);
+        return;
+      }
+
+      // In a real implementation, this would call window.ChatWidget.mount()
+      currentConfig = config;
+      widgetMounted = true;
+      updateStatus(`✅ Widget đã được mount với API key: ${config.apiKey.substring(0, 10)}...`);
+      
+      // Simulate widget appearance
+      createDemoWidget(config);
+    }
+
+    function updateWidget() {
+      if (!widgetMounted) {
+        updateStatus('Vui lòng mount widget trước!', true);
+        return;
+      }
+
+      const config = {
+        apiKey: document.getElementById('apiKey').value,
+        domain: document.getElementById('domain').value,
+        theme: document.getElementById('theme').value,
+        position: document.getElementById('position').value,
+        primaryColor: document.getElementById('primaryColor').value,
+        welcomeMessage: document.getElementById('welcomeMessage').value
+      };
+
+      currentConfig = config;
+      updateStatus('🔄 Cấu hình widget đã được cập nhật');
+      
+      // Update demo widget
+      updateDemoWidget(config);
+    }
+
+    function unmountWidget() {
+      if (!widgetMounted) {
+        updateStatus('Không có widget nào để unmount!', true);
+        return;
+      }
+
+      // In a real implementation, this would call window.ChatWidget.unmount()
+      widgetMounted = false;
+      updateStatus('❌ Widget đã được unmount');
+      
+      // Remove demo widget
+      removeDemoWidget();
+    }
+
+    // Demo widget simulation
+    function createDemoWidget(config) {
+      removeDemoWidget(); // Remove existing if any
+      
+      const widget = document.createElement('div');
+      widget.id = 'demo-chat-widget';
+      widget.style.cssText = `
+        position: fixed;
+        ${config.position === 'bottom-left' ? 'left' : 'right'}: 20px;
+        bottom: 20px;
+        width: 60px;
+        height: 60px;
+        background: ${config.primaryColor};
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        z-index: 9999;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: scale(0);
+      `;
+      
+      widget.innerHTML = '💬';
+      widget.title = 'Demo Chat Widget - ' + config.welcomeMessage;
+      
+      widget.addEventListener('mouseenter', () => {
+        widget.style.transform = 'scale(1.1)';
+        widget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.4)';
+      });
+      
+      widget.addEventListener('mouseleave', () => {
+        widget.style.transform = 'scale(1)';
+        widget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+      });
+      
+      widget.addEventListener('click', () => {
+        alert(`Demo Widget!\nTheme: ${config.theme}\nMessage: ${config.welcomeMessage}`);
+      });
+      
+      document.body.appendChild(widget);
+      
+      // Animate in
+      setTimeout(() => {
+        widget.style.opacity = '1';
+        widget.style.transform = 'scale(1)';
+      }, 100);
+    }
+
+    function updateDemoWidget(config) {
+      const widget = document.getElementById('demo-chat-widget');
+      if (widget) {
+        widget.style.background = config.primaryColor;
+        widget.style[config.position === 'bottom-left' ? 'left' : 'right'] = '20px';
+        widget.style[config.position === 'bottom-left' ? 'right' : 'left'] = 'auto';
+        widget.title = 'Demo Chat Widget - ' + config.welcomeMessage;
+      }
+    }
+
+    function removeDemoWidget() {
+      const widget = document.getElementById('demo-chat-widget');
+      if (widget) {
+        widget.style.opacity = '0';
+        widget.style.transform = 'scale(0)';
+        setTimeout(() => {
+          widget.remove();
+        }, 300);
+      }
+    }
+
+    // Initialize
+    updateStatus('Sẵn sàng để mount widget');
+  </script>
+</body>
+</html>

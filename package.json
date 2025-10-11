@@ -1,0 +1,16 @@
+{
+  "name": "chat-widget-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A complete live chat widget service with embeddable widget and admin dashboard",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0"
+  }
+}
