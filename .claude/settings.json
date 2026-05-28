@@ -13,7 +13,13 @@
       "mcp__render__list_workspaces",
       "mcp__render__list_services",
       "mcp__render__list_deploys",
-      "mcp__render__get_deploy"
+      "mcp__render__get_deploy",
+      "Bash(git log *)",
+      "Bash(pnpm install *)",
+      "Bash(npm ls *)",
+      "Bash(~/.local/bin/claude mcp *)",
+      "Bash(corepack pnpm *)",
+      "Bash(COREPACK_ENABLE_AUTO_PIN=0 npx --yes pnpm@10.12.1 install --lockfile-only)"
     ]
   }
 }
