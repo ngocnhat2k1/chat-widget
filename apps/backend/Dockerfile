@@ -24,7 +24,7 @@ RUN pnpm build
 
 # Produce a self-contained deploy bundle (prod-only deps, hoisted)
 WORKDIR /repo
-RUN pnpm --filter @chat-widget/backend deploy --prod /out
+RUN pnpm --filter @chat-widget/backend deploy --prod --legacy /out
 
 # ---------- Stage 2: runtime ----------
 FROM node:20-alpine AS runtime
