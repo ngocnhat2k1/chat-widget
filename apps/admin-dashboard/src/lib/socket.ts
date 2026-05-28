@@ -1,5 +1,5 @@
-import { io, Socket } from 'socket.io-client';
-import { Message, Conversation } from '../lib/api-client';
+import { io, Socket } from "socket.io-client";
+import { Message, Conversation } from "../lib/api-client";
 
 export interface SocketMessage extends Message {}
 
@@ -20,23 +20,23 @@ class SocketService {
     if (this.socket?.connected) return;
 
     const socketUrl =
-      import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
+      import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 
     this.socket = io(socketUrl, {
       auth: { token },
-      transports: ['websocket', 'polling'],
+      transports: ["websocket", "polling"],
     });
 
-    this.socket.on('connect', () => {
-      console.log('Socket connected as admin');
+    this.socket.on("connect", () => {
+      console.log("Socket connected as admin");
     });
 
-    this.socket.on('disconnect', () => {
-      console.log('Socket disconnected');
+    this.socket.on("disconnect", () => {
+      console.log("Socket disconnected");
     });
 
-    this.socket.on('error', (error) => {
-      console.error('Socket error:', error);
+    this.socket.on("error", (error) => {
+      console.error("Socket error:", error);
     });
   }
 
@@ -52,42 +52,68 @@ class SocketService {
   }
 
   joinConversation(conversationId: string): void {
-    this.socket?.emit('joinConversation', { conversationId });
+    this.socket?.emit("joinConversation", { conversationId });
   }
 
   leaveConversation(conversationId: string): void {
-    this.socket?.emit('leaveConversation', { conversationId });
+    this.socket?.emit("leaveConversation", { conversationId });
   }
 
   sendMessage(conversationId: string, content: string): void {
-    this.socket?.emit('sendMessage', {
+    this.socket?.emit("sendMessage", {
       conversationId,
       content,
-      senderType: 'AGENT',
+      senderType: "AGENT",
     });
   }
 
   onNewMessage(callback: (data: SocketMessage) => void): void {
-    this.socket?.on('receiveMessage', callback);
+    this.socket?.on("receiveMessage", callback);
   }
 
   offNewMessage(callback?: (data: SocketMessage) => void): void {
     if (callback) {
-      this.socket?.off('receiveMessage', callback);
+      this.socket?.off("receiveMessage", callback);
     } else {
-      this.socket?.off('receiveMessage');
+      this.socket?.off("receiveMessage");
     }
   }
 
   onNewConversation(callback: (data: SocketNewConversation) => void): void {
-    this.socket?.on('conversationCreated', callback);
+    this.socket?.on("conversationCreated", callback);
   }
 
   offNewConversation(callback?: (data: SocketNewConversation) => void): void {
     if (callback) {
-      this.socket?.off('conversationCreated', callback);
+      this.socket?.off("conversationCreated", callback);
     } else {
-      this.socket?.off('conversationCreated');
+      this.socket?.off("conversationCreated");
+    }
+  }
+
+  onVisitorTyping(callback: (data: { conversationId: string }) => void): void {
+    this.socket?.on("visitorTyping", callback);
+  }
+
+  offVisitorTyping(
+    callback?: (data: { conversationId: string }) => void
+  ): void {
+    if (callback) {
+      this.socket?.off("visitorTyping", callback);
+    } else {
+      this.socket?.off("visitorTyping");
+    }
+  }
+
+  onMessagesRead(callback: (data: { conversationId: string }) => void): void {
+    this.socket?.on("messagesRead", callback);
+  }
+
+  offMessagesRead(callback?: (data: { conversationId: string }) => void): void {
+    if (callback) {
+      this.socket?.off("messagesRead", callback);
+    } else {
+      this.socket?.off("messagesRead");
     }
   }
 

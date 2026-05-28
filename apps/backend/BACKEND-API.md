@@ -38,6 +38,7 @@
 ### 🗄️ Database Schema
 
 #### Models:
+
 - **User**: Admin users (id, email, passwordHash)
 - **Website**: Registered websites (id, userId, domain, name)
 - **ApiKey**: Hashed API keys (id, websiteId, hashedKey, name)
@@ -51,7 +52,7 @@ POST /auth/register
 Body: { email: string, password: string }
 Response: { user: User, token: string }
 
-POST /auth/login  
+POST /auth/login
 Body: { email: string, password: string }
 Response: { user: User, token: string }
 ```
@@ -92,12 +93,14 @@ Response: Conversation[]
 ### 🔌 Socket.IO Events
 
 #### Client → Server:
+
 - **createConversation**: Tạo conversation mới
 - **joinConversation**: Join vào conversation room
 - **sendMessage**: Gửi tin nhắn
 - **leaveConversation**: Rời khỏi conversation
 
 #### Server → Client:
+
 - **conversationCreated**: Conversation được tạo
 - **conversationHistory**: Lịch sử tin nhắn
 - **receiveMessage**: Tin nhắn mới
@@ -123,6 +126,7 @@ Response: Conversation[]
 ### 🔧 Setup Instructions
 
 1. **Environment Variables** (`.env`):
+
    ```env
    DATABASE_URL="postgresql://username:password@localhost:5432/chat_widget"
    JWT_SECRET="your-super-secret-jwt-key"
@@ -131,13 +135,14 @@ Response: Conversation[]
    ```
 
 2. **Database Setup**:
+
    ```bash
    # Generate Prisma client
    pnpm db:generate
-   
+
    # Run migrations
    pnpm db:migrate
-   
+
    # Seed database với demo data
    pnpm db:seed
    ```
@@ -150,6 +155,7 @@ Response: Conversation[]
 ### 🎯 Demo Credentials
 
 **Login:**
+
 - Email: `admin@example.com`
 - Password: `password123`
 
@@ -161,6 +167,7 @@ Response: Conversation[]
 Backend đã sẵn sàng cho **Step 3: Widget Development**!
 
 Sẽ implement:
+
 - ✅ Shadow DOM isolation
 - ✅ API key authentication
 - ✅ Real-time Socket.IO connection

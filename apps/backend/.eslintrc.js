@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: ["@chat-widget/eslint-config-custom"]
+  extends: ["@chat-widget/eslint-config-custom"],
 };

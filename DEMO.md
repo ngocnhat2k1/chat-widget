@@ -11,6 +11,7 @@ Tôi đã tạo thành công một **monorepo hoàn chỉnh** với cấu trúc 
 **File:** `apps/widget/src/App.tsx`
 
 **Giao diện bao gồm:**
+
 - ✅ **Nút chat floating** ở góc phải màn hình
 - ✅ **Cửa sổ chat popup** với animation mở/đóng
 - ✅ **Header** với tiêu đề "Chat Support"
@@ -20,6 +21,7 @@ Tôi đã tạo thành công một **monorepo hoàn chỉnh** với cấu trúc 
 - ✅ **Auto-reply simulation** (agent trả lời tự động sau 1s)
 
 **Design:**
+
 - 🎨 Sử dụng **Tailwind CSS** cho styling hiện đại
 - 💙 Màu chủ đạo: Blue (blue-600)
 - 📱 Responsive design
@@ -28,15 +30,18 @@ Tôi đã tạo thành công một **monorepo hoàn chỉnh** với cấu trúc 
 ### 🔧 Admin Dashboard (React + TanStack Router + Tailwind)
 
 **Routes đã tạo:**
+
 - ✅ `/` - Trang chủ dashboard với thống kê
 - ✅ `/login` - Trang đăng nhập
 
 **Giao diện Dashboard bao gồm:**
+
 - 📊 **3 thẻ thống kê**: Cuộc trò chuyện hoạt động (12), Tin nhắn hôm nay (48), Websites kết nối (3)
 - 🎨 **Thiết kế hiện đại** với card layout
 - 📱 **Grid responsive** (1 cột mobile, 3 cột desktop)
 
 **Giao diện Login:**
+
 - 🔐 **Form đăng nhập** với email và password
 - 🎨 **Centered layout** trên màn hình
 - 💎 **Thiết kế chuyên nghiệp** với focus states
@@ -44,6 +49,7 @@ Tôi đã tạo thành công một **monorepo hoàn chỉnh** với cấu trúc 
 ### 🏗️ Backend (NestJS)
 
 **Đã thiết lập:**
+
 - ✅ **Basic NestJS app** với AppModule, AppController, AppService
 - ✅ **Health check endpoint** `/health`
 - ✅ **CORS enabled** cho development
@@ -52,16 +58,19 @@ Tôi đã tạo thành công một **monorepo hoàn chỉnh** với cấu trúc 
 ### 📦 Shared Packages
 
 **1. UI Components** (`packages/ui/`)
+
 - ✅ **Button component** với variants (default, primary, secondary, ghost)
 - ✅ **Utility functions** (cn helper cho className merging)
 - ✅ **TypeScript support** hoàn chỉnh
 
 **2. ESLint Config** (`packages/eslint-config-custom/`)
+
 - ✅ **Base config** cho TypeScript
 - ✅ **React config** với React hooks rules
 - ✅ **Prettier integration**
 
 **3. TypeScript Config** (`packages/tsconfig/`)
+
 - ✅ **Base config** chung
 - ✅ **React library config**
 - ✅ **NestJS config**
@@ -69,6 +78,7 @@ Tôi đã tạo thành công một **monorepo hoàn chỉnh** với cấu trúc 
 ### 🚀 Scripts được cấu hình
 
 **Root level:**
+
 ```bash
 pnpm dev          # Chạy tất cả apps song song
 pnpm build        # Build tất cả packages
@@ -80,6 +90,7 @@ pnpm format       # Prettier format
 ### 🎯 Giao diện Demo
 
 **Widget Chat:**
+
 ```
 ┌─────────────────────────────────────┐
 │                                  [💬]│  ← Floating button
@@ -102,6 +113,7 @@ pnpm format       # Prettier format
 ```
 
 **Admin Dashboard:**
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ Home | Login                                            │
@@ -125,24 +137,27 @@ pnpm format       # Prettier format
 ### 📋 Để chạy thử ngay:
 
 1. **Khi network ổn định:**
+
    ```bash
    cd "/Users/ngocnhat/Desktop/tu hoc fe/chat-widget"
    pnpm install
    ```
 
 2. **Start development servers:**
+
    ```bash
    pnpm dev
    ```
 
 3. **Truy cập:**
    - Widget: http://localhost:5173
-   - Admin Dashboard: http://localhost:5174  
+   - Admin Dashboard: http://localhost:5174
    - Backend API: http://localhost:3001
 
 ### 🎯 Sẵn sàng cho Step 2
 
 Project đã sẵn sàng để triển khai **Step 2: Backend Development** với:
+
 - ✅ Prisma ORM setup
 - ✅ Database schema design
 - ✅ Authentication system

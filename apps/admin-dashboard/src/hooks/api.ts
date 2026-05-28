@@ -1,15 +1,16 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../lib/api-client';
-import toast from 'react-hot-toast';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../lib/api-client";
+import toast from "react-hot-toast";
 
 // Query Keys
 export const queryKeys = {
-  websites: ['websites'] as const,
-  website: (id: string) => ['website', id] as const,
-  conversations: (params?: any) => ['conversations', params] as const,
-  conversation: (id: string) => ['conversation', id] as const,
-  messages: (conversationId: string, params?: any) => ['messages', conversationId, params] as const,
-  analytics: (websiteId?: string) => ['analytics', websiteId] as const,
+  websites: ["websites"] as const,
+  website: (id: string) => ["website", id] as const,
+  conversations: (params?: any) => ["conversations", params] as const,
+  conversation: (id: string) => ["conversation", id] as const,
+  messages: (conversationId: string, params?: any) =>
+    ["messages", conversationId, params] as const,
+  analytics: (websiteId?: string) => ["analytics", websiteId] as const,
 };
 
 // Website Hooks
@@ -31,15 +32,17 @@ export function useWebsite(id: string) {
 
 export function useCreateWebsite() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: (data: { domain: string; name: string }) => apiClient.createWebsite(data),
+    mutationFn: (data: { domain: string; name: string }) =>
+      apiClient.createWebsite(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.websites });
-      toast.success('Website created successfully!');
+      toast.success("Website created successfully!");
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to create website';
+      const message =
+        error.response?.data?.message || "Failed to create website";
       toast.error(message);
     },
   });
@@ -47,17 +50,25 @@ export function useCreateWebsite() {
 
 export function useUpdateWebsite() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { domain?: string; name?: string } }) =>
-      apiClient.updateWebsite(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { domain?: string; name?: string };
+    }) => apiClient.updateWebsite(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.websites });
-      queryClient.invalidateQueries({ queryKey: queryKeys.website(variables.id) });
-      toast.success('Website updated successfully!');
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.website(variables.id),
+      });
+      toast.success("Website updated successfully!");
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to update website';
+      const message =
+        error.response?.data?.message || "Failed to update website";
       toast.error(message);
     },
   });
@@ -65,15 +76,16 @@ export function useUpdateWebsite() {
 
 export function useDeleteWebsite() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: string) => apiClient.deleteWebsite(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.websites });
-      toast.success('Website deleted successfully!');
+      toast.success("Website deleted successfully!");
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to delete website';
+      const message =
+        error.response?.data?.message || "Failed to delete website";
       toast.error(message);
     },
   });
@@ -81,17 +93,20 @@ export function useDeleteWebsite() {
 
 export function useCreateApiKey() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ websiteId, name }: { websiteId: string; name?: string }) =>
       apiClient.createApiKey(websiteId, name),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.website(variables.websiteId) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.website(variables.websiteId),
+      });
       queryClient.invalidateQueries({ queryKey: queryKeys.websites });
-      toast.success('API key created successfully!');
+      toast.success("API key created successfully!");
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to create API key';
+      const message =
+        error.response?.data?.message || "Failed to create API key";
       toast.error(message);
     },
   });
@@ -99,17 +114,20 @@ export function useCreateApiKey() {
 
 export function useDeleteApiKey() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ websiteId, keyId }: { websiteId: string; keyId: string }) =>
       apiClient.deleteApiKey(websiteId, keyId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.website(variables.websiteId) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.website(variables.websiteId),
+      });
       queryClient.invalidateQueries({ queryKey: queryKeys.websites });
-      toast.success('API key deleted successfully!');
+      toast.success("API key deleted successfully!");
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to delete API key';
+      const message =
+        error.response?.data?.message || "Failed to delete API key";
       toast.error(message);
     },
   });
@@ -118,7 +136,7 @@ export function useDeleteApiKey() {
 // Conversation Hooks
 export function useConversations(params?: {
   websiteId?: string;
-  status?: 'ACTIVE' | 'CLOSED';
+  status?: "ACTIVE" | "CLOSED";
   page?: number;
   limit?: number;
 }) {
@@ -140,17 +158,25 @@ export function useConversation(id: string) {
 
 export function useUpdateConversation() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { status?: 'ACTIVE' | 'CLOSED'; assignedTo?: string } }) =>
-      apiClient.updateConversation(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { status?: "ACTIVE" | "CLOSED"; assignedTo?: string };
+    }) => apiClient.updateConversation(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.conversations() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversation(variables.id) });
-      toast.success('Conversation updated successfully!');
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversation(variables.id),
+      });
+      toast.success("Conversation updated successfully!");
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to update conversation';
+      const message =
+        error.response?.data?.message || "Failed to update conversation";
       toast.error(message);
     },
   });
@@ -158,22 +184,26 @@ export function useUpdateConversation() {
 
 export function useDeleteConversation() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: string) => apiClient.deleteConversation(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.conversations() });
-      toast.success('Conversation deleted successfully!');
+      toast.success("Conversation deleted successfully!");
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to delete conversation';
+      const message =
+        error.response?.data?.message || "Failed to delete conversation";
       toast.error(message);
     },
   });
 }
 
 // Message Hooks
-export function useMessages(conversationId: string, params?: { page?: number; limit?: number }) {
+export function useMessages(
+  conversationId: string,
+  params?: { page?: number; limit?: number }
+) {
   return useQuery({
     queryKey: queryKeys.messages(conversationId, params),
     queryFn: () => apiClient.getMessages(conversationId, params),
@@ -184,19 +214,26 @@ export function useMessages(conversationId: string, params?: { page?: number; li
 
 export function useCreateMessage() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ conversationId, data }: { 
-      conversationId: string; 
-      data: { content: string; senderType: 'AGENT'; senderName?: string } 
+    mutationFn: ({
+      conversationId,
+      data,
+    }: {
+      conversationId: string;
+      data: { content: string; senderType: "AGENT"; senderName?: string };
     }) => apiClient.createMessage(conversationId, data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.messages(variables.conversationId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversation(variables.conversationId) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.messages(variables.conversationId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.conversation(variables.conversationId),
+      });
       queryClient.invalidateQueries({ queryKey: queryKeys.conversations() });
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to send message';
+      const message = error.response?.data?.message || "Failed to send message";
       toast.error(message);
     },
   });
@@ -204,16 +241,24 @@ export function useCreateMessage() {
 
 export function useDeleteMessage() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ conversationId, messageId }: { conversationId: string; messageId: string }) =>
-      apiClient.deleteMessage(conversationId, messageId),
+    mutationFn: ({
+      conversationId,
+      messageId,
+    }: {
+      conversationId: string;
+      messageId: string;
+    }) => apiClient.deleteMessage(conversationId, messageId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.messages(variables.conversationId) });
-      toast.success('Message deleted successfully!');
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.messages(variables.conversationId),
+      });
+      toast.success("Message deleted successfully!");
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to delete message';
+      const message =
+        error.response?.data?.message || "Failed to delete message";
       toast.error(message);
     },
   });
@@ -226,7 +271,7 @@ export const useAnalytics = (params?: {
   websiteId?: string;
 }) => {
   return useQuery({
-    queryKey: ['analytics', params],
+    queryKey: ["analytics", params],
     queryFn: () => apiClient.getAnalytics(params),
   });
 };

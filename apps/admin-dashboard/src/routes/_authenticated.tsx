@@ -1,12 +1,12 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
-import { DashboardLayout } from '../components/dashboard-layout';
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { DashboardLayout } from "../components/dashboard-layout";
 
-export const Route = createFileRoute('/_authenticated')({
+export const Route = createFileRoute("/_authenticated")({
   beforeLoad: ({ location }) => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     if (!token) {
       throw redirect({
-        to: '/login',
+        to: "/login",
         search: { redirect: location.href },
       });
     }

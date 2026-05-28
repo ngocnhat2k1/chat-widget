@@ -1,9 +1,9 @@
-import { IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsString, IsEnum, IsOptional } from "class-validator";
 
 export enum SenderType {
-  VISITOR = 'VISITOR',
-  AGENT = 'AGENT',
-  SYSTEM = 'SYSTEM',
+  VISITOR = "VISITOR",
+  AGENT = "AGENT",
+  SYSTEM = "SYSTEM",
 }
 
 export class SendMessageDto {
@@ -32,4 +32,12 @@ export class CreateConversationDto {
   @IsOptional()
   @IsString()
   initialMessage?: string;
+
+  @IsOptional()
+  @IsString()
+  visitorName?: string;
+
+  @IsOptional()
+  @IsString()
+  visitorEmail?: string;
 }

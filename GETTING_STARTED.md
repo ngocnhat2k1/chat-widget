@@ -3,6 +3,7 @@
 ## 📋 Tổng Quan Dự Án
 
 Dự án Chat Widget Service bao gồm 3 ứng dụng chính:
+
 - **Admin Dashboard** ✅ (Đã hoàn thành và sẵn sàng)
 - **Backend API** 🔧 (Cần cấu hình database)
 - **Chat Widget** 🔧 (Cần cấu hình)
@@ -10,6 +11,7 @@ Dự án Chat Widget Service bao gồm 3 ứng dụng chính:
 ## 🎯 Chạy Admin Dashboard (Sẵn sáng ngay)
 
 ### Bước 1: Chạy Admin Dashboard
+
 ```bash
 cd /Users/ngocnhat/Desktop/tu\ hoc\ fe/chat-widget/apps/admin-dashboard
 npm run dev
@@ -18,6 +20,7 @@ npm run dev
 **✅ Kết quả:** Admin Dashboard sẽ chạy tại: **http://localhost:5174**
 
 ### Bước 2: Truy cập và khám phá
+
 - Mở trình duyệt: http://localhost:5174
 - Bạn sẽ thấy giao diện admin dashboard hoàn chỉnh với:
   - 🔐 Trang Login/Register
@@ -27,6 +30,7 @@ npm run dev
   - 📈 Analytics chi tiết
 
 ### Features Admin Dashboard:
+
 - ✅ **Authentication System**: Login/Register với JWT
 - ✅ **Dashboard Overview**: Charts và metrics
 - ✅ **Website Management**: CRUD operations cho websites
@@ -38,19 +42,23 @@ npm run dev
 ## 🔧 Chạy Backend API (Cần setup)
 
 ### Yêu cầu:
+
 - PostgreSQL database
 - Node.js và npm
 
 ### Bước 1: Cài đặt dependencies
+
 ```bash
 cd /Users/ngocnhat/Desktop/tu\ hoc\ fe/chat-widget/apps/backend
 npm install
 ```
 
 ### Bước 2: Setup Database
+
 1. Cài đặt PostgreSQL
 2. Tạo database `chat_widget`
 3. Tạo file `.env`:
+
 ```env
 DATABASE_URL="postgresql://username:password@localhost:5432/chat_widget"
 JWT_SECRET="your-super-secret-jwt-key-here"
@@ -58,12 +66,14 @@ PORT=3001
 ```
 
 ### Bước 3: Chạy migrations
+
 ```bash
 npm run db:generate
 npx prisma db push
 ```
 
 ### Bước 4: Chạy Backend
+
 ```bash
 npm run dev
 ```
@@ -73,12 +83,14 @@ npm run dev
 ## 💬 Chạy Chat Widget (Cần setup)
 
 ### Bước 1: Cài đặt dependencies
+
 ```bash
 cd /Users/ngocnhat/Desktop/tu\ hoc\ fe/chat-widget/apps/widget
 npm install
 ```
 
 ### Bước 2: Chạy Widget
+
 ```bash
 npm run dev
 ```
@@ -88,18 +100,22 @@ npm run dev
 ## 🚀 Chạy Tất Cả Cùng Lúc
 
 ### Option 1: Sử dụng script có sẵn
+
 ```bash
 cd /Users/ngocnhat/Desktop/tu\ hoc\ fe/chat-widget
 ./start-dev.sh
 ```
 
 ### Option 2: Chạy từng terminal
+
 1. **Terminal 1 - Admin Dashboard:**
+
    ```bash
    cd apps/admin-dashboard && npm run dev
    ```
 
 2. **Terminal 2 - Backend API:**
+
    ```bash
    cd apps/backend && npm run dev
    ```
@@ -118,26 +134,31 @@ cd /Users/ngocnhat/Desktop/tu\ hoc\ fe/chat-widget
 ## 📱 Demo Admin Dashboard Features
 
 ### 1. Authentication
+
 - Truy cập: http://localhost:5174/login
 - Tạo tài khoản admin mới
 - Đăng nhập vào hệ thống
 
 ### 2. Dashboard Overview
+
 - Xem tổng quan analytics
 - Charts với Recharts library
 - Real-time metrics
 
 ### 3. Website Management
+
 - Tạo website mới
 - Generate API keys
 - Quản lý domains
 
 ### 4. Conversation Management
+
 - Xem danh sách conversations
 - Filter theo status
 - Real-time updates
 
 ### 5. Analytics Detail
+
 - Detailed charts và reports
 - Date range filtering
 - Export functionality
@@ -147,6 +168,7 @@ cd /Users/ngocnhat/Desktop/tu\ hoc\ fe/chat-widget
 ### Lỗi phổ biến:
 
 1. **Port đã được sử dụng:**
+
    ```bash
    # Kill processes trên port cụ thể
    lsof -ti:5174 | xargs kill -9  # Admin Dashboard
@@ -155,6 +177,7 @@ cd /Users/ngocnhat/Desktop/tu\ hoc\ fe/chat-widget
    ```
 
 2. **Dependencies lỗi:**
+
    ```bash
    # Xóa node_modules và reinstall
    rm -rf node_modules package-lock.json

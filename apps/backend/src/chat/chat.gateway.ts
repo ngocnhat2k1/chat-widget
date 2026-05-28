@@ -21,7 +21,7 @@ import {
 
 @WebSocketGateway({
   cors: {
-    origin: true,
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   },
 })
@@ -111,6 +111,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         websiteId: client.data.websiteId,
         visitorId: data.visitorId,
         initialMessage: data.initialMessage,
+        visitorName: data.visitorName,
+        visitorEmail: data.visitorEmail,
       });
 
       client.emit("conversationCreated", conversation);
@@ -192,6 +194,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } catch (error) {
       this.logger.error("Error leaving conversation:", error);
     }
+  }
+
+  @SubscribeMessage("typing")
+  handleTyping(
+    @MessageBody() data: { conversationId: string },
+    @ConnectedSocket() client: Socket
+  ) {
+    if (!client.data.isWidget) return;
+    client
+      .to(`conversation:${data.conversationId}`)
+      .emit("visitorTyping", { conversationId: data.conversationId });
   }
 
   private async resolveOwnerId(

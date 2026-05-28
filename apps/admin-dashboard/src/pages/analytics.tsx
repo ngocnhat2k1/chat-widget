@@ -1,23 +1,23 @@
-import { useState } from 'react';
-import { useAnalytics, useWebsites } from '../hooks/api';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  LineChart, 
-  Line, 
-  PieChart, 
-  Pie, 
+import { useState } from "react";
+import { useAnalytics, useWebsites } from "../hooks/api";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
   Cell,
   ResponsiveContainer,
   AreaChart,
-  Area
-} from 'recharts';
-import { 
+  Area,
+} from "recharts";
+import {
   TrendingUp,
   TrendingDown,
   MessageSquare,
@@ -26,10 +26,17 @@ import {
   Clock,
   Download,
   Calendar,
-} from 'lucide-react';
-import { format, subDays, startOfDay, endOfDay } from 'date-fns';
+} from "lucide-react";
+import { format, subDays, startOfDay, endOfDay } from "date-fns";
 
-const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
+const COLORS = [
+  "#3B82F6",
+  "#10B981",
+  "#F59E0B",
+  "#EF4444",
+  "#8B5CF6",
+  "#06B6D4",
+];
 
 interface DateRange {
   start: Date;
@@ -41,7 +48,7 @@ export function AnalyticsPage() {
     start: subDays(new Date(), 30),
     end: new Date(),
   });
-  const [selectedWebsite, setSelectedWebsite] = useState<string>('');
+  const [selectedWebsite, setSelectedWebsite] = useState<string>("");
 
   const { data: analytics, isLoading } = useAnalytics({
     startDate: startOfDay(dateRange.start).toISOString(),
@@ -68,11 +75,13 @@ export function AnalyticsPage() {
       dateRange,
     };
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `analytics-${format(dateRange.start, 'yyyy-MM-dd')}-to-${format(dateRange.end, 'yyyy-MM-dd')}.json`;
+    a.download = `analytics-${format(dateRange.start, "yyyy-MM-dd")}-to-${format(dateRange.end, "yyyy-MM-dd")}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -130,7 +139,7 @@ export function AnalyticsPage() {
   }));
 
   const dailyChartData = dailyStats.map((stat) => ({
-    date: format(new Date(stat.date), 'MMM dd'),
+    date: format(new Date(stat.date), "MMM dd"),
     conversations: stat.conversations,
     messages: stat.messages,
   }));
@@ -143,8 +152,12 @@ export function AnalyticsPage() {
   }));
 
   const conversationStatusData = [
-    { name: 'Active', value: summary.activeConversations, fill: '#10B981' },
-    { name: 'Closed', value: summary.totalConversations - summary.activeConversations, fill: '#6B7280' },
+    { name: "Active", value: summary.activeConversations, fill: "#10B981" },
+    {
+      name: "Closed",
+      value: summary.totalConversations - summary.activeConversations,
+      fill: "#6B7280",
+    },
   ];
 
   return (
@@ -183,9 +196,10 @@ export function AnalyticsPage() {
                   key={days}
                   onClick={() => handleDateRangeChange(days)}
                   className={`px-3 py-2 text-sm rounded-md ${
-                    dateRange.start.getTime() === subDays(new Date(), days).getTime()
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    dateRange.start.getTime() ===
+                    subDays(new Date(), days).getTime()
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
                   {days}d
@@ -220,7 +234,8 @@ export function AnalyticsPage() {
               Selected Period
             </label>
             <p className="text-sm text-gray-600">
-              {format(dateRange.start, 'MMM dd, yyyy')} - {format(dateRange.end, 'MMM dd, yyyy')}
+              {format(dateRange.start, "MMM dd, yyyy")} -{" "}
+              {format(dateRange.end, "MMM dd, yyyy")}
             </p>
           </div>
         </div>
@@ -234,8 +249,12 @@ export function AnalyticsPage() {
               <MessageSquare className="h-8 w-8 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Messages</p>
-              <p className="text-2xl font-semibold text-gray-900">{summary.totalMessages.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-500">
+                Total Messages
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {summary.totalMessages.toLocaleString()}
+              </p>
             </div>
           </div>
         </div>
@@ -246,8 +265,12 @@ export function AnalyticsPage() {
               <Users className="h-8 w-8 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Conversations</p>
-              <p className="text-2xl font-semibold text-gray-900">{summary.totalConversations.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-500">
+                Total Conversations
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {summary.totalConversations.toLocaleString()}
+              </p>
             </div>
           </div>
         </div>
@@ -258,8 +281,12 @@ export function AnalyticsPage() {
               <Clock className="h-8 w-8 text-yellow-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Active Conversations</p>
-              <p className="text-2xl font-semibold text-gray-900">{summary.activeConversations.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-500">
+                Active Conversations
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {summary.activeConversations.toLocaleString()}
+              </p>
             </div>
           </div>
         </div>
@@ -271,7 +298,9 @@ export function AnalyticsPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Websites</p>
-              <p className="text-2xl font-semibold text-gray-900">{topWebsites.length}</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {topWebsites.length}
+              </p>
             </div>
           </div>
         </div>
@@ -281,7 +310,9 @@ export function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Trends */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Daily Activity Trends</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            Daily Activity Trends
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={dailyChartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -311,7 +342,9 @@ export function AnalyticsPage() {
 
         {/* Conversation Status */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Conversation Status</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            Conversation Status
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -319,7 +352,9 @@ export function AnalyticsPage() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) =>
+                  `${name} ${(percent * 100).toFixed(0)}%`
+                }
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
@@ -338,7 +373,9 @@ export function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Website Performance */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Website Performance</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            Website Performance
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={websiteChartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -354,7 +391,9 @@ export function AnalyticsPage() {
 
         {/* Messages vs Conversations */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Messages vs Conversations Trend</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            Messages vs Conversations Trend
+          </h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={dailyChartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -367,14 +406,14 @@ export function AnalyticsPage() {
                 dataKey="messages"
                 stroke="#3B82F6"
                 strokeWidth={2}
-                dot={{ fill: '#3B82F6' }}
+                dot={{ fill: "#3B82F6" }}
               />
               <Line
                 type="monotone"
                 dataKey="conversations"
                 stroke="#10B981"
                 strokeWidth={2}
-                dot={{ fill: '#10B981' }}
+                dot={{ fill: "#10B981" }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -384,7 +423,9 @@ export function AnalyticsPage() {
       {/* Top Websites Table */}
       <div className="bg-white shadow rounded-lg">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Top Performing Websites</h3>
+          <h3 className="text-lg font-medium text-gray-900">
+            Top Performing Websites
+          </h3>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -409,25 +450,44 @@ export function AnalyticsPage() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {topWebsites.map((website, index) => {
-                const avgMessages = website.conversations > 0 ? (website.messages / website.conversations).toFixed(1) : '0';
+                const avgMessages =
+                  website.conversations > 0
+                    ? (website.messages / website.conversations).toFixed(1)
+                    : "0";
                 const isTop = index < 3;
-                
+
                 return (
-                  <tr key={website.id} className={isTop ? 'bg-yellow-50' : ''}>
+                  <tr key={website.id} className={isTop ? "bg-yellow-50" : ""}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${
-                          index === 0 ? 'bg-yellow-100' : 
-                          index === 1 ? 'bg-gray-100' : 
-                          index === 2 ? 'bg-orange-100' : 'bg-blue-100'
-                        }`}>
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${
+                            index === 0
+                              ? "bg-yellow-100"
+                              : index === 1
+                                ? "bg-gray-100"
+                                : index === 2
+                                  ? "bg-orange-100"
+                                  : "bg-blue-100"
+                          }`}
+                        >
                           <span className="text-sm font-medium">
-                            {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                            {index === 0
+                              ? "🥇"
+                              : index === 1
+                                ? "🥈"
+                                : index === 2
+                                  ? "🥉"
+                                  : `#${index + 1}`}
                           </span>
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{website.name}</div>
-                          <div className="text-sm text-gray-500">{website.domain}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {website.name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {website.domain}
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -445,17 +505,23 @@ export function AnalyticsPage() {
                         {website.messages > website.conversations * 5 ? (
                           <>
                             <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                            <span className="text-sm text-green-500">High Engagement</span>
+                            <span className="text-sm text-green-500">
+                              High Engagement
+                            </span>
                           </>
                         ) : website.messages < website.conversations * 2 ? (
                           <>
                             <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-                            <span className="text-sm text-red-500">Low Engagement</span>
+                            <span className="text-sm text-red-500">
+                              Low Engagement
+                            </span>
                           </>
                         ) : (
                           <>
                             <div className="h-4 w-4 bg-yellow-500 rounded mr-1"></div>
-                            <span className="text-sm text-yellow-600">Moderate</span>
+                            <span className="text-sm text-yellow-600">
+                              Moderate
+                            </span>
                           </>
                         )}
                       </div>
