@@ -6,18 +6,18 @@ import {
   OnGatewayDisconnect,
   MessageBody,
   ConnectedSocket,
-} from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
-import { Injectable, Logger } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { ChatService } from './chat.service';
-import { WebsitesService } from '../websites/websites.service';
-import { PrismaService } from '../prisma/prisma.service';
+} from "@nestjs/websockets";
+import { Server, Socket } from "socket.io";
+import { Injectable, Logger } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { ChatService } from "./chat.service";
+import { WebsitesService } from "../websites/websites.service";
+import { PrismaService } from "../prisma/prisma.service";
 import {
   CreateConversationDto,
   JoinConversationDto,
   SendMessageDto,
-} from './dto/chat.dto';
+} from "./dto/chat.dto";
 
 @WebSocketGateway({
   cors: {
@@ -26,9 +26,7 @@ import {
   },
 })
 @Injectable()
-export class ChatGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
@@ -38,7 +36,7 @@ export class ChatGateway
     private chatService: ChatService,
     private websitesService: WebsitesService,
     private prisma: PrismaService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async handleConnection(client: Socket) {
@@ -52,7 +50,7 @@ export class ChatGateway
       if (apiKey && domain) {
         const validation = await this.websitesService.validateApiKey(
           apiKey,
-          domain,
+          domain
         );
         if (!validation.isValid || !validation.website) {
           this.logger.warn(`Invalid API key for client ${client.id}`);
@@ -63,7 +61,7 @@ export class ChatGateway
         client.data.ownerId = validation.website.userId;
         client.data.isWidget = true;
         this.logger.log(
-          `Widget authenticated for website ${validation.website.id} (owner ${validation.website.userId})`,
+          `Widget authenticated for website ${validation.website.id} (owner ${validation.website.userId})`
         );
       } else if (token) {
         try {
@@ -72,11 +70,11 @@ export class ChatGateway
           client.data.isAdmin = true;
           await client.join(`admin:${payload.sub}`);
           this.logger.log(
-            `Admin ${payload.sub} connected via socket ${client.id}`,
+            `Admin ${payload.sub} connected via socket ${client.id}`
           );
         } catch (err) {
           this.logger.warn(
-            `Admin JWT verification failed for ${client.id}: ${err.message}`,
+            `Admin JWT verification failed for ${client.id}: ${err.message}`
           );
           client.disconnect();
           return;
@@ -88,7 +86,7 @@ export class ChatGateway
     } catch (error) {
       this.logger.error(
         `Authentication failed for client ${client.id}:`,
-        error.message,
+        error.message
       );
       client.disconnect();
     }
@@ -98,14 +96,14 @@ export class ChatGateway
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('createConversation')
+  @SubscribeMessage("createConversation")
   async handleCreateConversation(
     @MessageBody() data: CreateConversationDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     try {
       if (!client.data.isWidget) {
-        client.emit('error', { message: 'Unauthorized' });
+        client.emit("error", { message: "Unauthorized" });
         return;
       }
 
@@ -115,25 +113,25 @@ export class ChatGateway
         initialMessage: data.initialMessage,
       });
 
-      client.emit('conversationCreated', conversation);
+      client.emit("conversationCreated", conversation);
 
       if (client.data.ownerId) {
         this.server
           .to(`admin:${client.data.ownerId}`)
-          .emit('conversationCreated', conversation);
+          .emit("conversationCreated", conversation);
       }
 
       return conversation;
     } catch (error) {
-      this.logger.error('Error creating conversation:', error);
-      client.emit('error', { message: 'Failed to create conversation' });
+      this.logger.error("Error creating conversation:", error);
+      client.emit("error", { message: "Failed to create conversation" });
     }
   }
 
-  @SubscribeMessage('joinConversation')
+  @SubscribeMessage("joinConversation")
   async handleJoinConversation(
     @MessageBody() data: JoinConversationDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     try {
       const { conversationId } = data;
@@ -142,63 +140,63 @@ export class ChatGateway
 
       const messages =
         await this.chatService.getConversationMessages(conversationId);
-      client.emit('conversationHistory', { conversationId, messages });
+      client.emit("conversationHistory", { conversationId, messages });
 
       this.logger.log(
-        `Client ${client.id} joined conversation: ${conversationId}`,
+        `Client ${client.id} joined conversation: ${conversationId}`
       );
     } catch (error) {
-      this.logger.error('Error joining conversation:', error);
-      client.emit('error', { message: 'Failed to join conversation' });
+      this.logger.error("Error joining conversation:", error);
+      client.emit("error", { message: "Failed to join conversation" });
     }
   }
 
-  @SubscribeMessage('sendMessage')
+  @SubscribeMessage("sendMessage")
   async handleSendMessage(
     @MessageBody() data: SendMessageDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     try {
       const message = await this.chatService.createMessage(data);
 
       this.server
         .to(`conversation:${data.conversationId}`)
-        .emit('receiveMessage', message);
+        .emit("receiveMessage", message);
 
       // Notify the website owner's admin room so dashboards can show a badge
       // even when the agent isn't viewing the conversation.
       const ownerId = await this.resolveOwnerId(client, data.conversationId);
       if (ownerId) {
-        this.server.to(`admin:${ownerId}`).emit('receiveMessage', message);
+        this.server.to(`admin:${ownerId}`).emit("receiveMessage", message);
       }
 
       this.logger.log(`Message sent in conversation: ${data.conversationId}`);
       return message;
     } catch (error) {
-      this.logger.error('Error sending message:', error);
-      client.emit('error', { message: 'Failed to send message' });
+      this.logger.error("Error sending message:", error);
+      client.emit("error", { message: "Failed to send message" });
     }
   }
 
-  @SubscribeMessage('leaveConversation')
+  @SubscribeMessage("leaveConversation")
   async handleLeaveConversation(
     @MessageBody() data: JoinConversationDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     try {
       const { conversationId } = data;
       await client.leave(`conversation:${conversationId}`);
       this.logger.log(
-        `Client ${client.id} left conversation: ${conversationId}`,
+        `Client ${client.id} left conversation: ${conversationId}`
       );
     } catch (error) {
-      this.logger.error('Error leaving conversation:', error);
+      this.logger.error("Error leaving conversation:", error);
     }
   }
 
   private async resolveOwnerId(
     client: Socket,
-    conversationId: string,
+    conversationId: string
   ): Promise<string | null> {
     if (client.data.ownerId) return client.data.ownerId;
 

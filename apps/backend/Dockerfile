@@ -42,4 +42,4 @@ COPY --from=build /out/prisma ./prisma
 
 EXPOSE 3001
 
-CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "npx -y prisma@5 db push --skip-generate && node dist/main.js"]
