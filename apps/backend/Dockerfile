@@ -4,7 +4,7 @@
 # ---------- Stage 1: build ----------
 FROM node:20-alpine AS build
 RUN apk add --no-cache libc6-compat openssl
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.12.1 --activate
 WORKDIR /repo
 
 # Copy workspace manifests first for better layer caching
@@ -29,7 +29,7 @@ RUN pnpm --filter @chat-widget/backend deploy --prod /out
 # ---------- Stage 2: runtime ----------
 FROM node:20-alpine AS runtime
 RUN apk add --no-cache libc6-compat openssl
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.12.1 --activate
 WORKDIR /app
 
 ENV NODE_ENV=production
