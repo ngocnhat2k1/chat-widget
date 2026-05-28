@@ -1,15 +1,13 @@
-import React from 'react';
 import { useAnalytics } from '../hooks/api';
-import { 
-  MessageCircle, 
-  Globe, 
-  TrendingUp, 
+import {
+  MessageCircle,
+  TrendingUp,
   Users,
   ArrowUpRight,
   ArrowDownRight,
-  Activity
+  Activity,
 } from 'lucide-react';
-import { format, subDays } from 'date-fns';
+import { format } from 'date-fns';
 import { 
   LineChart, 
   Line, 

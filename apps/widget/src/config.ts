@@ -12,6 +12,9 @@ export interface WidgetConfig {
   position?: 'bottom-right' | 'bottom-left'
   primaryColor?: string
   welcomeMessage?: string
+  // Simulate conversations locally without hitting the backend.
+  // Useful for previewing the UI before provisioning an API key.
+  demoMode?: boolean
 }
 
 // Default configuration
@@ -20,4 +23,5 @@ export const DEFAULT_CONFIG: Partial<WidgetConfig> = {
   position: 'bottom-right',
   primaryColor: '#2563eb',
   welcomeMessage: 'Xin chào! Tôi có thể giúp gì cho bạn?',
+  demoMode: false,
 }

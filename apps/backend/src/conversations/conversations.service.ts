@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 export interface CreateConversationDto {
@@ -19,52 +19,46 @@ export interface UpdateConversationDto {
 export class ConversationsService {
   constructor(private prisma: PrismaService) {}
 
-  // Find all conversations for a user (across all their websites)
-  async findAll(userId: string, websiteId?: string) {
-    const where = websiteId 
-      ? { websiteId, website: { userId } }
-      : { website: { userId } };
+  async findAll(
+    userId: string,
+    websiteId?: string,
+    status?: 'ACTIVE' | 'CLOSED' | 'ARCHIVED',
+    page = 1,
+    limit = 20,
+  ) {
+    const where: Record<string, unknown> = {
+      website: { userId },
+    };
+    if (websiteId) where.websiteId = websiteId;
+    if (status) where.status = status;
 
-    return this.prisma.conversation.findMany({
-      where,
-      include: {
-        website: {
-          select: {
-            id: true,
-            name: true,
-            domain: true,
+    const skip = (page - 1) * limit;
+
+    const [conversations, total] = await Promise.all([
+      this.prisma.conversation.findMany({
+        where,
+        include: {
+          website: {
+            select: { id: true, name: true, domain: true },
           },
+          _count: { select: { messages: true } },
         },
-        _count: {
-          select: {
-            messages: true,
-          },
-        },
-      },
-      orderBy: { updatedAt: 'desc' },
-    });
+        orderBy: { updatedAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.conversation.count({ where }),
+    ]);
+
+    return { conversations, total, page, limit };
   }
 
-  // Find one conversation and verify user has access
   async findOne(id: string, userId: string) {
     const conversation = await this.prisma.conversation.findFirst({
-      where: {
-        id,
-        website: { userId },
-      },
+      where: { id, website: { userId } },
       include: {
-        website: {
-          select: {
-            id: true,
-            name: true,
-            domain: true,
-          },
-        },
-        _count: {
-          select: {
-            messages: true,
-          },
-        },
+        website: { select: { id: true, name: true, domain: true } },
+        _count: { select: { messages: true } },
       },
     });
 
@@ -75,13 +69,9 @@ export class ConversationsService {
     return conversation;
   }
 
-  // Create new conversation (usually called by widget)
-  async create(createConversationDto: CreateConversationDto) {
-    const { websiteId, visitorId } = createConversationDto;
-
-    // Verify website exists
+  async create(dto: CreateConversationDto, _userId?: string) {
     const website = await this.prisma.website.findUnique({
-      where: { id: websiteId },
+      where: { id: dto.websiteId },
     });
 
     if (!website) {
@@ -90,77 +80,77 @@ export class ConversationsService {
 
     return this.prisma.conversation.create({
       data: {
-        websiteId,
-        visitorId,
+        websiteId: dto.websiteId,
+        visitorId: dto.visitorId,
         status: 'ACTIVE',
       },
       include: {
-        website: {
-          select: {
-            id: true,
-            name: true,
-            domain: true,
-          },
-        },
+        website: { select: { id: true, name: true, domain: true } },
       },
     });
   }
 
-  // Update conversation status
-  async update(id: string, updateConversationDto: UpdateConversationDto, userId: string) {
-    // Verify user has access
+  async update(id: string, dto: UpdateConversationDto, userId: string) {
     await this.findOne(id, userId);
 
     return this.prisma.conversation.update({
       where: { id },
-      data: updateConversationDto,
+      data: dto,
       include: {
-        website: {
-          select: {
-            id: true,
-            name: true,
-            domain: true,
-          },
-        },
-        _count: {
-          select: {
-            messages: true,
-          },
-        },
+        website: { select: { id: true, name: true, domain: true } },
+        _count: { select: { messages: true } },
       },
     });
   }
 
-  // Get messages for a conversation
-  async getMessages(conversationId: string, userId?: string) {
-    // If userId is provided, verify access
+  async remove(id: string, userId: string) {
+    await this.findOne(id, userId);
+    await this.prisma.conversation.delete({ where: { id } });
+    return { success: true };
+  }
+
+  async getMessages(
+    conversationId: string,
+    userId?: string,
+    page = 1,
+    limit = 50,
+  ) {
     if (userId) {
       await this.findOne(conversationId, userId);
     }
 
-    return this.prisma.message.findMany({
-      where: { conversationId },
-      orderBy: { createdAt: 'asc' },
-    });
+    const skip = (page - 1) * limit;
+
+    const [messages, total] = await Promise.all([
+      this.prisma.message.findMany({
+        where: { conversationId },
+        orderBy: { createdAt: 'asc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.message.count({ where: { conversationId } }),
+    ]);
+
+    return { messages, total, page, limit };
   }
 
-  // Create a new message
-  async createMessage(conversationId: string, createMessageDto: CreateMessageDto, userId?: string) {
-    // If userId is provided (agent message), verify access
-    if (userId && createMessageDto.senderType === 'AGENT') {
+  async createMessage(
+    conversationId: string,
+    dto: CreateMessageDto,
+    userId?: string,
+  ) {
+    if (userId && dto.senderType === 'AGENT') {
       await this.findOne(conversationId, userId);
     }
 
-    // Create the message
     const message = await this.prisma.message.create({
       data: {
         conversationId,
-        content: createMessageDto.content,
-        senderType: createMessageDto.senderType,
+        content: dto.content,
+        senderType: dto.senderType,
       },
     });
 
-    // Update conversation's updatedAt timestamp
     await this.prisma.conversation.update({
       where: { id: conversationId },
       data: { updatedAt: new Date() },
@@ -169,46 +159,35 @@ export class ConversationsService {
     return message;
   }
 
-  // Find or create conversation for a visitor
-  async findOrCreateConversation(websiteId: string, visitorId: string) {
-    // Try to find existing active conversation
-    let conversation = await this.prisma.conversation.findFirst({
-      where: {
-        websiteId,
-        visitorId,
-        status: 'ACTIVE',
-      },
-      include: {
-        website: {
-          select: {
-            id: true,
-            name: true,
-            domain: true,
-          },
-        },
-      },
+  async deleteMessage(
+    messageId: string,
+    conversationId: string,
+    userId: string,
+  ) {
+    await this.findOne(conversationId, userId);
+
+    const message = await this.prisma.message.findFirst({
+      where: { id: messageId, conversationId },
     });
 
-    // If no active conversation, create new one
-    if (!conversation) {
-      conversation = await this.create({ websiteId, visitorId });
+    if (!message) {
+      throw new NotFoundException('Message not found');
     }
 
-    return conversation;
+    await this.prisma.message.delete({ where: { id: messageId } });
+    return { success: true };
   }
 
-  // Get conversations for a specific website (for widget stats)
-  async getWebsiteConversations(websiteId: string) {
-    return this.prisma.conversation.findMany({
-      where: { websiteId },
+  async findOrCreateConversation(websiteId: string, visitorId: string) {
+    const existing = await this.prisma.conversation.findFirst({
+      where: { websiteId, visitorId, status: 'ACTIVE' },
       include: {
-        _count: {
-          select: {
-            messages: true,
-          },
-        },
+        website: { select: { id: true, name: true, domain: true } },
       },
-      orderBy: { updatedAt: 'desc' },
     });
+
+    if (existing) return existing;
+
+    return this.create({ websiteId, visitorId });
   }
 }

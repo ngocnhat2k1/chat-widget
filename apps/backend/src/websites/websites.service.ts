@@ -115,7 +115,7 @@ export class WebsitesService {
     })
   }
 
-  async createApiKey(websiteId: string, createApiKeyDto: CreateApiKeyDto, userId: string) {
+  async createApiKey(websiteId: string, createApiKeyDto: { name?: string }, userId: string) {
     // Verify ownership
     await this.findOne(websiteId, userId)
 
@@ -192,17 +192,4 @@ export class WebsitesService {
     return { isValid: false }
   }
 
-  // Legacy methods (keep for backward compatibility)
-  async createWebsite(userId: string, createWebsiteDto: CreateWebsiteDto) {
-    return this.create(createWebsiteDto, userId)
-  }
-
-  async getUserWebsites(userId: string) {
-    return this.findAll(userId)
-  }
-
-  async generateApiKey(userId: string, createApiKeyDto: CreateApiKeyDto) {
-    const { websiteId, name } = createApiKeyDto
-    return this.createApiKey(websiteId, { name }, userId)
-  }
 }

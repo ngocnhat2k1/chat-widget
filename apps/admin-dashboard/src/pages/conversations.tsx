@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from '@tanstack/react-router';
-import { useConversations, useUpdateConversation } from '../hooks/api';
+import {
+  useConversations,
+  useUpdateConversation,
+  useWebsites,
+} from '../hooks/api';
 import { socketService } from '../lib/socket';
-import { 
-  MessageCircle, 
-  User, 
-  Clock, 
-  Filter, 
+import {
+  MessageCircle,
+  User,
+  Clock,
   Search,
-  MoreVertical,
   CheckCircle,
   XCircle,
-  Eye
+  Eye,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 
@@ -19,6 +21,7 @@ export function ConversationsPage() {
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'CLOSED'>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedWebsite, setSelectedWebsite] = useState<string>('');
+  const { data: websites } = useWebsites();
 
   const { 
     data: conversationsData, 
@@ -119,6 +122,18 @@ export function ConversationsPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Conversations</h1>
         <div className="flex items-center space-x-4">
+          <select
+            value={selectedWebsite}
+            onChange={(e) => setSelectedWebsite(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
+          >
+            <option value="">All websites</option>
+            {websites?.map((w) => (
+              <option key={w.id} value={w.id}>
+                {w.name}
+              </option>
+            ))}
+          </select>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input

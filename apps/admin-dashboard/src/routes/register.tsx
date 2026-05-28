@@ -1,12 +1,12 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { LoginPage } from '../pages/login';
+import { RegisterPage } from '../pages/register';
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute('/register')({
   beforeLoad: () => {
     const token = localStorage.getItem('accessToken');
     if (token) {
       throw redirect({ to: '/dashboard' });
     }
   },
-  component: LoginPage,
+  component: RegisterPage,
 });

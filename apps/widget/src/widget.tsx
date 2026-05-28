@@ -264,6 +264,7 @@ if (typeof document !== 'undefined') {
       const position = script.getAttribute('data-chat-widget-position') as 'bottom-right' | 'bottom-left' || 'bottom-right'
       const primaryColor = script.getAttribute('data-chat-widget-color') || '#2563eb'
       const welcomeMessage = script.getAttribute('data-chat-widget-welcome') || 'Xin chào! Tôi có thể giúp gì cho bạn?'
+      const demoMode = script.getAttribute('data-chat-widget-demo') === 'true'
 
       if (apiKey) {
         const containerId = `chat-widget-${index}`
@@ -274,6 +275,7 @@ if (typeof document !== 'undefined') {
           position,
           primaryColor,
           welcomeMessage,
+          demoMode,
         })
       }
     })

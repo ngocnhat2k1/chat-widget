@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAnalytics, useWebsites } from '../hooks/api';
 import { 
   BarChart, 
@@ -18,15 +18,14 @@ import {
   Area
 } from 'recharts';
 import { 
-  TrendingUp, 
-  TrendingDown, 
-  MessageSquare, 
-  Users, 
-  Globe, 
+  TrendingUp,
+  TrendingDown,
+  MessageSquare,
+  Users,
+  Globe,
   Clock,
-  Filter,
   Download,
-  Calendar
+  Calendar,
 } from 'lucide-react';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 
@@ -51,7 +50,7 @@ export function AnalyticsPage() {
   });
 
   const { data: websitesData } = useWebsites();
-  const websites = websitesData?.websites || [];
+  const websites = websitesData || [];
 
   const handleDateRangeChange = (days: number) => {
     setDateRange({
@@ -62,11 +61,9 @@ export function AnalyticsPage() {
 
   const exportData = () => {
     if (!analytics) return;
-    
+
     const data = {
-      summary: analytics.summary,
-      dailyStats: analytics.dailyStats,
-      topWebsites: analytics.topWebsites,
+      ...analytics,
       exportDate: new Date().toISOString(),
       dateRange,
     };
@@ -98,14 +95,44 @@ export function AnalyticsPage() {
     );
   }
 
-  const { summary, dailyStats, topWebsites } = analytics;
+  const summary = {
+    totalConversations: analytics.totalConversations,
+    activeConversations: analytics.activeConversations,
+    totalMessages: analytics.totalMessages,
+  };
 
-  // Prepare chart data
-  const dailyChartData = dailyStats.map(stat => ({
+  const dailyStats = (() => {
+    const byDate = new Map<
+      string,
+      { conversations: number; messages: number }
+    >();
+    for (const item of analytics.messagesPerDay) {
+      const entry = byDate.get(item.date) ?? { conversations: 0, messages: 0 };
+      entry.messages = item.count;
+      byDate.set(item.date, entry);
+    }
+    for (const item of analytics.conversationsPerDay) {
+      const entry = byDate.get(item.date) ?? { conversations: 0, messages: 0 };
+      entry.conversations = item.count;
+      byDate.set(item.date, entry);
+    }
+    return Array.from(byDate.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, value]) => ({ date, ...value }));
+  })();
+
+  const topWebsites = analytics.topWebsites.map((w) => ({
+    id: w.website.id,
+    name: w.website.name,
+    domain: w.website.domain,
+    conversations: w.conversationCount,
+    messages: w.messageCount,
+  }));
+
+  const dailyChartData = dailyStats.map((stat) => ({
     date: format(new Date(stat.date), 'MMM dd'),
     conversations: stat.conversations,
     messages: stat.messages,
-    visitors: stat.visitors,
   }));
 
   const websiteChartData = topWebsites.map((website, index) => ({

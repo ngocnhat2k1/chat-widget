@@ -15,20 +15,16 @@ import { User } from '../auth/user.decorator';
 
 export class CreateConversationDto {
   websiteId: string;
-  visitorName?: string;
-  visitorEmail?: string;
-  visitorInfo?: any;
+  visitorId: string;
 }
 
 export class CreateMessageDto {
   content: string;
-  senderType: 'USER' | 'VISITOR';
-  senderName?: string;
+  senderType: 'VISITOR' | 'AGENT' | 'SYSTEM';
 }
 
 export class UpdateConversationDto {
-  status?: 'ACTIVE' | 'CLOSED';
-  assignedTo?: string;
+  status?: 'ACTIVE' | 'CLOSED' | 'ARCHIVED';
 }
 
 @Controller('api/conversations')
