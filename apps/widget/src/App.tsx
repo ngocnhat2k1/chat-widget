@@ -15,7 +15,7 @@ export default function ChatWidget({ config }: Props) {
   const [newMessage, setNewMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [demoMode, setDemoMode] = useState(true) // Enable demo mode by default
+  const demoMode = config.demoMode ?? false
 
   const chatAPI = useRef<ChatAPI | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)

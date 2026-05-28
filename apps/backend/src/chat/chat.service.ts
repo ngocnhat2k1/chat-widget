@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateConversationDto, SendMessageDto } from './dto/chat.dto';
+import { CreateConversationDto, SendMessageDto, SenderType } from './dto/chat.dto';
 
 @Injectable()
 export class ChatService {
@@ -36,7 +36,7 @@ export class ChatService {
       await this.createMessage({
         conversationId: conversation.id,
         content: initialMessage,
-        senderType: 'VISITOR',
+        senderType: SenderType.VISITOR,
       });
     }
 

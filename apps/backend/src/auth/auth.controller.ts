@@ -10,7 +10,7 @@ import {
   ValidationPipe 
 } from '@nestjs/common';
 import { AuthService, AuthResponse } from './auth.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtAuthGuard } from './jwt-auth.guard';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 
 @Controller('api/auth')
