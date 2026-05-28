@@ -144,6 +144,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await this.chatService.getConversationMessages(conversationId);
       client.emit("conversationHistory", { conversationId, messages });
 
+      // When admin joins, mark all visitor messages as read and notify the room
+      if (client.data.isAdmin) {
+        await this.chatService.markVisitorMessagesRead(conversationId);
+        this.server
+          .to(`conversation:${conversationId}`)
+          .emit("messagesRead", { conversationId });
+      }
+
       this.logger.log(
         `Client ${client.id} joined conversation: ${conversationId}`
       );

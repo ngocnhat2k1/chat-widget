@@ -8,225 +8,225 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as RegisterRouteImport } from './routes/register'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedWebsitesRouteImport } from './routes/_authenticated.websites'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
-import { Route as AuthenticatedConversationsRouteImport } from './routes/_authenticated.conversations'
-import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated.analytics'
-import { Route as AuthenticatedConversationsConversationIdRouteImport } from './routes/_authenticated.conversations.$conversationId'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as RegisterRouteImport } from "./routes/register";
+import { Route as LoginRouteImport } from "./routes/login";
+import { Route as AuthenticatedRouteImport } from "./routes/_authenticated";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as AuthenticatedWebsitesRouteImport } from "./routes/_authenticated.websites";
+import { Route as AuthenticatedDashboardRouteImport } from "./routes/_authenticated.dashboard";
+import { Route as AuthenticatedConversationsRouteImport } from "./routes/_authenticated.conversations";
+import { Route as AuthenticatedAnalyticsRouteImport } from "./routes/_authenticated.analytics";
+import { Route as AuthenticatedConversationsConversationIdRouteImport } from "./routes/_authenticated.conversations.$conversationId";
 
 const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
+  id: "/register",
+  path: "/register",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+  id: "/login",
+  path: "/login",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+  id: "/_authenticated",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AuthenticatedWebsitesRoute = AuthenticatedWebsitesRouteImport.update({
-  id: '/websites',
-  path: '/websites',
+  id: "/websites",
+  path: "/websites",
   getParentRoute: () => AuthenticatedRoute,
-} as any)
+} as any);
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+  id: "/dashboard",
+  path: "/dashboard",
   getParentRoute: () => AuthenticatedRoute,
-} as any)
+} as any);
 const AuthenticatedConversationsRoute =
   AuthenticatedConversationsRouteImport.update({
-    id: '/conversations',
-    path: '/conversations',
+    id: "/conversations",
+    path: "/conversations",
     getParentRoute: () => AuthenticatedRoute,
-  } as any)
+  } as any);
 const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
+  id: "/analytics",
+  path: "/analytics",
   getParentRoute: () => AuthenticatedRoute,
-} as any)
+} as any);
 const AuthenticatedConversationsConversationIdRoute =
   AuthenticatedConversationsConversationIdRouteImport.update({
-    id: '/$conversationId',
-    path: '/$conversationId',
+    id: "/$conversationId",
+    path: "/$conversationId",
     getParentRoute: () => AuthenticatedConversationsRoute,
-  } as any)
+  } as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
-  '/analytics': typeof AuthenticatedAnalyticsRoute
-  '/conversations': typeof AuthenticatedConversationsRouteWithChildren
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/websites': typeof AuthenticatedWebsitesRoute
-  '/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
+  "/": typeof IndexRoute;
+  "/login": typeof LoginRoute;
+  "/register": typeof RegisterRoute;
+  "/analytics": typeof AuthenticatedAnalyticsRoute;
+  "/conversations": typeof AuthenticatedConversationsRouteWithChildren;
+  "/dashboard": typeof AuthenticatedDashboardRoute;
+  "/websites": typeof AuthenticatedWebsitesRoute;
+  "/conversations/$conversationId": typeof AuthenticatedConversationsConversationIdRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
-  '/analytics': typeof AuthenticatedAnalyticsRoute
-  '/conversations': typeof AuthenticatedConversationsRouteWithChildren
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/websites': typeof AuthenticatedWebsitesRoute
-  '/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
+  "/": typeof IndexRoute;
+  "/login": typeof LoginRoute;
+  "/register": typeof RegisterRoute;
+  "/analytics": typeof AuthenticatedAnalyticsRoute;
+  "/conversations": typeof AuthenticatedConversationsRouteWithChildren;
+  "/dashboard": typeof AuthenticatedDashboardRoute;
+  "/websites": typeof AuthenticatedWebsitesRoute;
+  "/conversations/$conversationId": typeof AuthenticatedConversationsConversationIdRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
-  '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
-  '/_authenticated/conversations': typeof AuthenticatedConversationsRouteWithChildren
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/websites': typeof AuthenticatedWebsitesRoute
-  '/_authenticated/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/_authenticated": typeof AuthenticatedRouteWithChildren;
+  "/login": typeof LoginRoute;
+  "/register": typeof RegisterRoute;
+  "/_authenticated/analytics": typeof AuthenticatedAnalyticsRoute;
+  "/_authenticated/conversations": typeof AuthenticatedConversationsRouteWithChildren;
+  "/_authenticated/dashboard": typeof AuthenticatedDashboardRoute;
+  "/_authenticated/websites": typeof AuthenticatedWebsitesRoute;
+  "/_authenticated/conversations/$conversationId": typeof AuthenticatedConversationsConversationIdRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
-    | '/'
-    | '/login'
-    | '/register'
-    | '/analytics'
-    | '/conversations'
-    | '/dashboard'
-    | '/websites'
-    | '/conversations/$conversationId'
-  fileRoutesByTo: FileRoutesByTo
+    | "/"
+    | "/login"
+    | "/register"
+    | "/analytics"
+    | "/conversations"
+    | "/dashboard"
+    | "/websites"
+    | "/conversations/$conversationId";
+  fileRoutesByTo: FileRoutesByTo;
   to:
-    | '/'
-    | '/login'
-    | '/register'
-    | '/analytics'
-    | '/conversations'
-    | '/dashboard'
-    | '/websites'
-    | '/conversations/$conversationId'
+    | "/"
+    | "/login"
+    | "/register"
+    | "/analytics"
+    | "/conversations"
+    | "/dashboard"
+    | "/websites"
+    | "/conversations/$conversationId";
   id:
-    | '__root__'
-    | '/'
-    | '/_authenticated'
-    | '/login'
-    | '/register'
-    | '/_authenticated/analytics'
-    | '/_authenticated/conversations'
-    | '/_authenticated/dashboard'
-    | '/_authenticated/websites'
-    | '/_authenticated/conversations/$conversationId'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/"
+    | "/_authenticated"
+    | "/login"
+    | "/register"
+    | "/_authenticated/analytics"
+    | "/_authenticated/conversations"
+    | "/_authenticated/dashboard"
+    | "/_authenticated/websites"
+    | "/_authenticated/conversations/$conversationId";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  LoginRoute: typeof LoginRoute
-  RegisterRoute: typeof RegisterRoute
+  IndexRoute: typeof IndexRoute;
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren;
+  LoginRoute: typeof LoginRoute;
+  RegisterRoute: typeof RegisterRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/websites': {
-      id: '/_authenticated/websites'
-      path: '/websites'
-      fullPath: '/websites'
-      preLoaderRoute: typeof AuthenticatedWebsitesRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/conversations': {
-      id: '/_authenticated/conversations'
-      path: '/conversations'
-      fullPath: '/conversations'
-      preLoaderRoute: typeof AuthenticatedConversationsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/analytics': {
-      id: '/_authenticated/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/conversations/$conversationId': {
-      id: '/_authenticated/conversations/$conversationId'
-      path: '/$conversationId'
-      fullPath: '/conversations/$conversationId'
-      preLoaderRoute: typeof AuthenticatedConversationsConversationIdRouteImport
-      parentRoute: typeof AuthenticatedConversationsRoute
-    }
+    "/register": {
+      id: "/register";
+      path: "/register";
+      fullPath: "/register";
+      preLoaderRoute: typeof RegisterRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/login": {
+      id: "/login";
+      path: "/login";
+      fullPath: "/login";
+      preLoaderRoute: typeof LoginRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_authenticated": {
+      id: "/_authenticated";
+      path: "";
+      fullPath: "/";
+      preLoaderRoute: typeof AuthenticatedRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_authenticated/websites": {
+      id: "/_authenticated/websites";
+      path: "/websites";
+      fullPath: "/websites";
+      preLoaderRoute: typeof AuthenticatedWebsitesRouteImport;
+      parentRoute: typeof AuthenticatedRoute;
+    };
+    "/_authenticated/dashboard": {
+      id: "/_authenticated/dashboard";
+      path: "/dashboard";
+      fullPath: "/dashboard";
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport;
+      parentRoute: typeof AuthenticatedRoute;
+    };
+    "/_authenticated/conversations": {
+      id: "/_authenticated/conversations";
+      path: "/conversations";
+      fullPath: "/conversations";
+      preLoaderRoute: typeof AuthenticatedConversationsRouteImport;
+      parentRoute: typeof AuthenticatedRoute;
+    };
+    "/_authenticated/analytics": {
+      id: "/_authenticated/analytics";
+      path: "/analytics";
+      fullPath: "/analytics";
+      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport;
+      parentRoute: typeof AuthenticatedRoute;
+    };
+    "/_authenticated/conversations/$conversationId": {
+      id: "/_authenticated/conversations/$conversationId";
+      path: "/$conversationId";
+      fullPath: "/conversations/$conversationId";
+      preLoaderRoute: typeof AuthenticatedConversationsConversationIdRouteImport;
+      parentRoute: typeof AuthenticatedConversationsRoute;
+    };
   }
 }
 
 interface AuthenticatedConversationsRouteChildren {
-  AuthenticatedConversationsConversationIdRoute: typeof AuthenticatedConversationsConversationIdRoute
+  AuthenticatedConversationsConversationIdRoute: typeof AuthenticatedConversationsConversationIdRoute;
 }
 
 const AuthenticatedConversationsRouteChildren: AuthenticatedConversationsRouteChildren =
   {
     AuthenticatedConversationsConversationIdRoute:
       AuthenticatedConversationsConversationIdRoute,
-  }
+  };
 
 const AuthenticatedConversationsRouteWithChildren =
   AuthenticatedConversationsRoute._addFileChildren(
-    AuthenticatedConversationsRouteChildren,
-  )
+    AuthenticatedConversationsRouteChildren
+  );
 
 interface AuthenticatedRouteChildren {
-  AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
-  AuthenticatedConversationsRoute: typeof AuthenticatedConversationsRouteWithChildren
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedWebsitesRoute: typeof AuthenticatedWebsitesRoute
+  AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute;
+  AuthenticatedConversationsRoute: typeof AuthenticatedConversationsRouteWithChildren;
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute;
+  AuthenticatedWebsitesRoute: typeof AuthenticatedWebsitesRoute;
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -234,18 +234,18 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedConversationsRoute: AuthenticatedConversationsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedWebsitesRoute: AuthenticatedWebsitesRoute,
-}
+};
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
-  AuthenticatedRouteChildren,
-)
+  AuthenticatedRouteChildren
+);
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
