@@ -19,7 +19,11 @@
       "Bash(npm ls *)",
       "Bash(~/.local/bin/claude mcp *)",
       "Bash(corepack pnpm *)",
-      "Bash(COREPACK_ENABLE_AUTO_PIN=0 npx --yes pnpm@10.12.1 install --lockfile-only)"
+      "Bash(COREPACK_ENABLE_AUTO_PIN=0 npx --yes pnpm@10.12.1 install --lockfile-only)",
+      "mcp__vercel__list_teams",
+      "mcp__vercel__list_projects",
+      "mcp__vercel__list_deployments",
+      "mcp__vercel__get_deployment_build_logs"
     ]
   }
 }
