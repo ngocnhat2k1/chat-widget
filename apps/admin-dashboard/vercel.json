@@ -1,3 +1,4 @@
 {
+  "installCommand": "corepack enable && corepack prepare pnpm@10.12.1 --activate && cd ../.. && pnpm install --frozen-lockfile",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

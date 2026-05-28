@@ -9,7 +9,11 @@
       "Bash(PATH=__TRACKED_VAR__:__CMDSUB_OUTPUT__ command -v pnpm)",
       "Bash(npx prisma *)",
       "WebFetch(domain:render.com)",
-      "Bash(claude mcp *)"
+      "Bash(claude mcp *)",
+      "mcp__render__list_workspaces",
+      "mcp__render__list_services",
+      "mcp__render__list_deploys",
+      "mcp__render__get_deploy"
     ]
   }
 }
