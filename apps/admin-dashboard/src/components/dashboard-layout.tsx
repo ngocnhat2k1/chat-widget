@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet, Link, useNavigate } from '@tanstack/react-router';
-import { useAuth } from '../contexts/auth-context';
-import { socketService } from '../lib/socket';
+import React, { useState, useEffect } from "react";
+import { Outlet, Link, useNavigate } from "@tanstack/react-router";
+import { useAuth } from "../contexts/auth-context";
+import { socketService } from "../lib/socket";
 import {
   LayoutDashboard,
   Globe,
@@ -12,15 +12,15 @@ import {
   Menu,
   X,
   Bell,
-} from 'lucide-react';
-import toast from 'react-hot-toast';
+} from "lucide-react";
+import toast from "react-hot-toast";
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Websites', href: '/websites', icon: Globe },
-  { name: 'Conversations', href: '/conversations', icon: MessageCircle },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Websites", href: "/websites", icon: Globe },
+  { name: "Conversations", href: "/conversations", icon: MessageCircle },
+  { name: "Analytics", href: "/analytics", icon: BarChart3 },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 interface DashboardLayoutProps {
@@ -34,19 +34,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     if (!token) return;
 
     socketService.connect(token);
 
     const handleNewMessage = () => {
       setNotifications((prev) => prev + 1);
-      toast.success('New message received!');
+      toast.success("New message received!");
     };
 
     const handleNewConversation = () => {
       setNotifications((prev) => prev + 1);
-      toast.success('New conversation started!');
+      toast.success("New conversation started!");
     };
 
     socketService.onMessageNotification(handleNewMessage);
@@ -62,7 +62,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const handleLogout = async () => {
     await logout();
     socketService.disconnect();
-    navigate({ to: '/login' });
+    navigate({ to: "/login" });
   };
 
   const clearNotifications = () => {
@@ -72,22 +72,26 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
       {/* Mobile sidebar */}
-      <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
+      <div
+        className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? "" : "pointer-events-none"}`}
+      >
         <div
           className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ease-linear duration-300 ${
-            sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
           onClick={() => setSidebarOpen(false)}
         />
         <nav
           className={`fixed top-0 left-0 bottom-0 flex flex-col w-64 bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto transition ease-in-out duration-300 transform ${
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           <div className="flex items-center justify-between flex-shrink-0 px-4">
             <div className="flex items-center">
               <MessageCircle className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">ChatWidget</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">
+                ChatWidget
+              </span>
             </div>
             <button
               className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
@@ -108,7 +112,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <nav className="flex flex-col flex-1 bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-4">
               <MessageCircle className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">ChatWidget</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">
+                ChatWidget
+              </span>
             </div>
             <div className="mt-5 flex-1 h-0 overflow-y-auto">
               <SidebarNavigation clearNotifications={clearNotifications} />
@@ -142,11 +148,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Bell className="h-6 w-6" />
                 {notifications > 0 && (
                   <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {notifications > 9 ? '9+' : notifications}
+                    {notifications > 9 ? "9+" : notifications}
                   </span>
                 )}
               </button>
-              
+
               {/* Logout button */}
               <button
                 onClick={handleLogout}
@@ -172,7 +178,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 }
 
-function SidebarNavigation({ clearNotifications }: { clearNotifications: () => void }) {
+function SidebarNavigation({
+  clearNotifications,
+}: {
+  clearNotifications: () => void;
+}) {
   return (
     <nav className="px-2 space-y-1">
       {navigation.map((item) => (
@@ -182,7 +192,8 @@ function SidebarNavigation({ clearNotifications }: { clearNotifications: () => v
           onClick={clearNotifications}
           className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
           activeProps={{
-            className: 'bg-gray-100 text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+            className:
+              "bg-gray-100 text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md",
           }}
         >
           <item.icon className="text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-6 w-6" />

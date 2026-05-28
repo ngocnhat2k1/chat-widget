@@ -27,22 +27,22 @@ chat-widget/
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend framework | React 18 |
-| Admin routing | TanStack Router (file-based, `src/routes/`) |
-| Server state | TanStack Query (React Query v5) |
-| Forms | react-hook-form + yup |
-| Styling | Tailwind CSS 3 |
-| HTTP client | Axios singleton with JWT interceptors |
-| Real-time | Socket.IO (client + server) |
-| Widget bundler | Vite (IIFE output, inlined CSS) |
-| Backend framework | NestJS 10 |
-| ORM | Prisma 5 (SQLite dev / PostgreSQL prod) |
-| Auth | JWT (7-day expiry, localStorage) |
-| Validation | class-validator + class-transformer |
-| Package manager | pnpm (workspaces) |
-| Shared components | `packages/ui` — exported as ESM + CJS |
+| Layer              | Technology                                  |
+| ------------------ | ------------------------------------------- |
+| Frontend framework | React 18                                    |
+| Admin routing      | TanStack Router (file-based, `src/routes/`) |
+| Server state       | TanStack Query (React Query v5)             |
+| Forms              | react-hook-form + yup                       |
+| Styling            | Tailwind CSS 3                              |
+| HTTP client        | Axios singleton with JWT interceptors       |
+| Real-time          | Socket.IO (client + server)                 |
+| Widget bundler     | Vite (IIFE output, inlined CSS)             |
+| Backend framework  | NestJS 10                                   |
+| ORM                | Prisma 5 (SQLite dev / PostgreSQL prod)     |
+| Auth               | JWT (7-day expiry, localStorage)            |
+| Validation         | class-validator + class-transformer         |
+| Package manager    | pnpm (workspaces)                           |
+| Shared components  | `packages/ui` — exported as ESM + CJS       |
 
 ---
 
@@ -115,11 +115,11 @@ cd packages/ui && pnpm build
 
 ## Port Assignments
 
-| Service | Port |
-|---|---|
-| Backend API | 3001 |
-| Widget dev server | 5173 |
-| Admin Dashboard | 5174 |
+| Service             | Port |
+| ------------------- | ---- |
+| Backend API         | 3001 |
+| Widget dev server   | 5173 |
+| Admin Dashboard     | 5174 |
 | PostgreSQL (Docker) | 5432 |
 
 ---
@@ -166,12 +166,14 @@ Check only: `pnpm format:check`
 The embeddable chat widget renders into a **Shadow DOM** to avoid style leakage.
 
 Key files:
+
 - `src/widget.tsx` — `ChatWidgetManager` class; registers `window.ChatWidget` global; reads config from `<script>` data attributes
 - `src/App.tsx` — `ChatWidget` React component; handles connection, messages, theming
 - `src/api.ts` — `ChatAPI` class wrapping Socket.IO; manages visitor ID in localStorage
 - `src/config.ts` — `WidgetConfig` interface and defaults
 
 Widget embedding:
+
 ```html
 <script
   src="/widget.js"
@@ -181,8 +183,12 @@ Widget embedding:
 ```
 
 Or programmatically:
+
 ```js
-window.ChatWidget.mount('container-id', { apiKey: '...', position: 'bottom-right' });
+window.ChatWidget.mount("container-id", {
+  apiKey: "...",
+  position: "bottom-right",
+});
 ```
 
 Vite config produces an **IIFE bundle** with inlined CSS and Terser minification (console statements stripped).
@@ -192,6 +198,7 @@ Vite config produces an **IIFE bundle** with inlined CSS and Terser minification
 Single-page app with file-based routing via TanStack Router. Route files live in `src/routes/`; `src/routeTree.gen.ts` is **auto-generated** — do not edit manually.
 
 Key files:
+
 - `src/contexts/auth-context.tsx` — `AuthContext`; login/register/logout; JWT stored in localStorage; auto-validates token on load
 - `src/lib/api-client.ts` — Axios singleton; all CRUD endpoints; interceptors attach JWT and redirect to login on 401
 - `src/hooks/api.ts` — React Query hooks (5-minute stale time)
@@ -213,6 +220,7 @@ prisma/       – shared PrismaService module
 ```
 
 WebSocket events (Socket.IO):
+
 - `createConversation` — widget opens a new chat
 - `joinConversation` — admin/widget joins a room (`conversation:{id}`)
 - `sendMessage` — broadcast to room members
@@ -220,6 +228,7 @@ WebSocket events (Socket.IO):
 - `receiveMessage` — emitted to subscribers
 
 Auth:
+
 - Widget connects using API key (`data-chat-widget-api-key`)
 - Admin uses JWT Bearer token
 
@@ -228,12 +237,14 @@ CORS is configured in `src/main.ts`. Validation pipe is global. Logger is used v
 ### `packages/ui`
 
 Shared React component library built with tsup. Exports:
+
 - `Button` — reusable button component
 - `cn` utility — `clsx` + `tailwind-merge`
 
 Import in apps:
+
 ```ts
-import { Button, cn } from '@chat-widget/ui';
+import { Button, cn } from "@chat-widget/ui";
 ```
 
 ---
@@ -246,6 +257,7 @@ Models: `User`, `Website`, `ApiKey`, `Conversation`, `Message`
 - Prod: PostgreSQL (set `DATABASE_URL` env var; run Docker Compose)
 
 Migration workflow:
+
 ```bash
 pnpm prisma migrate dev --name <migration-name>
 pnpm prisma generate
@@ -271,6 +283,7 @@ PORT=3001
 **Status**: Jest and Supertest are installed in the backend but no tests are implemented yet. This is a known gap.
 
 When adding tests:
+
 - Backend unit tests: `apps/backend/src/**/*.spec.ts`
 - Backend e2e tests: `apps/backend/test/`
 - Run: `cd apps/backend && pnpm test`

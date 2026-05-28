@@ -1,6 +1,12 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { apiClient, AuthUser, AuthResponse } from '../lib/api-client';
-import toast from 'react-hot-toast';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { apiClient, AuthUser, AuthResponse } from "../lib/api-client";
+import toast from "react-hot-toast";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -27,8 +33,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Check if user is already logged in on app start
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('accessToken');
-      const savedUser = localStorage.getItem('user');
+      const token = localStorage.getItem("accessToken");
+      const savedUser = localStorage.getItem("user");
 
       if (token && savedUser) {
         try {
@@ -37,8 +43,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setUser(currentUser);
         } catch (error) {
           // Token is invalid, clear storage
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('user');
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("user");
           setUser(null);
         }
       }
@@ -52,16 +58,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true);
       const response: AuthResponse = await apiClient.login(email, password);
-      
+
       // Store token and user data
-      localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      localStorage.setItem("accessToken", response.accessToken);
+      localStorage.setItem("user", JSON.stringify(response.user));
       setUser(response.user);
-      
-      toast.success('Login successful!');
+
+      toast.success("Login successful!");
       return true;
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Login failed';
+      const message = error.response?.data?.message || "Login failed";
       toast.error(message);
       return false;
     } finally {
@@ -69,20 +75,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const register = async (email: string, password: string): Promise<boolean> => {
+  const register = async (
+    email: string,
+    password: string
+  ): Promise<boolean> => {
     try {
       setIsLoading(true);
       const response: AuthResponse = await apiClient.register(email, password);
-      
+
       // Store token and user data
-      localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      localStorage.setItem("accessToken", response.accessToken);
+      localStorage.setItem("user", JSON.stringify(response.user));
       setUser(response.user);
-      
-      toast.success('Registration successful!');
+
+      toast.success("Registration successful!");
       return true;
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Registration failed';
+      const message = error.response?.data?.message || "Registration failed";
       toast.error(message);
       return false;
     } finally {
@@ -95,12 +104,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await apiClient.logout();
     } catch (error) {
       // Even if API call fails, we still want to log out locally
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
       setUser(null);
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('user');
-      toast.success('Logged out successfully');
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user");
+      toast.success("Logged out successfully");
     }
   };
 
@@ -108,9 +117,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const currentUser = await apiClient.getCurrentUser();
       setUser(currentUser);
-      localStorage.setItem('user', JSON.stringify(currentUser));
+      localStorage.setItem("user", JSON.stringify(currentUser));
     } catch (error) {
-      console.error('Failed to refresh user:', error);
+      console.error("Failed to refresh user:", error);
       // If refresh fails, logout
       await logout();
     }
@@ -132,7 +141,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

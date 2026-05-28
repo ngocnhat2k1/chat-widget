@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
 
 export interface AnalyticsData {
   totalConversations: number;
@@ -29,7 +29,10 @@ export interface AnalyticsData {
 export class AnalyticsService {
   constructor(private prisma: PrismaService) {}
 
-  async getAnalytics(userId: string, websiteId?: string): Promise<AnalyticsData> {
+  async getAnalytics(
+    userId: string,
+    websiteId?: string
+  ): Promise<AnalyticsData> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -37,7 +40,7 @@ export class AnalyticsService {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     // Base where clause
-    const baseWhere = websiteId 
+    const baseWhere = websiteId
       ? { websiteId, website: { userId } }
       : { website: { userId } };
 
@@ -50,7 +53,7 @@ export class AnalyticsService {
     const activeConversations = await this.prisma.conversation.count({
       where: {
         ...baseWhere,
-        status: 'ACTIVE',
+        status: "ACTIVE",
       },
     });
 
@@ -72,15 +75,21 @@ export class AnalyticsService {
     });
 
     // Get messages per day (last 30 days)
-    const messagesPerDay = await this.getMessagesPerDay(userId, websiteId, thirtyDaysAgo);
+    const messagesPerDay = await this.getMessagesPerDay(
+      userId,
+      websiteId,
+      thirtyDaysAgo
+    );
 
     // Get conversations per day (last 30 days)
-    const conversationsPerDay = await this.getConversationsPerDay(userId, websiteId, thirtyDaysAgo);
+    const conversationsPerDay = await this.getConversationsPerDay(
+      userId,
+      websiteId,
+      thirtyDaysAgo
+    );
 
     // Get top websites (if not filtering by specific website)
-    const topWebsites = websiteId 
-      ? [] 
-      : await this.getTopWebsites(userId);
+    const topWebsites = websiteId ? [] : await this.getTopWebsites(userId);
 
     return {
       totalConversations,
@@ -93,13 +102,17 @@ export class AnalyticsService {
     };
   }
 
-  private async getMessagesPerDay(userId: string, websiteId?: string, since?: Date) {
-    const where = websiteId 
+  private async getMessagesPerDay(
+    userId: string,
+    websiteId?: string,
+    since?: Date
+  ) {
+    const where = websiteId
       ? { conversation: { websiteId, website: { userId } } }
       : { conversation: { website: { userId } } };
 
     if (since) {
-      where['createdAt'] = { gte: since };
+      where["createdAt"] = { gte: since };
     }
 
     // This is a simplified version - in a real app you'd use SQL aggregation
@@ -111,11 +124,14 @@ export class AnalyticsService {
     });
 
     // Group by date
-    const grouped = messages.reduce((acc, message) => {
-      const date = message.createdAt.toISOString().split('T')[0];
-      acc[date] = (acc[date] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const grouped = messages.reduce(
+      (acc, message) => {
+        const date = message.createdAt.toISOString().split("T")[0];
+        acc[date] = (acc[date] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     return Object.entries(grouped).map(([date, count]) => ({
       date,
@@ -123,13 +139,17 @@ export class AnalyticsService {
     }));
   }
 
-  private async getConversationsPerDay(userId: string, websiteId?: string, since?: Date) {
-    const where = websiteId 
+  private async getConversationsPerDay(
+    userId: string,
+    websiteId?: string,
+    since?: Date
+  ) {
+    const where = websiteId
       ? { websiteId, website: { userId } }
       : { website: { userId } };
 
     if (since) {
-      where['createdAt'] = { gte: since };
+      where["createdAt"] = { gte: since };
     }
 
     // This is a simplified version - in a real app you'd use SQL aggregation
@@ -141,11 +161,14 @@ export class AnalyticsService {
     });
 
     // Group by date
-    const grouped = conversations.reduce((acc, conversation) => {
-      const date = conversation.createdAt.toISOString().split('T')[0];
-      acc[date] = (acc[date] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const grouped = conversations.reduce(
+      (acc, conversation) => {
+        const date = conversation.createdAt.toISOString().split("T")[0];
+        acc[date] = (acc[date] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     return Object.entries(grouped).map(([date, count]) => ({
       date,

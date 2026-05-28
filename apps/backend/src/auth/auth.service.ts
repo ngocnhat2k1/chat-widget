@@ -2,11 +2,11 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
-import { RegisterDto, LoginDto } from './dto/auth.dto';
-import * as bcrypt from 'bcrypt';
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { PrismaService } from "../prisma/prisma.service";
+import { RegisterDto, LoginDto } from "./dto/auth.dto";
+import * as bcrypt from "bcrypt";
 
 export interface AuthUser {
   id: string;
@@ -23,7 +23,7 @@ export interface AuthResponse {
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
@@ -34,7 +34,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException("Email already registered");
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
@@ -54,12 +54,12 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException("Invalid credentials");
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException("Invalid credentials");
     }
 
     return this.buildAuthResponse(user);
@@ -71,7 +71,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException("User not found");
     }
 
     return {

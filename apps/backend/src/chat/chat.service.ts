@@ -1,20 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateConversationDto, SendMessageDto, SenderType } from './dto/chat.dto';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import {
+  CreateConversationDto,
+  SendMessageDto,
+  SenderType,
+} from "./dto/chat.dto";
 
 @Injectable()
 export class ChatService {
   constructor(private prisma: PrismaService) {}
 
   async createConversation(createConversationDto: CreateConversationDto) {
-    const { websiteId, visitorId, initialMessage } = createConversationDto;
+    const { websiteId, visitorId, initialMessage, visitorName, visitorEmail } =
+      createConversationDto;
 
     // Check if there's already an active conversation for this visitor
     const existingConversation = await this.prisma.conversation.findFirst({
       where: {
         websiteId,
         visitorId,
-        status: 'ACTIVE',
+        status: "ACTIVE",
       },
     });
 
@@ -27,7 +32,9 @@ export class ChatService {
       data: {
         websiteId,
         visitorId,
-        status: 'ACTIVE',
+        status: "ACTIVE",
+        ...(visitorName && { visitorName }),
+        ...(visitorEmail && { visitorEmail }),
       },
     });
 
@@ -66,7 +73,7 @@ export class ChatService {
   async getConversationMessages(conversationId: string) {
     const messages = await this.prisma.message.findMany({
       where: { conversationId },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: "asc" },
     });
 
     return messages;
@@ -77,7 +84,7 @@ export class ChatService {
       where: { websiteId },
       include: {
         messages: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: "desc" },
           take: 1, // Get only the latest message
         },
         _count: {
@@ -86,7 +93,7 @@ export class ChatService {
           },
         },
       },
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { updatedAt: "desc" },
     });
 
     return conversations;
@@ -95,9 +102,20 @@ export class ChatService {
   async closeConversation(conversationId: string) {
     const conversation = await this.prisma.conversation.update({
       where: { id: conversationId },
-      data: { status: 'CLOSED' },
+      data: { status: "CLOSED" },
     });
 
     return conversation;
+  }
+
+  async markVisitorMessagesRead(conversationId: string) {
+    await this.prisma.message.updateMany({
+      where: {
+        conversationId,
+        senderType: "VISITOR",
+        readAt: null,
+      },
+      data: { readAt: new Date() },
+    });
   }
 }

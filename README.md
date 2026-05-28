@@ -7,11 +7,13 @@ A comprehensive live chat widget service with embeddable widget and admin dashbo
 This project is a monorepo built with pnpm workspaces containing:
 
 ### Applications
+
 - **backend**: NestJS API server with Socket.IO for real-time communication
 - **widget**: React + Vite embeddable chat widget with Shadow DOM isolation
 - **admin-dashboard**: React + TanStack Router admin interface
 
 ### Packages
+
 - **ui**: Shared React component library
 - **eslint-config-custom**: Shared ESLint configurations
 - **tsconfig**: Shared TypeScript configurations
@@ -30,18 +32,22 @@ This project is a monorepo built with pnpm workspaces containing:
 ### Option 1: Run Individual Apps (Recommended)
 
 1. **Admin Dashboard** (Ready to use):
+
    ```bash
    cd apps/admin-dashboard
    npm run dev
    ```
+
    Access at: http://localhost:5174
 
 2. **Backend API** (If you have NestJS setup):
+
    ```bash
    cd apps/backend
    npm install
    npm run start:dev
    ```
+
    Access at: http://localhost:3001
 
 3. **Chat Widget** (If configured):
@@ -55,6 +61,7 @@ This project is a monorepo built with pnpm workspaces containing:
 ### Option 2: Use Convenience Scripts
 
 1. **Start Admin Dashboard only**:
+
    ```bash
    ./start-admin.sh
    ```
@@ -65,13 +72,15 @@ This project is a monorepo built with pnpm workspaces containing:
    ```
 
 ### Current Status
+
 - ✅ **Admin Dashboard**: Fully implemented and ready to run
-- 🔧 **Backend**: Needs NestJS setup and database configuration  
+- 🔧 **Backend**: Needs NestJS setup and database configuration
 - ✅ **Widget**: Ready to run (standalone demo mode)
 
 ## Environment Setup
 
 For the backend (when ready), create `apps/backend/.env`:
+
 ```env
 DATABASE_URL="postgresql://username:password@localhost:5432/chat_widget"
 JWT_SECRET="your-jwt-secret-here"

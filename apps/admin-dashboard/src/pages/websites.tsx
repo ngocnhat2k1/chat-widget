@@ -1,22 +1,23 @@
-import { useState } from 'react';
-import { useWebsites, useCreateWebsite, useDeleteWebsite, useCreateApiKey, useDeleteApiKey } from '../hooks/api';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { useState } from "react";
 import {
-  Globe,
-  Plus,
-  Trash2,
-  Copy,
-  Key,
-  Eye,
-  EyeOff,
-} from 'lucide-react';
-import toast from 'react-hot-toast';
+  useWebsites,
+  useCreateWebsite,
+  useDeleteWebsite,
+  useCreateApiKey,
+  useDeleteApiKey,
+} from "../hooks/api";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { Globe, Plus, Trash2, Copy, Key, Eye, EyeOff } from "lucide-react";
+import toast from "react-hot-toast";
 
 const websiteSchema = yup.object({
-  name: yup.string().required('Website name is required'),
-  domain: yup.string().url('Please enter a valid URL').required('Domain is required'),
+  name: yup.string().required("Website name is required"),
+  domain: yup
+    .string()
+    .url("Please enter a valid URL")
+    .required("Domain is required"),
 });
 
 const apiKeySchema = yup.object({
@@ -67,7 +68,11 @@ export function WebsitesPage() {
   };
 
   const onDeleteWebsite = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this website? This action cannot be undone.')) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this website? This action cannot be undone."
+      )
+    ) {
       try {
         await deleteWebsiteMutation.mutateAsync(id);
       } catch (error) {
@@ -78,17 +83,17 @@ export function WebsitesPage() {
 
   const onCreateApiKey = async (data: ApiKeyFormData) => {
     if (!selectedWebsite) return;
-    
+
     try {
       const result = await createApiKeyMutation.mutateAsync({
         websiteId: selectedWebsite,
         name: data.name,
       });
-      
+
       // Show the generated API key to user
       navigator.clipboard.writeText(result.key);
-      toast.success('API key created and copied to clipboard!');
-      
+      toast.success("API key created and copied to clipboard!");
+
       setShowApiKeyForm(false);
       setSelectedWebsite(null);
       resetApiKeyForm();
@@ -98,7 +103,7 @@ export function WebsitesPage() {
   };
 
   const onDeleteApiKey = async (websiteId: string, keyId: string) => {
-    if (window.confirm('Are you sure you want to delete this API key?')) {
+    if (window.confirm("Are you sure you want to delete this API key?")) {
       try {
         await deleteApiKeyMutation.mutateAsync({ websiteId, keyId });
       } catch (error) {
@@ -110,9 +115,9 @@ export function WebsitesPage() {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success('Copied to clipboard!');
+      toast.success("Copied to clipboard!");
     } catch (error) {
-      toast.error('Failed to copy to clipboard');
+      toast.error("Failed to copy to clipboard");
     }
   };
 
@@ -134,7 +139,10 @@ export function WebsitesPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-white shadow rounded-lg p-6 animate-pulse">
+            <div
+              key={i}
+              className="bg-white shadow rounded-lg p-6 animate-pulse"
+            >
               <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
               <div className="h-3 bg-gray-200 rounded w-1/2"></div>
             </div>
@@ -171,34 +179,49 @@ export function WebsitesPage() {
       {/* Create Website Form */}
       {showCreateForm && (
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Add New Website</h2>
-          <form onSubmit={handleWebsiteSubmit(onCreateWebsite)} className="space-y-4">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">
+            Add New Website
+          </h2>
+          <form
+            onSubmit={handleWebsiteSubmit(onCreateWebsite)}
+            className="space-y-4"
+          >
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Website Name
               </label>
               <input
-                {...registerWebsite('name')}
+                {...registerWebsite("name")}
                 type="text"
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="My Website"
               />
               {websiteErrors.name && (
-                <p className="mt-1 text-sm text-red-600">{websiteErrors.name.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {websiteErrors.name.message}
+                </p>
               )}
             </div>
             <div>
-              <label htmlFor="domain" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="domain"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Domain
               </label>
               <input
-                {...registerWebsite('domain')}
+                {...registerWebsite("domain")}
                 type="url"
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="https://example.com"
               />
               {websiteErrors.domain && (
-                <p className="mt-1 text-sm text-red-600">{websiteErrors.domain.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {websiteErrors.domain.message}
+                </p>
               )}
             </div>
             <div className="flex justify-end space-x-3">
@@ -217,7 +240,9 @@ export function WebsitesPage() {
                 disabled={createWebsiteMutation.isPending}
                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
               >
-                {createWebsiteMutation.isPending ? 'Creating...' : 'Create Website'}
+                {createWebsiteMutation.isPending
+                  ? "Creating..."
+                  : "Create Website"}
               </button>
             </div>
           </form>
@@ -227,20 +252,30 @@ export function WebsitesPage() {
       {/* API Key Form */}
       {showApiKeyForm && selectedWebsite && (
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Create API Key</h2>
-          <form onSubmit={handleApiKeySubmit(onCreateApiKey)} className="space-y-4">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">
+            Create API Key
+          </h2>
+          <form
+            onSubmit={handleApiKeySubmit(onCreateApiKey)}
+            className="space-y-4"
+          >
             <div>
-              <label htmlFor="apiKeyName" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="apiKeyName"
+                className="block text-sm font-medium text-gray-700"
+              >
                 API Key Name (Optional)
               </label>
               <input
-                {...registerApiKey('name')}
+                {...registerApiKey("name")}
                 type="text"
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="Production Key"
               />
               {apiKeyErrors.name && (
-                <p className="mt-1 text-sm text-red-600">{apiKeyErrors.name.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {apiKeyErrors.name.message}
+                </p>
               )}
             </div>
             <div className="flex justify-end space-x-3">
@@ -260,7 +295,9 @@ export function WebsitesPage() {
                 disabled={createApiKeyMutation.isPending}
                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
               >
-                {createApiKeyMutation.isPending ? 'Creating...' : 'Create API Key'}
+                {createApiKeyMutation.isPending
+                  ? "Creating..."
+                  : "Create API Key"}
               </button>
             </div>
           </form>
@@ -271,13 +308,18 @@ export function WebsitesPage() {
       {websites && websites.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {websites.map((website) => (
-            <div key={website.id} className="bg-white shadow rounded-lg overflow-hidden">
+            <div
+              key={website.id}
+              className="bg-white shadow rounded-lg overflow-hidden"
+            >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
                     <Globe className="h-8 w-8 text-blue-500" />
                     <div className="ml-3">
-                      <h3 className="text-lg font-medium text-gray-900">{website.name}</h3>
+                      <h3 className="text-lg font-medium text-gray-900">
+                        {website.name}
+                      </h3>
                       <p className="text-sm text-gray-500">{website.domain}</p>
                     </div>
                   </div>
@@ -305,23 +347,29 @@ export function WebsitesPage() {
                 {/* API Keys */}
                 {website.apiKeys && website.apiKeys.length > 0 && (
                   <div className="border-t border-gray-200 pt-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">API Keys</h4>
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                      API Keys
+                    </h4>
                     <div className="space-y-2">
                       {website.apiKeys.map((apiKey) => (
-                        <div key={apiKey.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <div
+                          key={apiKey.id}
+                          className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                        >
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium text-gray-900">
-                              {apiKey.name || 'Unnamed Key'}
+                              {apiKey.name || "Unnamed Key"}
                             </p>
                             <div className="flex items-center space-x-2">
                               <code className="text-xs text-gray-500 font-mono">
-                                {visibleApiKeys.has(apiKey.id) 
+                                {visibleApiKeys.has(apiKey.id)
                                   ? apiKey.hashedKey
-                                  : '••••••••••••••••'
-                                }
+                                  : "••••••••••••••••"}
                               </code>
                               <button
-                                onClick={() => toggleApiKeyVisibility(apiKey.id)}
+                                onClick={() =>
+                                  toggleApiKeyVisibility(apiKey.id)
+                                }
                                 className="text-gray-400 hover:text-gray-500"
                               >
                                 {visibleApiKeys.has(apiKey.id) ? (
@@ -331,7 +379,9 @@ export function WebsitesPage() {
                                 )}
                               </button>
                               <button
-                                onClick={() => copyToClipboard(apiKey.hashedKey)}
+                                onClick={() =>
+                                  copyToClipboard(apiKey.hashedKey)
+                                }
                                 className="text-gray-400 hover:text-gray-500"
                               >
                                 <Copy className="h-3 w-3" />
@@ -339,7 +389,9 @@ export function WebsitesPage() {
                             </div>
                           </div>
                           <button
-                            onClick={() => onDeleteApiKey(website.id, apiKey.id)}
+                            onClick={() =>
+                              onDeleteApiKey(website.id, apiKey.id)
+                            }
                             className="ml-2 text-gray-400 hover:text-red-500"
                           >
                             <Trash2 className="h-3 w-3" />
@@ -356,8 +408,12 @@ export function WebsitesPage() {
       ) : (
         <div className="text-center py-12">
           <Globe className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No websites</h3>
-          <p className="mt-1 text-sm text-gray-500">Get started by creating your first website.</p>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">
+            No websites
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            Get started by creating your first website.
+          </p>
           <div className="mt-6">
             <button
               onClick={() => setShowCreateForm(true)}

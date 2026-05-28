@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
 
 export interface ApiResponse<T = any> {
   data: T;
@@ -39,7 +39,9 @@ export interface Conversation {
   id: string;
   websiteId: string;
   visitorId: string;
-  status: 'ACTIVE' | 'CLOSED' | 'ARCHIVED';
+  visitorName?: string | null;
+  visitorEmail?: string | null;
+  status: "ACTIVE" | "CLOSED" | "ARCHIVED";
   createdAt: string;
   updatedAt: string;
   website: Website;
@@ -52,8 +54,9 @@ export interface Conversation {
 export interface Message {
   id: string;
   conversationId: string;
-  senderType: 'VISITOR' | 'AGENT' | 'SYSTEM';
+  senderType: "VISITOR" | "AGENT" | "SYSTEM";
   content: string;
+  readAt?: string | null;
   createdAt: string;
 }
 
@@ -87,10 +90,10 @@ class ApiClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
+      baseURL: import.meta.env.VITE_API_URL || "http://localhost:3001",
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -108,7 +111,7 @@ class ApiClient {
     // Request interceptor - add auth token
     this.client.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem("accessToken");
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -135,14 +138,14 @@ class ApiClient {
   }
 
   private handleAuthError() {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
-    window.location.href = '/login';
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
   }
 
   // Auth methods
   async login(email: string, password: string): Promise<AuthResponse> {
-    const response = await this.client.post<AuthResponse>('/api/auth/login', {
+    const response = await this.client.post<AuthResponse>("/api/auth/login", {
       email,
       password,
     });
@@ -150,27 +153,30 @@ class ApiClient {
   }
 
   async register(email: string, password: string): Promise<AuthResponse> {
-    const response = await this.client.post<AuthResponse>('/api/auth/register', {
-      email,
-      password,
-    });
+    const response = await this.client.post<AuthResponse>(
+      "/api/auth/register",
+      {
+        email,
+        password,
+      }
+    );
     return response.data;
   }
 
   async getCurrentUser(): Promise<AuthUser> {
-    const response = await this.client.get<AuthUser>('/api/auth/me');
+    const response = await this.client.get<AuthUser>("/api/auth/me");
     return response.data;
   }
 
   async logout(): Promise<void> {
-    await this.client.post('/api/auth/logout');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
+    await this.client.post("/api/auth/logout");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
   }
 
   // Website methods
   async getWebsites(): Promise<Website[]> {
-    const response = await this.client.get<Website[]>('/api/websites');
+    const response = await this.client.get<Website[]>("/api/websites");
     return response.data;
   }
 
@@ -179,13 +185,22 @@ class ApiClient {
     return response.data;
   }
 
-  async createWebsite(data: { domain: string; name: string }): Promise<Website> {
-    const response = await this.client.post<Website>('/api/websites', data);
+  async createWebsite(data: {
+    domain: string;
+    name: string;
+  }): Promise<Website> {
+    const response = await this.client.post<Website>("/api/websites", data);
     return response.data;
   }
 
-  async updateWebsite(id: string, data: { domain?: string; name?: string }): Promise<Website> {
-    const response = await this.client.patch<Website>(`/api/websites/${id}`, data);
+  async updateWebsite(
+    id: string,
+    data: { domain?: string; name?: string }
+  ): Promise<Website> {
+    const response = await this.client.patch<Website>(
+      `/api/websites/${id}`,
+      data
+    );
     return response.data;
   }
 
@@ -193,7 +208,10 @@ class ApiClient {
     await this.client.delete(`/api/websites/${id}`);
   }
 
-  async createApiKey(websiteId: string, name?: string): Promise<{ key: string; apiKey: ApiKey }> {
+  async createApiKey(
+    websiteId: string,
+    name?: string
+  ): Promise<{ key: string; apiKey: ApiKey }> {
     const response = await this.client.post<{ key: string; apiKey: ApiKey }>(
       `/api/websites/${websiteId}/api-keys`,
       { name }
@@ -208,15 +226,20 @@ class ApiClient {
   // Conversation methods
   async getConversations(params?: {
     websiteId?: string;
-    status?: 'ACTIVE' | 'CLOSED';
+    status?: "ACTIVE" | "CLOSED";
     page?: number;
     limit?: number;
-  }): Promise<{ conversations: Conversation[]; total: number; page: number; limit: number }> {
+  }): Promise<{
+    conversations: Conversation[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const searchParams = new URLSearchParams();
-    if (params?.websiteId) searchParams.append('websiteId', params.websiteId);
-    if (params?.status) searchParams.append('status', params.status);
-    if (params?.page) searchParams.append('page', params.page.toString());
-    if (params?.limit) searchParams.append('limit', params.limit.toString());
+    if (params?.websiteId) searchParams.append("websiteId", params.websiteId);
+    if (params?.status) searchParams.append("status", params.status);
+    if (params?.page) searchParams.append("page", params.page.toString());
+    if (params?.limit) searchParams.append("limit", params.limit.toString());
 
     const response = await this.client.get<{
       conversations: Conversation[];
@@ -228,15 +251,20 @@ class ApiClient {
   }
 
   async getConversation(id: string): Promise<Conversation> {
-    const response = await this.client.get<Conversation>(`/api/conversations/${id}`);
+    const response = await this.client.get<Conversation>(
+      `/api/conversations/${id}`
+    );
     return response.data;
   }
 
   async updateConversation(
     id: string,
-    data: { status?: 'ACTIVE' | 'CLOSED'; assignedTo?: string }
+    data: { status?: "ACTIVE" | "CLOSED"; assignedTo?: string }
   ): Promise<Conversation> {
-    const response = await this.client.patch<Conversation>(`/api/conversations/${id}`, data);
+    const response = await this.client.patch<Conversation>(
+      `/api/conversations/${id}`,
+      data
+    );
     return response.data;
   }
 
@@ -247,23 +275,30 @@ class ApiClient {
   async getMessages(
     conversationId: string,
     params?: { page?: number; limit?: number }
-  ): Promise<{ messages: Message[]; total: number; page: number; limit: number }> {
+  ): Promise<{
+    messages: Message[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const searchParams = new URLSearchParams();
-    if (params?.page) searchParams.append('page', params.page.toString());
-    if (params?.limit) searchParams.append('limit', params.limit.toString());
+    if (params?.page) searchParams.append("page", params.page.toString());
+    if (params?.limit) searchParams.append("limit", params.limit.toString());
 
     const response = await this.client.get<{
       messages: Message[];
       total: number;
       page: number;
       limit: number;
-    }>(`/api/conversations/${conversationId}/messages?${searchParams.toString()}`);
+    }>(
+      `/api/conversations/${conversationId}/messages?${searchParams.toString()}`
+    );
     return response.data;
   }
 
   async createMessage(
     conversationId: string,
-    data: { content: string; senderType: 'AGENT'; senderName?: string }
+    data: { content: string; senderType: "AGENT"; senderName?: string }
   ): Promise<Message> {
     const response = await this.client.post<Message>(
       `/api/conversations/${conversationId}/messages`,
@@ -272,8 +307,13 @@ class ApiClient {
     return response.data;
   }
 
-  async deleteMessage(conversationId: string, messageId: string): Promise<void> {
-    await this.client.delete(`/api/conversations/${conversationId}/messages/${messageId}`);
+  async deleteMessage(
+    conversationId: string,
+    messageId: string
+  ): Promise<void> {
+    await this.client.delete(
+      `/api/conversations/${conversationId}/messages/${messageId}`
+    );
   }
 
   // Analytics methods
@@ -283,9 +323,9 @@ class ApiClient {
     websiteId?: string;
   }): Promise<AnalyticsData> {
     const searchParams = new URLSearchParams();
-    if (params?.startDate) searchParams.append('startDate', params.startDate);
-    if (params?.endDate) searchParams.append('endDate', params.endDate);
-    if (params?.websiteId) searchParams.append('websiteId', params.websiteId);
+    if (params?.startDate) searchParams.append("startDate", params.startDate);
+    if (params?.endDate) searchParams.append("endDate", params.endDate);
+    if (params?.websiteId) searchParams.append("websiteId", params.websiteId);
 
     const response = await this.client.get<AnalyticsData>(
       `/api/analytics?${searchParams.toString()}`

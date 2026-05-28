@@ -1,104 +1,102 @@
-import React from 'react'
-import { createRoot, Root } from 'react-dom/client'
-import ChatWidget from './App'
-import { WidgetConfig, DEFAULT_CONFIG } from './config'
-import './index.css'
+import React from "react";
+import { createRoot, Root } from "react-dom/client";
+import ChatWidget from "./App";
+import { WidgetConfig, DEFAULT_CONFIG } from "./config";
+import "./index.css";
 
 declare global {
   interface Window {
     ChatWidget: {
-      mount: (containerId: string, config: WidgetConfig) => void
-      unmount: (containerId: string) => void
-    }
+      mount: (containerId: string, config: WidgetConfig) => void;
+      unmount: (containerId: string) => void;
+    };
   }
 }
 
 class ChatWidgetManager {
-  private roots: Map<string, Root> = new Map()
-  private shadowRoots: Map<string, ShadowRoot> = new Map()
+  private roots: Map<string, Root> = new Map();
+  private shadowRoots: Map<string, ShadowRoot> = new Map();
 
   mount(containerId: string, config: WidgetConfig): void {
     try {
       // Validate required config
       if (!config.apiKey) {
-        throw new Error('API key is required')
+        throw new Error("API key is required");
       }
       if (!config.domain) {
-        throw new Error('Domain is required')
+        throw new Error("Domain is required");
       }
 
       // Find or create container
-      let container = document.getElementById(containerId)
+      let container = document.getElementById(containerId);
       if (!container) {
-        container = document.createElement('div')
-        container.id = containerId
-        document.body.appendChild(container)
+        container = document.createElement("div");
+        container.id = containerId;
+        document.body.appendChild(container);
       }
 
       // Create Shadow DOM for CSS isolation
-      const shadowRoot = container.attachShadow({ mode: 'open' })
-      this.shadowRoots.set(containerId, shadowRoot)
+      const shadowRoot = container.attachShadow({ mode: "open" });
+      this.shadowRoots.set(containerId, shadowRoot);
 
       // Create widget root container inside shadow DOM
-      const widgetContainer = document.createElement('div')
+      const widgetContainer = document.createElement("div");
       widgetContainer.style.cssText = `
         all: initial;
         position: fixed;
         z-index: 2147483647;
         pointer-events: none;
-      `
-      
+      `;
+
       // Create style element for widget CSS
-      const styleElement = document.createElement('style')
-      styleElement.textContent = this.getWidgetCSS()
-      
-      shadowRoot.appendChild(styleElement)
-      shadowRoot.appendChild(widgetContainer)
+      const styleElement = document.createElement("style");
+      styleElement.textContent = this.getWidgetCSS();
+
+      shadowRoot.appendChild(styleElement);
+      shadowRoot.appendChild(widgetContainer);
 
       // Enable pointer events for the widget container
-      widgetContainer.style.pointerEvents = 'auto'
+      widgetContainer.style.pointerEvents = "auto";
 
       // Merge config with defaults
       const finalConfig: WidgetConfig = {
         ...DEFAULT_CONFIG,
         ...config,
-      }
+      };
 
       // Mount React component
-      const root = createRoot(widgetContainer)
-      this.roots.set(containerId, root)
+      const root = createRoot(widgetContainer);
+      this.roots.set(containerId, root);
 
-      root.render(
-        React.createElement(ChatWidget, { config: finalConfig })
-      )
+      root.render(React.createElement(ChatWidget, { config: finalConfig }));
 
-      console.log('✅ Chat widget mounted successfully:', containerId)
+      console.log("✅ Chat widget mounted successfully:", containerId);
     } catch (error) {
-      console.error('❌ Failed to mount chat widget:', error)
+      console.error("❌ Failed to mount chat widget:", error);
     }
   }
 
   unmount(containerId: string): void {
     try {
-      const root = this.roots.get(containerId)
+      const root = this.roots.get(containerId);
       if (root) {
-        root.unmount()
-        this.roots.delete(containerId)
+        root.unmount();
+        this.roots.delete(containerId);
       }
 
-      const shadowRoot = this.shadowRoots.get(containerId)
+      const shadowRoot = this.shadowRoots.get(containerId);
       if (shadowRoot) {
-        this.shadowRoots.delete(containerId)
+        this.shadowRoots.delete(containerId);
       }
 
-      const container = document.getElementById(containerId)
+      const container = document.getElementById(containerId);
       if (container) {
-        container.remove()
+        container.remove();
       }
 
-      console.log('✅ Chat widget unmounted successfully:', containerId)
+      console.log("✅ Chat widget unmounted successfully:", containerId);
     } catch (error) {
-      console.error('❌ Failed to unmount chat widget:', error)
+      console.error("❌ Failed to unmount chat widget:", error);
     }
   }
 
@@ -236,38 +234,50 @@ class ChatWidgetManager {
         display: block;
         vertical-align: middle;
       }
-    `
+    `;
   }
 }
 
 // Create global instance
-const widgetManager = new ChatWidgetManager()
+const widgetManager = new ChatWidgetManager();
 
 // Expose global API
 window.ChatWidget = {
   mount: (containerId: string, config: WidgetConfig) => {
-    widgetManager.mount(containerId, config)
+    widgetManager.mount(containerId, config);
   },
   unmount: (containerId: string) => {
-    widgetManager.unmount(containerId)
-  }
-}
+    widgetManager.unmount(containerId);
+  },
+};
 
 // Auto-mount if script has data attributes
-if (typeof document !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    const scripts = document.querySelectorAll('script[data-chat-widget-api-key]')
+if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", () => {
+    const scripts = document.querySelectorAll(
+      "script[data-chat-widget-api-key]"
+    );
     scripts.forEach((script, index) => {
-      const apiKey = script.getAttribute('data-chat-widget-api-key')
-      const domain = script.getAttribute('data-chat-widget-domain') || window.location.hostname
-      const theme = script.getAttribute('data-chat-widget-theme') as 'light' | 'dark' || 'light'
-      const position = script.getAttribute('data-chat-widget-position') as 'bottom-right' | 'bottom-left' || 'bottom-right'
-      const primaryColor = script.getAttribute('data-chat-widget-color') || '#2563eb'
-      const welcomeMessage = script.getAttribute('data-chat-widget-welcome') || 'Xin chào! Tôi có thể giúp gì cho bạn?'
-      const demoMode = script.getAttribute('data-chat-widget-demo') === 'true'
+      const apiKey = script.getAttribute("data-chat-widget-api-key");
+      const domain =
+        script.getAttribute("data-chat-widget-domain") ||
+        window.location.hostname;
+      const theme =
+        (script.getAttribute("data-chat-widget-theme") as "light" | "dark") ||
+        "light";
+      const position =
+        (script.getAttribute("data-chat-widget-position") as
+          | "bottom-right"
+          | "bottom-left") || "bottom-right";
+      const primaryColor =
+        script.getAttribute("data-chat-widget-color") || "#2563eb";
+      const welcomeMessage =
+        script.getAttribute("data-chat-widget-welcome") ||
+        "Xin chào! Tôi có thể giúp gì cho bạn?";
+      const demoMode = script.getAttribute("data-chat-widget-demo") === "true";
 
       if (apiKey) {
-        const containerId = `chat-widget-${index}`
+        const containerId = `chat-widget-${index}`;
         widgetManager.mount(containerId, {
           apiKey,
           domain,
@@ -276,10 +286,10 @@ if (typeof document !== 'undefined') {
           primaryColor,
           welcomeMessage,
           demoMode,
-        })
+        });
       }
-    })
-  })
+    });
+  });
 }
 
-export default ChatWidget
+export default ChatWidget;

@@ -1,12 +1,16 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateWebsiteDto, CreateApiKeyDto } from './dto/websites.dto';
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateWebsiteDto, CreateApiKeyDto } from "./dto/websites.dto";
+import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
 
 export interface UpdateWebsiteDto {
-  domain?: string
-  name?: string
+  domain?: string;
+  name?: string;
 }
 
 @Injectable()
@@ -25,8 +29,8 @@ export class WebsitesService {
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
-    })
+      orderBy: { createdAt: "desc" },
+    });
   }
 
   // Find one website by ID and verify ownership
@@ -41,13 +45,13 @@ export class WebsitesService {
           },
         },
       },
-    })
+    });
 
     if (!website) {
-      throw new NotFoundException('Website not found')
+      throw new NotFoundException("Website not found");
     }
 
-    return website
+    return website;
   }
 
   // Create new website
@@ -65,13 +69,13 @@ export class WebsitesService {
           },
         },
       },
-    })
+    });
   }
 
   // Update website
   async update(id: string, updateWebsiteDto: UpdateWebsiteDto, userId: string) {
     // Verify ownership
-    await this.findOne(id, userId)
+    await this.findOne(id, userId);
 
     return this.prisma.website.update({
       where: { id },
@@ -84,23 +88,23 @@ export class WebsitesService {
           },
         },
       },
-    })
+    });
   }
 
   // Delete website
   async remove(id: string, userId: string) {
     // Verify ownership
-    await this.findOne(id, userId)
+    await this.findOne(id, userId);
 
     return this.prisma.website.delete({
       where: { id },
-    })
+    });
   }
 
   // API Key management
   async getApiKeys(websiteId: string, userId: string) {
     // Verify ownership
-    await this.findOne(websiteId, userId)
+    await this.findOne(websiteId, userId);
 
     return this.prisma.apiKey.findMany({
       where: { websiteId },
@@ -111,19 +115,23 @@ export class WebsitesService {
         lastUsed: true,
         // Don't return the actual hashed key
       },
-      orderBy: { createdAt: 'desc' },
-    })
+      orderBy: { createdAt: "desc" },
+    });
   }
 
-  async createApiKey(websiteId: string, createApiKeyDto: { name?: string }, userId: string) {
+  async createApiKey(
+    websiteId: string,
+    createApiKeyDto: { name?: string },
+    userId: string
+  ) {
     // Verify ownership
-    await this.findOne(websiteId, userId)
+    await this.findOne(websiteId, userId);
 
     // Generate a random API key
-    const apiKey = crypto.randomBytes(32).toString('hex')
-    
+    const apiKey = crypto.randomBytes(32).toString("hex");
+
     // Hash the API key for storage
-    const hashedKey = await bcrypt.hash(apiKey, 12)
+    const hashedKey = await bcrypt.hash(apiKey, 12);
 
     const result = await this.prisma.apiKey.create({
       data: {
@@ -137,31 +145,31 @@ export class WebsitesService {
         createdAt: true,
         lastUsed: true,
       },
-    })
+    });
 
     // Return the API key only once (on creation)
     return {
       ...result,
       key: apiKey, // Plain text key - only returned on creation
-    }
+    };
   }
 
   async deleteApiKey(websiteId: string, keyId: string, userId: string) {
     // Verify ownership
-    await this.findOne(websiteId, userId)
+    await this.findOne(websiteId, userId);
 
     // Verify the API key belongs to this website
     const apiKey = await this.prisma.apiKey.findFirst({
       where: { id: keyId, websiteId },
-    })
+    });
 
     if (!apiKey) {
-      throw new NotFoundException('API key not found')
+      throw new NotFoundException("API key not found");
     }
 
     return this.prisma.apiKey.delete({
       where: { id: keyId },
-    })
+    });
   }
 
   // Validate API key for widget usage
@@ -171,25 +179,24 @@ export class WebsitesService {
       include: {
         website: true,
       },
-    })
+    });
 
     for (const key of apiKeys) {
-      const isValid = await bcrypt.compare(apiKey, key.hashedKey)
+      const isValid = await bcrypt.compare(apiKey, key.hashedKey);
       if (isValid && key.website.domain === domain) {
         // Update last used timestamp
         await this.prisma.apiKey.update({
           where: { id: key.id },
           data: { lastUsed: new Date() },
-        })
+        });
 
         return {
           isValid: true,
           website: key.website,
-        }
+        };
       }
     }
 
-    return { isValid: false }
+    return { isValid: false };
   }
-
 }

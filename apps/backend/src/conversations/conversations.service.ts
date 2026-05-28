@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
 
 export interface CreateConversationDto {
   websiteId: string;
@@ -8,11 +8,11 @@ export interface CreateConversationDto {
 
 export interface CreateMessageDto {
   content: string;
-  senderType: 'VISITOR' | 'AGENT' | 'SYSTEM';
+  senderType: "VISITOR" | "AGENT" | "SYSTEM";
 }
 
 export interface UpdateConversationDto {
-  status?: 'ACTIVE' | 'CLOSED' | 'ARCHIVED';
+  status?: "ACTIVE" | "CLOSED" | "ARCHIVED";
 }
 
 @Injectable()
@@ -22,9 +22,9 @@ export class ConversationsService {
   async findAll(
     userId: string,
     websiteId?: string,
-    status?: 'ACTIVE' | 'CLOSED' | 'ARCHIVED',
+    status?: "ACTIVE" | "CLOSED" | "ARCHIVED",
     page = 1,
-    limit = 20,
+    limit = 20
   ) {
     const where: Record<string, unknown> = {
       website: { userId },
@@ -43,7 +43,7 @@ export class ConversationsService {
           },
           _count: { select: { messages: true } },
         },
-        orderBy: { updatedAt: 'desc' },
+        orderBy: { updatedAt: "desc" },
         skip,
         take: limit,
       }),
@@ -63,7 +63,7 @@ export class ConversationsService {
     });
 
     if (!conversation) {
-      throw new NotFoundException('Conversation not found');
+      throw new NotFoundException("Conversation not found");
     }
 
     return conversation;
@@ -75,14 +75,14 @@ export class ConversationsService {
     });
 
     if (!website) {
-      throw new NotFoundException('Website not found');
+      throw new NotFoundException("Website not found");
     }
 
     return this.prisma.conversation.create({
       data: {
         websiteId: dto.websiteId,
         visitorId: dto.visitorId,
-        status: 'ACTIVE',
+        status: "ACTIVE",
       },
       include: {
         website: { select: { id: true, name: true, domain: true } },
@@ -113,7 +113,7 @@ export class ConversationsService {
     conversationId: string,
     userId?: string,
     page = 1,
-    limit = 50,
+    limit = 50
   ) {
     if (userId) {
       await this.findOne(conversationId, userId);
@@ -124,7 +124,7 @@ export class ConversationsService {
     const [messages, total] = await Promise.all([
       this.prisma.message.findMany({
         where: { conversationId },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: "asc" },
         skip,
         take: limit,
       }),
@@ -137,9 +137,9 @@ export class ConversationsService {
   async createMessage(
     conversationId: string,
     dto: CreateMessageDto,
-    userId?: string,
+    userId?: string
   ) {
-    if (userId && dto.senderType === 'AGENT') {
+    if (userId && dto.senderType === "AGENT") {
       await this.findOne(conversationId, userId);
     }
 
@@ -162,7 +162,7 @@ export class ConversationsService {
   async deleteMessage(
     messageId: string,
     conversationId: string,
-    userId: string,
+    userId: string
   ) {
     await this.findOne(conversationId, userId);
 
@@ -171,7 +171,7 @@ export class ConversationsService {
     });
 
     if (!message) {
-      throw new NotFoundException('Message not found');
+      throw new NotFoundException("Message not found");
     }
 
     await this.prisma.message.delete({ where: { id: messageId } });
@@ -180,7 +180,7 @@ export class ConversationsService {
 
   async findOrCreateConversation(websiteId: string, visitorId: string) {
     const existing = await this.prisma.conversation.findFirst({
-      where: { websiteId, visitorId, status: 'ACTIVE' },
+      where: { websiteId, visitorId, status: "ACTIVE" },
       include: {
         website: { select: { id: true, name: true, domain: true } },
       },
