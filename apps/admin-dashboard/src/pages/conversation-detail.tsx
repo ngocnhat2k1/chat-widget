@@ -1,18 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from '@tanstack/react-router';
 import { useConversation, useMessages, useCreateMessage, useUpdateConversation } from '../hooks/api';
 import { socketService } from '../lib/socket';
 import { useForm } from 'react-hook-form';
-import { 
-  ArrowLeft, 
-  Send, 
-  User, 
-  Bot, 
-  Clock, 
+import {
+  ArrowLeft,
+  Send,
+  User,
+  Bot,
+  Clock,
   Globe,
   CheckCircle,
   XCircle,
-  MoreVertical
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from '@tanstack/react-router';
@@ -22,8 +21,10 @@ interface MessageFormData {
 }
 
 export function ConversationDetailPage() {
-  const { conversationId } = useParams({ from: '/conversations/$conversationId' });
-  const [isTyping, setIsTyping] = useState(false);
+  const { conversationId } = useParams({
+    from: '/_authenticated/conversations/$conversationId',
+  });
+  const [isTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: conversation, isLoading: conversationLoading } = useConversation(conversationId);

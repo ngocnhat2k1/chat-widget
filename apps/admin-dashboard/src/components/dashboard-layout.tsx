@@ -30,41 +30,34 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState<number>(0);
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate({ to: '/login' });
-      return;
-    }
-
-    // Connect to Socket.IO when user is authenticated
     const token = localStorage.getItem('accessToken');
-    if (token) {
-      socketService.connect(token);
+    if (!token) return;
 
-      // Listen for real-time notifications
-      const handleNewMessage = () => {
-        setNotifications(prev => prev + 1);
-        toast.success('New message received!');
-      };
+    socketService.connect(token);
 
-      const handleNewConversation = () => {
-        setNotifications(prev => prev + 1);
-        toast.success('New conversation started!');
-      };
+    const handleNewMessage = () => {
+      setNotifications((prev) => prev + 1);
+      toast.success('New message received!');
+    };
 
-      socketService.onMessageNotification(handleNewMessage);
-      socketService.onNewConversation(handleNewConversation);
+    const handleNewConversation = () => {
+      setNotifications((prev) => prev + 1);
+      toast.success('New conversation started!');
+    };
 
-      return () => {
-        socketService.offMessageNotification(handleNewMessage);
-        socketService.offNewConversation(handleNewConversation);
-        socketService.disconnect();
-      };
-    }
-  }, [isAuthenticated, navigate]);
+    socketService.onMessageNotification(handleNewMessage);
+    socketService.onNewConversation(handleNewConversation);
+
+    return () => {
+      socketService.offMessageNotification(handleNewMessage);
+      socketService.offNewConversation(handleNewConversation);
+      socketService.disconnect();
+    };
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -75,10 +68,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const clearNotifications = () => {
     setNotifications(0);
   };
-
-  if (!isAuthenticated) {
-    return null; // or loading spinner
-  }
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">

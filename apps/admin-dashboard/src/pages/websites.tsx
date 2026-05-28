@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useWebsites, useCreateWebsite, useDeleteWebsite, useCreateApiKey, useDeleteApiKey } from '../hooks/api';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { 
-  Globe, 
-  Plus, 
-  Trash2, 
-  Copy, 
-  Key, 
+import {
+  Globe,
+  Plus,
+  Trash2,
+  Copy,
+  Key,
   Eye,
   EyeOff,
-  MoreVertical,
-  Settings
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

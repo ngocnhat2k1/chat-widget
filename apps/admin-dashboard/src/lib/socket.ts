@@ -1,19 +1,9 @@
 import { io, Socket } from 'socket.io-client';
 import { Message, Conversation } from '../lib/api-client';
 
-export interface SocketMessage {
-  message: Message;
-  conversationId: string;
-}
+export interface SocketMessage extends Message {}
 
-export interface SocketNewConversation {
-  conversation: Conversation;
-}
-
-export interface SocketMessageNotification {
-  message: Message;
-  conversation: Conversation;
-}
+export interface SocketNewConversation extends Conversation {}
 
 class SocketService {
   private socket: Socket | null = null;
@@ -27,16 +17,13 @@ class SocketService {
   }
 
   connect(token: string): void {
-    if (this.socket?.connected) {
-      return;
-    }
+    if (this.socket?.connected) return;
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
-    
-    this.socket = io(`${socketUrl}/chat`, {
-      auth: {
-        token, // JWT token for admin authentication
-      },
+    const socketUrl =
+      import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
+
+    this.socket = io(socketUrl, {
+      auth: { token },
       transports: ['websocket', 'polling'],
     });
 
@@ -64,83 +51,53 @@ class SocketService {
     return this.socket?.connected || false;
   }
 
-  // Join a conversation room
   joinConversation(conversationId: string): void {
-    if (this.socket) {
-      this.socket.emit('join_conversation', { conversationId });
-    }
+    this.socket?.emit('joinConversation', { conversationId });
   }
 
-  // Leave a conversation room
   leaveConversation(conversationId: string): void {
-    if (this.socket) {
-      this.socket.emit('leave_conversation', { conversationId });
-    }
+    this.socket?.emit('leaveConversation', { conversationId });
   }
 
-  // Send a message to a conversation
-  sendMessage(conversationId: string, content: string, senderName?: string): void {
-    if (this.socket) {
-      this.socket.emit('send_message', {
-        conversationId,
-        content,
-        senderName: senderName || 'Admin',
-      });
-    }
+  sendMessage(conversationId: string, content: string): void {
+    this.socket?.emit('sendMessage', {
+      conversationId,
+      content,
+      senderType: 'AGENT',
+    });
   }
 
-  // Listen for new messages
   onNewMessage(callback: (data: SocketMessage) => void): void {
-    if (this.socket) {
-      this.socket.on('new_message', callback);
-    }
+    this.socket?.on('receiveMessage', callback);
   }
 
-  // Stop listening for new messages
   offNewMessage(callback?: (data: SocketMessage) => void): void {
-    if (this.socket) {
-      if (callback) {
-        this.socket.off('new_message', callback);
-      } else {
-        this.socket.off('new_message');
-      }
+    if (callback) {
+      this.socket?.off('receiveMessage', callback);
+    } else {
+      this.socket?.off('receiveMessage');
     }
   }
 
-  // Listen for new conversations
   onNewConversation(callback: (data: SocketNewConversation) => void): void {
-    if (this.socket) {
-      this.socket.on('new_conversation', callback);
-    }
+    this.socket?.on('conversationCreated', callback);
   }
 
-  // Stop listening for new conversations
   offNewConversation(callback?: (data: SocketNewConversation) => void): void {
-    if (this.socket) {
-      if (callback) {
-        this.socket.off('new_conversation', callback);
-      } else {
-        this.socket.off('new_conversation');
-      }
+    if (callback) {
+      this.socket?.off('conversationCreated', callback);
+    } else {
+      this.socket?.off('conversationCreated');
     }
   }
 
-  // Listen for message notifications (for conversations not currently viewed)
-  onMessageNotification(callback: (data: SocketMessageNotification) => void): void {
-    if (this.socket) {
-      this.socket.on('new_message_notification', callback);
-    }
+  // Alias used by dashboard layout for toast notifications on background convos
+  onMessageNotification(callback: (data: SocketMessage) => void): void {
+    this.onNewMessage(callback);
   }
 
-  // Stop listening for message notifications
-  offMessageNotification(callback?: (data: SocketMessageNotification) => void): void {
-    if (this.socket) {
-      if (callback) {
-        this.socket.off('new_message_notification', callback);
-      } else {
-        this.socket.off('new_message_notification');
-      }
-    }
+  offMessageNotification(callback?: (data: SocketMessage) => void): void {
+    this.offNewMessage(callback);
   }
 }
 
