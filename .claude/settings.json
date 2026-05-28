@@ -7,7 +7,9 @@
       "Bash(corepack enable *)",
       "Bash(npm bin *)",
       "Bash(PATH=__TRACKED_VAR__:__CMDSUB_OUTPUT__ command -v pnpm)",
-      "Bash(npx prisma *)"
+      "Bash(npx prisma *)",
+      "WebFetch(domain:render.com)",
+      "Bash(claude mcp *)"
     ]
   }
 }

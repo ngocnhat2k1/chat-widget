@@ -26,6 +26,13 @@ RUN pnpm build
 WORKDIR /repo
 RUN pnpm --filter @chat-widget/backend deploy --prod --legacy /out
 
+# Ensure Prisma schema is present in the bundle and (re-)generate the client
+# into /out/node_modules. pnpm deploy creates a fresh node_modules, so the
+# client generated earlier under /repo/apps/backend is not preserved.
+RUN mkdir -p /out/prisma && cp -R apps/backend/prisma/. /out/prisma/
+WORKDIR /out
+RUN npx -y prisma@5.22.0 generate --schema=./prisma/schema.prisma
+
 # ---------- Stage 2: runtime ----------
 FROM node:20-alpine AS runtime
 RUN apk add --no-cache libc6-compat openssl
