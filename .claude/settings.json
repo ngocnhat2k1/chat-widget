@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm prisma *)",
+      "Bash(pnpm type-check *)",
+      "Bash(corepack --version)",
+      "Bash(corepack enable *)",
+      "Bash(npm bin *)",
+      "Bash(PATH=__TRACKED_VAR__:__CMDSUB_OUTPUT__ command -v pnpm)",
+      "Bash(npx prisma *)"
+    ]
+  }
+}

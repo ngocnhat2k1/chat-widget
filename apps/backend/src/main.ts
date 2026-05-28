@@ -12,14 +12,19 @@ async function bootstrap() {
     transform: true,
   }));
   
-  // Enable CORS for development
+  const origins = (
+    process.env.CORS_ORIGINS ?? 'http://localhost:5173,http://localhost:5174'
+  )
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: origins,
     credentials: true,
   });
-  
+
   const port = process.env.PORT || 3001;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   
   console.log('🚀 Backend server is running on http://localhost:' + port);
   console.log('📡 Socket.IO server is ready for real-time connections');
