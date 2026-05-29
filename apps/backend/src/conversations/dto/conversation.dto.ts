@@ -12,6 +12,6 @@ export interface JoinConversationDto {
 export interface SendMessageDto {
   conversationId: string;
   content: string;
-  senderType: "USER" | "VISITOR";
+  senderType: "VISITOR" | "AGENT" | "SYSTEM";
   senderName?: string;
 }

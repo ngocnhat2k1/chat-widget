@@ -1,10 +1,9 @@
 import { IsString, IsEnum, IsOptional } from "class-validator";
+import { SenderType } from "@prisma/client";
 
-export enum SenderType {
-  VISITOR = "VISITOR",
-  AGENT = "AGENT",
-  SYSTEM = "SYSTEM",
-}
+// Re-export so existing imports (`./dto/chat.dto`) keep working while the
+// single source of truth is the Prisma-generated enum.
+export { SenderType };
 
 export class SendMessageDto {
   @IsString()

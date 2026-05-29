@@ -2,7 +2,7 @@
 
 > **Tài liệu chiến lược.** Giải thích _tại sao_ và _làm gì_ ở mỗi phase. Việc tick off cụ thể nằm trong [CHECKLIST.md](CHECKLIST.md).
 > **Last updated:** 2026-05-29
-> **Current phase:** Phase 0 (chưa bắt đầu)
+> **Current phase:** Phase 0 ✅ hoàn thành → tiếp theo Phase 1 (Workspace Foundation)
 
 ---
 
@@ -17,36 +17,39 @@ Ship **public beta** trong 6-8 tuần — deploy thật trên Vercel + Render, c
 ## Hiện trạng codebase (~60%)
 
 ### ✅ Đã có
+
 - **Backend**: auth (JWT), websites + API key CRUD, conversations + messages (REST + WS), analytics, Prisma 5 model cơ bản
 - **Widget**: Shadow DOM, pre-chat form, typing indicators, read receipts, customization (color/position), demo mode, IIFE bundle
 - **Admin**: login/register, dashboard charts, websites CRUD, live inbox với real-time, analytics chi tiết
 
 ### ❌ Thiếu cho SaaS bán được
-| Nhóm | Hạng mục |
-|---|---|
-| Monetization | Stripe, plans, quota, landing/pricing, self-serve signup |
-| Team & Roles | Multi-agent, OWNER/ADMIN/AGENT, invitation, assignment |
-| Customer comms | Email noti, file upload, push, sound, office hours |
-| UX | Customize UI có preview, copy embed code, canned replies, tags, search, visitor info, export |
-| Production | Tests, CI/CD, rate limit, Swagger, Sentry, deploy scripts |
-| Data model | Workspace/Organization (hiện User trực tiếp own Website → cản trở team) |
+
+| Nhóm           | Hạng mục                                                                                     |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| Monetization   | Stripe, plans, quota, landing/pricing, self-serve signup                                     |
+| Team & Roles   | Multi-agent, OWNER/ADMIN/AGENT, invitation, assignment                                       |
+| Customer comms | Email noti, file upload, push, sound, office hours                                           |
+| UX             | Customize UI có preview, copy embed code, canned replies, tags, search, visitor info, export |
+| Production     | Tests, CI/CD, rate limit, Swagger, Sentry, deploy scripts                                    |
+| Data model     | Workspace/Organization (hiện User trực tiếp own Website → cản trở team)                      |
 
 ### ⚠️ Cần lưu ý
+
 - Duplicate routes: `apps/admin-dashboard/src/pages/` vs `src/routes/` — đang migrate dở
 - Schema thiếu `Workspace`, `Membership`, `Plan`, `Invitation`, `Attachment`, `Tag`
-- Dev SQLite vs prod Postgres → enum behavior khác nhau (CLAUDE.md đã ghi nhận workaround dùng String)
+- ~~Dev SQLite vs prod Postgres → enum behavior khác nhau~~ → ✅ Đã giải quyết ở Phase 0: dev dùng Postgres + native enum (`ConversationStatus`, `SenderType`)
 
 ---
 
 ## Roadmap tổng quan
 
-| Phase | Mục tiêu | Tuần | Trạng thái |
-|---|---|---|---|
-| 0 | Dev environment alignment (SQLite → Postgres) | <1 | ☐ Chưa bắt đầu |
-| 1 | Workspace foundation + dynamic CORS + WS auth | 2-3 | ☐ Chưa bắt đầu |
-| 2 | MVP polish (customize UI, file upload, email, visitor info, Sentry, rate limit) | 2 | ☐ Chưa bắt đầu |
-| 3 | Deploy (Vercel + Render + landing + docs) | 1 | ☐ Chưa bắt đầu |
-| 4 | Beta validation (Swagger, CI, smoke tests, onboard user) | 1-3 | ☐ Chưa bắt đầu |
+| Phase | Mục tiêu                                                                        | Tuần | Trạng thái                 |
+| ----- | ------------------------------------------------------------------------------- | ---- | -------------------------- |
+| 0     | Dev environment alignment (SQLite → Postgres)                                   | <1   | ✅ Hoàn thành (2026-05-29) |
+| 1     | Workspace foundation + dynamic CORS + WS auth                                   | 2-3  | ☐ Chưa bắt đầu             |
+| 2     | MVP polish (customize UI, file upload, email, visitor info, Sentry, rate limit) | 2    | ☐ Chưa bắt đầu             |
+| 3     | Deploy (Vercel + Render + landing + docs)                                       | 1    | ☐ Chưa bắt đầu             |
+| 4     | Beta validation (Swagger, CI, smoke tests, onboard user)                        | 1-3  | ☐ Chưa bắt đầu             |
 
 > Phase 1 đụng vào auth + mọi service + WS gateway + admin client → realistic 2-3 tuần cho solo, không phải 1-2. Đừng coi slippage là thất bại.
 
@@ -59,6 +62,7 @@ Ship **public beta** trong 6-8 tuần — deploy thật trên Vercel + Render, c
 **Lợi ích cho việc học**: Dev = prod environment → hiểu được cách Prisma generate khác nhau giữa các DB, debug realistic.
 
 **Việc làm chính**:
+
 - Start Postgres qua `docker-compose.yml` (đã có sẵn)
 - Đổi `provider` trong `schema.prisma` → `postgresql`
 - Chuyển các field String (status, senderType) → native Prisma enum
@@ -72,6 +76,7 @@ Ship **public beta** trong 6-8 tuần — deploy thật trên Vercel + Render, c
 **Tại sao**: Hiện `User → Website` (1:M) trực tiếp. Khi thêm multi-agent sau này phải migrate data thật → đau. Làm SỚM lúc chưa có user nào là rẻ nhất. Schema xong → UI invite/role làm sau cũng OK.
 
 **Schema mới**:
+
 ```prisma
 Workspace { id, name, slug, memberships, websites }
 Membership { userId, workspaceId, role (OWNER|ADMIN|AGENT) }
@@ -81,12 +86,14 @@ Website { workspaceId } // bỏ userId
 **Khi register**: auto-create Workspace + Membership(OWNER) trong cùng transaction.
 
 **Auth/JWT**:
+
 - JWT chỉ chứa `userId` (giữ stateless)
 - REST: header `X-Workspace-Id` + `WorkspaceGuard` check membership
 - WS không gửi được custom header → workspace qua `socket.handshake.auth.workspaceId`
 - WS widget: `handshake.auth = { apiKey, domain }` → server resolve workspaceId qua ApiKey → Website
 
 **Dynamic CORS (làm cùng Phase 1)**:
+
 - Widget nhúng trên domain tuỳ ý → không thể list cứng `CORS_ORIGINS`
 - Middleware: nhận `Origin`, lookup `Website.domain` qua API key, allow nếu khớp
 - Admin dashboard origin: vẫn fixed list trong env
@@ -99,19 +106,20 @@ Website { workspaceId } // bỏ userId
 
 Các tính năng tối thiểu để beta user dùng được thật:
 
-| # | Tính năng | Tại sao |
-|---|---|---|
-| 2.1 | Xoá duplicate `src/pages/` | Tránh confusion, tech debt |
-| 2.2 | Widget customize UI có live preview | Customer cần đổi màu/welcome msg mà không sửa code |
-| 2.3 | Embed code copy UI (HTML/React/WordPress tabs) | Customer cần copy nhanh để nhúng |
-| 2.4 | Visitor info capture (UA, page, referrer, timezone) | Admin cần context khi reply |
-| 2.5 | File upload (image only, Cloudinary) | Visitor cần share screenshot |
-| 2.6 | Email noti offline (Resend) | Admin không thể online 24/7 |
-| 2.7 | Rate limiting (`@nestjs/throttler`) | Chống brute force + spam |
-| 2.8 | Sentry FE + BE | Track lỗi production |
-| 2.9 | Sound + browser noti admin inbox | Admin biết có msg khi tab background |
+| #   | Tính năng                                           | Tại sao                                            |
+| --- | --------------------------------------------------- | -------------------------------------------------- |
+| 2.1 | Xoá duplicate `src/pages/`                          | Tránh confusion, tech debt                         |
+| 2.2 | Widget customize UI có live preview                 | Customer cần đổi màu/welcome msg mà không sửa code |
+| 2.3 | Embed code copy UI (HTML/React/WordPress tabs)      | Customer cần copy nhanh để nhúng                   |
+| 2.4 | Visitor info capture (UA, page, referrer, timezone) | Admin cần context khi reply                        |
+| 2.5 | File upload (image only, Cloudinary)                | Visitor cần share screenshot                       |
+| 2.6 | Email noti offline (Resend)                         | Admin không thể online 24/7                        |
+| 2.7 | Rate limiting (`@nestjs/throttler`)                 | Chống brute force + spam                           |
+| 2.8 | Sentry FE + BE                                      | Track lỗi production                               |
+| 2.9 | Sound + browser noti admin inbox                    | Admin biết có msg khi tab background               |
 
 **Config merge order** cho widget:
+
 1. `Website.widgetConfig` (server baseline, admin set)
 2. `<script data-...>` attributes (per-page override, customer dev set)
 3. Render: `{ ...baseline, ...dataAttrs }` — dataAttrs thắng
@@ -122,13 +130,14 @@ Các tính năng tối thiểu để beta user dùng được thật:
 
 ## Phase 3 — Deploy
 
-| Service | Hạ tầng | Note |
-|---|---|---|
-| Backend + DB | Render | Cảnh báo: free Postgres bị xoá ngày 90, **khuyến nghị trả $7/tháng từ đầu** |
-| Widget (IIFE) | Vercel static | `Cache-Control: public, max-age=3600, s-maxage=86400` |
-| Admin Dashboard | Vercel | `vercel.json` đã có, verify config monorepo pnpm |
+| Service         | Hạ tầng       | Note                                                                        |
+| --------------- | ------------- | --------------------------------------------------------------------------- |
+| Backend + DB    | Render        | Cảnh báo: free Postgres bị xoá ngày 90, **khuyến nghị trả $7/tháng từ đầu** |
+| Widget (IIFE)   | Vercel static | `Cache-Control: public, max-age=3600, s-maxage=86400`                       |
+| Admin Dashboard | Vercel        | `vercel.json` đã có, verify config monorepo pnpm                            |
 
 **Public routes** (thêm vào admin-dashboard):
+
 - `/` — landing page (hero, features, pricing "Coming soon", embed preview)
 - `/docs` — integration guide (HTML/React/WordPress), link sang Swagger
 
@@ -148,14 +157,14 @@ Các tính năng tối thiểu để beta user dùng được thật:
 
 ## Out of scope cho beta
 
-| Hạng mục | Khi nào làm |
-|---|---|
-| Stripe + plans + quotas | Có 5+ active beta user và thấy người sẵn sàng trả |
-| Multi-agent invitation UI | Sau Phase 4 khi có yêu cầu thực |
-| Conversation assignment, routing, tags | Khi user phàn nàn về workflow |
-| Auto-response / chatbot / AI | Product v2 |
-| Mobile app | PWA admin tạm đủ |
-| File upload non-image, video, voice | Khi user thực sự cần |
+| Hạng mục                               | Khi nào làm                                       |
+| -------------------------------------- | ------------------------------------------------- |
+| Stripe + plans + quotas                | Có 5+ active beta user và thấy người sẵn sàng trả |
+| Multi-agent invitation UI              | Sau Phase 4 khi có yêu cầu thực                   |
+| Conversation assignment, routing, tags | Khi user phàn nàn về workflow                     |
+| Auto-response / chatbot / AI           | Product v2                                        |
+| Mobile app                             | PWA admin tạm đủ                                  |
+| File upload non-image, video, voice    | Khi user thực sự cần                              |
 
 ---
 

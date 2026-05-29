@@ -59,7 +59,7 @@ model Conversation {
   visitorId    String
   visitorName  String?
   visitorEmail String?
-  status       String    @default("ACTIVE") // ACTIVE, CLOSED, ARCHIVED
+  status       ConversationStatus @default(ACTIVE)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
@@ -73,7 +73,7 @@ model Conversation {
 model Message {
   id             String    @id @default(cuid())
   conversationId String
-  senderType     String // VISITOR, AGENT, SYSTEM
+  senderType     SenderType
   content        String
   readAt         DateTime?
   createdAt      DateTime  @default(now())
@@ -84,15 +84,14 @@ model Message {
   @@map("messages")
 }
 
-// Note: SQLite doesn't support enums, so we use String with validation in the app
-// enum ConversationStatus {
-//   ACTIVE
-//   CLOSED
-//   ARCHIVED
-// }
+enum ConversationStatus {
+  ACTIVE
+  CLOSED
+  ARCHIVED
+}
 
-// enum SenderType {
-//   VISITOR
-//   AGENT
-//   SYSTEM
-// }
+enum SenderType {
+  VISITOR
+  AGENT
+  SYSTEM
+}
