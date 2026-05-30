@@ -11,7 +11,8 @@ import {
 } from "@nestjs/common";
 import { ConversationsService } from "./conversations.service";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { User } from "../auth/user.decorator";
+import { WorkspaceGuard } from "../workspaces/workspace.guard";
+import { CurrentWorkspace } from "../workspaces/current-workspace.decorator";
 
 export class CreateConversationDto {
   websiteId: string;
@@ -28,13 +29,13 @@ export class UpdateConversationDto {
 }
 
 @Controller("api/conversations")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, WorkspaceGuard)
 export class ConversationsController {
   constructor(private readonly conversationsService: ConversationsService) {}
 
   @Get()
   async findAll(
-    @User("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Query("websiteId") websiteId?: string,
     @Query("status") status?: "ACTIVE" | "CLOSED",
     @Query("page") page?: string,
@@ -44,7 +45,7 @@ export class ConversationsController {
     const limitNum = limit ? parseInt(limit, 10) : 20;
 
     return this.conversationsService.findAll(
-      userId,
+      workspaceId,
       websiteId,
       status,
       pageNum,
@@ -53,36 +54,46 @@ export class ConversationsController {
   }
 
   @Get(":id")
-  async findOne(@User("id") userId: string, @Param("id") id: string) {
-    return this.conversationsService.findOne(id, userId);
+  async findOne(
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string
+  ) {
+    return this.conversationsService.findOne(id, workspaceId);
   }
 
   @Post()
   async create(
-    @User("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Body() createConversationDto: CreateConversationDto
   ) {
-    return this.conversationsService.create(createConversationDto, userId);
+    return this.conversationsService.create(createConversationDto, workspaceId);
   }
 
   @Patch(":id")
   async update(
-    @User("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") id: string,
     @Body() updateConversationDto: UpdateConversationDto
   ) {
-    return this.conversationsService.update(id, updateConversationDto, userId);
+    return this.conversationsService.update(
+      id,
+      updateConversationDto,
+      workspaceId
+    );
   }
 
   @Delete(":id")
-  async remove(@User("id") userId: string, @Param("id") id: string) {
-    return this.conversationsService.remove(id, userId);
+  async remove(
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string
+  ) {
+    return this.conversationsService.remove(id, workspaceId);
   }
 
   // Messages endpoints
   @Get(":id/messages")
   async getMessages(
-    @User("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") conversationId: string,
     @Query("page") page?: string,
     @Query("limit") limit?: string
@@ -92,7 +103,7 @@ export class ConversationsController {
 
     return this.conversationsService.getMessages(
       conversationId,
-      userId,
+      workspaceId,
       pageNum,
       limitNum
     );
@@ -100,27 +111,27 @@ export class ConversationsController {
 
   @Post(":id/messages")
   async createMessage(
-    @User("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") conversationId: string,
     @Body() createMessageDto: CreateMessageDto
   ) {
     return this.conversationsService.createMessage(
       conversationId,
       createMessageDto,
-      userId
+      workspaceId
     );
   }
 
   @Delete(":conversationId/messages/:messageId")
   async deleteMessage(
-    @User("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("conversationId") conversationId: string,
     @Param("messageId") messageId: string
   ) {
     return this.conversationsService.deleteMessage(
       messageId,
       conversationId,
-      userId
+      workspaceId
     );
   }
 }

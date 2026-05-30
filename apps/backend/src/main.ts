@@ -14,14 +14,19 @@ async function bootstrap() {
     })
   );
 
-  const origins = (
-    process.env.CORS_ORIGINS ?? "http://localhost:5173,http://localhost:5174"
+  // HTTP API is admin-facing only (the widget talks over WebSocket), so the
+  // REST surface keeps a fixed allowlist. Prefer ADMIN_CORS_ORIGINS, falling
+  // back to the legacy CORS_ORIGINS for compatibility.
+  const adminOrigins = (
+    process.env.ADMIN_CORS_ORIGINS ??
+    process.env.CORS_ORIGINS ??
+    "http://localhost:5173,http://localhost:5174"
   )
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
   app.enableCors({
-    origin: origins,
+    origin: adminOrigins,
     credentials: true,
   });
 

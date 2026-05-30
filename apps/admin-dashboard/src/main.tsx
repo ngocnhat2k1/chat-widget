@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { AuthProvider } from "./contexts/auth-context";
+import { WorkspaceProvider } from "./contexts/workspace-context";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 
@@ -33,28 +34,30 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <RouterProvider router={router} />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: "#363636",
-              color: "#fff",
-            },
-            success: {
+        <WorkspaceProvider>
+          <RouterProvider router={router} />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
               style: {
-                background: "#10b981",
+                background: "#363636",
+                color: "#fff",
               },
-            },
-            error: {
-              style: {
-                background: "#ef4444",
+              success: {
+                style: {
+                  background: "#10b981",
+                },
               },
-            },
-          }}
-        />
-        <ReactQueryDevtools initialIsOpen={false} />
+              error: {
+                style: {
+                  background: "#ef4444",
+                },
+              },
+            }}
+          />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </WorkspaceProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

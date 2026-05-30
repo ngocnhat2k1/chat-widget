@@ -12,65 +12,72 @@ import {
 import { WebsitesService, UpdateWebsiteDto } from "./websites.service";
 import { CreateWebsiteDto } from "./dto/websites.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { User } from "../auth/user.decorator";
+import { WorkspaceGuard } from "../workspaces/workspace.guard";
+import { CurrentWorkspace } from "../workspaces/current-workspace.decorator";
 
 @Controller("api/websites")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, WorkspaceGuard)
 export class WebsitesController {
   constructor(private readonly websitesService: WebsitesService) {}
 
   @Get()
-  findAll(@User("id") userId: string) {
-    return this.websitesService.findAll(userId);
+  findAll(@CurrentWorkspace("id") workspaceId: string) {
+    return this.websitesService.findAll(workspaceId);
   }
 
   @Get(":id")
-  findOne(@User("id") userId: string, @Param("id") id: string) {
-    return this.websitesService.findOne(id, userId);
+  findOne(
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") id: string
+  ) {
+    return this.websitesService.findOne(id, workspaceId);
   }
 
   @Post()
   create(
-    @User("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Body(ValidationPipe) dto: CreateWebsiteDto
   ) {
-    return this.websitesService.create(dto, userId);
+    return this.websitesService.create(dto, workspaceId);
   }
 
   @Patch(":id")
   update(
-    @User("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") id: string,
     @Body() dto: UpdateWebsiteDto
   ) {
-    return this.websitesService.update(id, dto, userId);
+    return this.websitesService.update(id, dto, workspaceId);
   }
 
   @Delete(":id")
-  remove(@User("id") userId: string, @Param("id") id: string) {
-    return this.websitesService.remove(id, userId);
+  remove(@CurrentWorkspace("id") workspaceId: string, @Param("id") id: string) {
+    return this.websitesService.remove(id, workspaceId);
   }
 
   @Get(":id/api-keys")
-  getApiKeys(@User("id") userId: string, @Param("id") websiteId: string) {
-    return this.websitesService.getApiKeys(websiteId, userId);
+  getApiKeys(
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") websiteId: string
+  ) {
+    return this.websitesService.getApiKeys(websiteId, workspaceId);
   }
 
   @Post(":id/api-keys")
   createApiKey(
-    @User("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") websiteId: string,
     @Body() dto: { name?: string }
   ) {
-    return this.websitesService.createApiKey(websiteId, dto, userId);
+    return this.websitesService.createApiKey(websiteId, dto, workspaceId);
   }
 
   @Delete(":id/api-keys/:keyId")
   deleteApiKey(
-    @User("id") userId: string,
+    @CurrentWorkspace("id") workspaceId: string,
     @Param("id") websiteId: string,
     @Param("keyId") keyId: string
   ) {
-    return this.websitesService.deleteApiKey(websiteId, keyId, userId);
+    return this.websitesService.deleteApiKey(websiteId, keyId, workspaceId);
   }
 }

@@ -20,8 +20,12 @@ import {
 } from "./dto/chat.dto";
 
 @WebSocketGateway({
+  // The widget is embedded on arbitrary customer domains, so the WS handshake
+  // reflects any origin. This is NOT the security boundary — every connection
+  // must still pass apiKey+domain validation (widget) or JWT + workspace
+  // membership (admin) in handleConnection before it can do anything.
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: true,
     credentials: true,
   },
 })
@@ -57,21 +61,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
           client.disconnect();
           return;
         }
+        // Workspace is derived from the apiKey→website, never trusted from the
+        // client — so a widget can only ever reach its own workspace.
         client.data.websiteId = validation.website.id;
-        client.data.ownerId = validation.website.userId;
+        client.data.workspaceId = validation.website.workspaceId;
         client.data.isWidget = true;
         this.logger.log(
-          `Widget authenticated for website ${validation.website.id} (owner ${validation.website.userId})`
+          `Widget authenticated for website ${validation.website.id} (workspace ${validation.website.workspaceId})`
         );
       } else if (token) {
+        let userId: string;
         try {
           const payload = this.jwtService.verify(token);
-          client.data.userId = payload.sub;
-          client.data.isAdmin = true;
-          await client.join(`admin:${payload.sub}`);
-          this.logger.log(
-            `Admin ${payload.sub} connected via socket ${client.id}`
-          );
+          userId = payload.sub;
         } catch (err) {
           this.logger.warn(
             `Admin JWT verification failed for ${client.id}: ${err.message}`
@@ -79,6 +81,35 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
           client.disconnect();
           return;
         }
+
+        // The client claims a workspace via the handshake — verify membership
+        // before joining its room, otherwise any authed user could subscribe
+        // to another tenant's realtime stream.
+        const workspaceId = client.handshake.auth?.workspaceId;
+        if (!workspaceId) {
+          this.logger.warn(`Admin ${userId} sent no workspaceId`);
+          client.disconnect();
+          return;
+        }
+
+        const membership = await this.prisma.membership.findUnique({
+          where: { userId_workspaceId: { userId, workspaceId } },
+        });
+        if (!membership) {
+          this.logger.warn(
+            `Admin ${userId} is not a member of workspace ${workspaceId}`
+          );
+          client.disconnect();
+          return;
+        }
+
+        client.data.userId = userId;
+        client.data.workspaceId = workspaceId;
+        client.data.isAdmin = true;
+        await client.join(`admin:${workspaceId}`);
+        this.logger.log(
+          `Admin ${userId} connected to workspace ${workspaceId} via socket ${client.id}`
+        );
       } else {
         this.logger.warn(`Client ${client.id} provided no credentials`);
         client.disconnect();
@@ -117,9 +148,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       client.emit("conversationCreated", conversation);
 
-      if (client.data.ownerId) {
+      if (client.data.workspaceId) {
         this.server
-          .to(`admin:${client.data.ownerId}`)
+          .to(`admin:${client.data.workspaceId}`)
           .emit("conversationCreated", conversation);
       }
 
@@ -165,11 +196,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         .to(`conversation:${data.conversationId}`)
         .emit("receiveMessage", message);
 
-      // Notify the website owner's admin room so dashboards can show a badge
+      // Notify the workspace's admin room so dashboards can show a badge
       // even when the agent isn't viewing the conversation.
-      const ownerId = await this.resolveOwnerId(client, data.conversationId);
-      if (ownerId) {
-        this.server.to(`admin:${ownerId}`).emit("receiveMessage", message);
+      const workspaceId = await this.resolveWorkspaceId(
+        client,
+        data.conversationId
+      );
+      if (workspaceId) {
+        this.server.to(`admin:${workspaceId}`).emit("receiveMessage", message);
       }
 
       this.logger.log(`Message sent in conversation: ${data.conversationId}`);
@@ -207,16 +241,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       .emit("visitorTyping", { conversationId: data.conversationId });
   }
 
-  private async resolveOwnerId(
+  private async resolveWorkspaceId(
     client: Socket,
     conversationId: string
   ): Promise<string | null> {
-    if (client.data.ownerId) return client.data.ownerId;
+    if (client.data.workspaceId) return client.data.workspaceId;
 
     const conversation = await this.prisma.conversation.findUnique({
       where: { id: conversationId },
-      select: { website: { select: { userId: true } } },
+      select: { website: { select: { workspaceId: true } } },
     });
-    return conversation?.website.userId ?? null;
+    return conversation?.website.workspaceId ?? null;
   }
 }

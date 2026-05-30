@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -20,13 +20,43 @@ async function main() {
 
   console.log("✅ Created user:", user.email);
 
-  // Create a demo website
-  const website = await prisma.website.upsert({
-    where: { id: "demo-website-id" },
+  // Create a demo workspace + OWNER membership for the demo user
+  const workspace = await prisma.workspace.upsert({
+    where: { slug: "demo-workspace" },
     update: {},
     create: {
-      id: "demo-website-id",
+      id: "demo-workspace-id",
+      name: "Demo Workspace",
+      slug: "demo-workspace",
+    },
+  });
+
+  await prisma.membership.upsert({
+    where: {
+      userId_workspaceId: { userId: user.id, workspaceId: workspace.id },
+    },
+    update: {},
+    create: {
       userId: user.id,
+      workspaceId: workspace.id,
+      role: Role.OWNER,
+    },
+  });
+
+  console.log(
+    "✅ Created workspace:",
+    workspace.slug,
+    "(OWNER:",
+    user.email + ")"
+  );
+
+  // Create a demo website owned by the workspace
+  const website = await prisma.website.upsert({
+    where: { id: "demo-website-id" },
+    update: { workspaceId: workspace.id },
+    create: {
+      id: "demo-website-id",
+      workspaceId: workspace.id,
       name: "Demo Website",
       domain: "localhost:5173",
     },
@@ -37,7 +67,7 @@ async function main() {
   // Create a demo API key
   const hashedApiKey = await bcrypt.hash("demo-api-key-12345", 10);
 
-  const apiKey = await prisma.apiKey.upsert({
+  await prisma.apiKey.upsert({
     where: { hashedKey: hashedApiKey },
     update: {},
     create: {

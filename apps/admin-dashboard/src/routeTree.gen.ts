@@ -17,6 +17,7 @@ import { Route as AuthenticatedWebsitesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedConversationsRouteImport } from './routes/_authenticated.conversations'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated.analytics'
+import { Route as AuthenticatedSettingsWorkspaceRouteImport } from './routes/_authenticated.settings.workspace'
 import { Route as AuthenticatedConversationsConversationIdRouteImport } from './routes/_authenticated.conversations.$conversationId'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -59,6 +60,12 @@ const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedSettingsWorkspaceRoute =
+  AuthenticatedSettingsWorkspaceRouteImport.update({
+    id: '/settings/workspace',
+    path: '/settings/workspace',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedConversationsConversationIdRoute =
   AuthenticatedConversationsConversationIdRouteImport.update({
     id: '/$conversationId',
@@ -75,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/websites': typeof AuthenticatedWebsitesRoute
   '/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
+  '/settings/workspace': typeof AuthenticatedSettingsWorkspaceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -85,6 +93,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/websites': typeof AuthenticatedWebsitesRoute
   '/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
+  '/settings/workspace': typeof AuthenticatedSettingsWorkspaceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -97,6 +106,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/websites': typeof AuthenticatedWebsitesRoute
   '/_authenticated/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
+  '/_authenticated/settings/workspace': typeof AuthenticatedSettingsWorkspaceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/websites'
     | '/conversations/$conversationId'
+    | '/settings/workspace'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/websites'
     | '/conversations/$conversationId'
+    | '/settings/workspace'
   id:
     | '__root__'
     | '/'
@@ -130,6 +142,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/websites'
     | '/_authenticated/conversations/$conversationId'
+    | '/_authenticated/settings/workspace'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -197,6 +210,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/settings/workspace': {
+      id: '/_authenticated/settings/workspace'
+      path: '/settings/workspace'
+      fullPath: '/settings/workspace'
+      preLoaderRoute: typeof AuthenticatedSettingsWorkspaceRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/conversations/$conversationId': {
       id: '/_authenticated/conversations/$conversationId'
       path: '/$conversationId'
@@ -227,6 +247,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedConversationsRoute: typeof AuthenticatedConversationsRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedWebsitesRoute: typeof AuthenticatedWebsitesRoute
+  AuthenticatedSettingsWorkspaceRoute: typeof AuthenticatedSettingsWorkspaceRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -234,6 +255,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedConversationsRoute: AuthenticatedConversationsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedWebsitesRoute: AuthenticatedWebsitesRoute,
+  AuthenticatedSettingsWorkspaceRoute: AuthenticatedSettingsWorkspaceRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

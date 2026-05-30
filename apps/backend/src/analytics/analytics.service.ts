@@ -30,7 +30,7 @@ export class AnalyticsService {
   constructor(private prisma: PrismaService) {}
 
   async getAnalytics(
-    userId: string,
+    workspaceId: string,
     websiteId?: string
   ): Promise<AnalyticsData> {
     const today = new Date();
@@ -39,10 +39,10 @@ export class AnalyticsService {
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    // Base where clause
+    // Base where clause — always scoped to the workspace
     const baseWhere = websiteId
-      ? { websiteId, website: { userId } }
-      : { website: { userId } };
+      ? { websiteId, website: { workspaceId } }
+      : { website: { workspaceId } };
 
     // Get total conversations
     const totalConversations = await this.prisma.conversation.count({
@@ -76,20 +76,20 @@ export class AnalyticsService {
 
     // Get messages per day (last 30 days)
     const messagesPerDay = await this.getMessagesPerDay(
-      userId,
+      workspaceId,
       websiteId,
       thirtyDaysAgo
     );
 
     // Get conversations per day (last 30 days)
     const conversationsPerDay = await this.getConversationsPerDay(
-      userId,
+      workspaceId,
       websiteId,
       thirtyDaysAgo
     );
 
     // Get top websites (if not filtering by specific website)
-    const topWebsites = websiteId ? [] : await this.getTopWebsites(userId);
+    const topWebsites = websiteId ? [] : await this.getTopWebsites(workspaceId);
 
     return {
       totalConversations,
@@ -103,13 +103,13 @@ export class AnalyticsService {
   }
 
   private async getMessagesPerDay(
-    userId: string,
+    workspaceId: string,
     websiteId?: string,
     since?: Date
   ) {
     const where = websiteId
-      ? { conversation: { websiteId, website: { userId } } }
-      : { conversation: { website: { userId } } };
+      ? { conversation: { websiteId, website: { workspaceId } } }
+      : { conversation: { website: { workspaceId } } };
 
     if (since) {
       where["createdAt"] = { gte: since };
@@ -140,13 +140,13 @@ export class AnalyticsService {
   }
 
   private async getConversationsPerDay(
-    userId: string,
+    workspaceId: string,
     websiteId?: string,
     since?: Date
   ) {
     const where = websiteId
-      ? { websiteId, website: { userId } }
-      : { website: { userId } };
+      ? { websiteId, website: { workspaceId } }
+      : { website: { workspaceId } };
 
     if (since) {
       where["createdAt"] = { gte: since };
@@ -176,10 +176,10 @@ export class AnalyticsService {
     }));
   }
 
-  private async getTopWebsites(userId: string) {
+  private async getTopWebsites(workspaceId: string) {
     // Get websites with conversation and message counts
     const websites = await this.prisma.website.findMany({
-      where: { userId },
+      where: { workspaceId },
       select: {
         id: true,
         name: true,

@@ -6,6 +6,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AuthModule } from "./auth/auth.module";
+import { WorkspacesModule } from "./workspaces/workspaces.module";
 import { WebsitesModule } from "./websites/websites.module";
 import { ConversationsModule } from "./conversations/conversations.module";
 import { AnalyticsModule } from "./analytics/analytics.module";
@@ -31,6 +32,7 @@ import { ChatModule } from "./chat/chat.module";
     }),
     PrismaModule,
     AuthModule,
+    WorkspacesModule,
     WebsitesModule,
     ConversationsModule,
     AnalyticsModule,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../contexts/auth-context";
+import { useWorkspace } from "../contexts/workspace-context";
 import { socketService } from "../lib/socket";
 import {
   LayoutDashboard,
@@ -12,6 +13,9 @@ import {
   Menu,
   X,
   Bell,
+  Building2,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -20,7 +24,7 @@ const navigation = [
   { name: "Websites", href: "/websites", icon: Globe },
   { name: "Conversations", href: "/conversations", icon: MessageCircle },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Settings", href: "/settings/workspace", icon: Settings },
 ];
 
 interface DashboardLayoutProps {
@@ -31,13 +35,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState<number>(0);
   const { user, logout } = useAuth();
+  const { currentWorkspaceId, isLoading: workspaceLoading } = useWorkspace();
   const navigate = useNavigate();
 
+  // Connect (and reconnect) the realtime socket to the active workspace.
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (!token) return;
+    if (!token || !currentWorkspaceId) return;
 
-    socketService.connect(token);
+    socketService.connect(token, currentWorkspaceId);
 
     const handleNewMessage = () => {
       setNotifications((prev) => prev + 1);
@@ -57,7 +63,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       socketService.offNewConversation(handleNewConversation);
       socketService.disconnect();
     };
-  }, []);
+  }, [currentWorkspaceId]);
 
   const handleLogout = async () => {
     await logout();
@@ -68,6 +74,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const clearNotifications = () => {
     setNotifications(0);
   };
+
+  // Scoped pages query by the active workspace (via the X-Workspace-Id header).
+  // Hold rendering until a workspace is selected so those requests aren't fired
+  // without scope (which the backend rejects with 403).
+  if (workspaceLoading || !currentWorkspaceId) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-100">
+        <div className="flex items-center text-gray-500">
+          <Building2 className="h-5 w-5 mr-2 animate-pulse" />
+          Đang tải workspace…
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">
@@ -140,6 +160,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </h1>
             </div>
             <div className="ml-4 flex items-center md:ml-6 space-x-4">
+              {/* Workspace switcher */}
+              <WorkspaceSwitcher />
+
               {/* Notifications */}
               <button
                 onClick={clearNotifications}
@@ -174,6 +197,65 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </main>
       </div>
+    </div>
+  );
+}
+
+function WorkspaceSwitcher() {
+  const { workspaces, currentWorkspace, switchWorkspace } = useWorkspace();
+  const [open, setOpen] = useState(false);
+
+  if (!currentWorkspace) return null;
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center max-w-[200px] px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <Building2 className="h-4 w-4 mr-2 text-gray-400 flex-shrink-0" />
+        <span className="truncate">{currentWorkspace.name}</span>
+        <ChevronDown className="h-4 w-4 ml-2 text-gray-400 flex-shrink-0" />
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 z-20 mt-2 w-64 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1">
+            <p className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+              Workspaces
+            </p>
+            {workspaces.map((ws) => (
+              <button
+                key={ws.id}
+                onClick={() => {
+                  switchWorkspace(ws.id);
+                  setOpen(false);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              >
+                <span className="flex flex-col items-start min-w-0">
+                  <span className="truncate w-full text-left">{ws.name}</span>
+                  <span className="text-xs text-gray-400">{ws.role}</span>
+                </span>
+                {ws.id === currentWorkspace.id && (
+                  <Check className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                )}
+              </button>
+            ))}
+            <div className="border-t border-gray-100 mt-1">
+              <Link
+                to="/settings/workspace"
+                onClick={() => setOpen(false)}
+                className="flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+              >
+                <Settings className="h-4 w-4 mr-2 text-gray-400" />
+                Workspace settings
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

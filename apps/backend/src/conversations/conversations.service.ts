@@ -20,14 +20,14 @@ export class ConversationsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(
-    userId: string,
+    workspaceId: string,
     websiteId?: string,
     status?: "ACTIVE" | "CLOSED" | "ARCHIVED",
     page = 1,
     limit = 20
   ) {
     const where: Record<string, unknown> = {
-      website: { userId },
+      website: { workspaceId },
     };
     if (websiteId) where.websiteId = websiteId;
     if (status) where.status = status;
@@ -53,9 +53,9 @@ export class ConversationsService {
     return { conversations, total, page, limit };
   }
 
-  async findOne(id: string, userId: string) {
+  async findOne(id: string, workspaceId: string) {
     const conversation = await this.prisma.conversation.findFirst({
-      where: { id, website: { userId } },
+      where: { id, website: { workspaceId } },
       include: {
         website: { select: { id: true, name: true, domain: true } },
         _count: { select: { messages: true } },
@@ -69,7 +69,7 @@ export class ConversationsService {
     return conversation;
   }
 
-  async create(dto: CreateConversationDto, _userId?: string) {
+  async create(dto: CreateConversationDto, _workspaceId?: string) {
     const website = await this.prisma.website.findUnique({
       where: { id: dto.websiteId },
     });
@@ -90,8 +90,8 @@ export class ConversationsService {
     });
   }
 
-  async update(id: string, dto: UpdateConversationDto, userId: string) {
-    await this.findOne(id, userId);
+  async update(id: string, dto: UpdateConversationDto, workspaceId: string) {
+    await this.findOne(id, workspaceId);
 
     return this.prisma.conversation.update({
       where: { id },
@@ -103,20 +103,20 @@ export class ConversationsService {
     });
   }
 
-  async remove(id: string, userId: string) {
-    await this.findOne(id, userId);
+  async remove(id: string, workspaceId: string) {
+    await this.findOne(id, workspaceId);
     await this.prisma.conversation.delete({ where: { id } });
     return { success: true };
   }
 
   async getMessages(
     conversationId: string,
-    userId?: string,
+    workspaceId?: string,
     page = 1,
     limit = 50
   ) {
-    if (userId) {
-      await this.findOne(conversationId, userId);
+    if (workspaceId) {
+      await this.findOne(conversationId, workspaceId);
     }
 
     const skip = (page - 1) * limit;
@@ -137,10 +137,10 @@ export class ConversationsService {
   async createMessage(
     conversationId: string,
     dto: CreateMessageDto,
-    userId?: string
+    workspaceId?: string
   ) {
-    if (userId && dto.senderType === "AGENT") {
-      await this.findOne(conversationId, userId);
+    if (workspaceId && dto.senderType === "AGENT") {
+      await this.findOne(conversationId, workspaceId);
     }
 
     const message = await this.prisma.message.create({
@@ -162,9 +162,9 @@ export class ConversationsService {
   async deleteMessage(
     messageId: string,
     conversationId: string,
-    userId: string
+    workspaceId: string
   ) {
-    await this.findOne(conversationId, userId);
+    await this.findOne(conversationId, workspaceId);
 
     const message = await this.prisma.message.findFirst({
       where: { id: messageId, conversationId },

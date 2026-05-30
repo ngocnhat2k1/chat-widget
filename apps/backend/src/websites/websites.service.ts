@@ -1,10 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  ForbiddenException,
-} from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateWebsiteDto, CreateApiKeyDto } from "./dto/websites.dto";
+import { CreateWebsiteDto } from "./dto/websites.dto";
 import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
 
@@ -17,10 +13,10 @@ export interface UpdateWebsiteDto {
 export class WebsitesService {
   constructor(private prisma: PrismaService) {}
 
-  // Find all websites for a user
-  async findAll(userId: string) {
+  // Find all websites in a workspace
+  async findAll(workspaceId: string) {
     return this.prisma.website.findMany({
-      where: { userId },
+      where: { workspaceId },
       include: {
         _count: {
           select: {
@@ -33,10 +29,10 @@ export class WebsitesService {
     });
   }
 
-  // Find one website by ID and verify ownership
-  async findOne(id: string, userId: string) {
+  // Find one website by ID and verify it belongs to the workspace
+  async findOne(id: string, workspaceId: string) {
     const website = await this.prisma.website.findFirst({
-      where: { id, userId },
+      where: { id, workspaceId },
       include: {
         _count: {
           select: {
@@ -54,12 +50,12 @@ export class WebsitesService {
     return website;
   }
 
-  // Create new website
-  async create(createWebsiteDto: CreateWebsiteDto, userId: string) {
+  // Create new website in a workspace
+  async create(createWebsiteDto: CreateWebsiteDto, workspaceId: string) {
     return this.prisma.website.create({
       data: {
         ...createWebsiteDto,
-        userId,
+        workspaceId,
       },
       include: {
         _count: {
@@ -73,9 +69,13 @@ export class WebsitesService {
   }
 
   // Update website
-  async update(id: string, updateWebsiteDto: UpdateWebsiteDto, userId: string) {
-    // Verify ownership
-    await this.findOne(id, userId);
+  async update(
+    id: string,
+    updateWebsiteDto: UpdateWebsiteDto,
+    workspaceId: string
+  ) {
+    // Verify the website belongs to the workspace
+    await this.findOne(id, workspaceId);
 
     return this.prisma.website.update({
       where: { id },
@@ -92,9 +92,9 @@ export class WebsitesService {
   }
 
   // Delete website
-  async remove(id: string, userId: string) {
-    // Verify ownership
-    await this.findOne(id, userId);
+  async remove(id: string, workspaceId: string) {
+    // Verify the website belongs to the workspace
+    await this.findOne(id, workspaceId);
 
     return this.prisma.website.delete({
       where: { id },
@@ -102,9 +102,9 @@ export class WebsitesService {
   }
 
   // API Key management
-  async getApiKeys(websiteId: string, userId: string) {
-    // Verify ownership
-    await this.findOne(websiteId, userId);
+  async getApiKeys(websiteId: string, workspaceId: string) {
+    // Verify the website belongs to the workspace
+    await this.findOne(websiteId, workspaceId);
 
     return this.prisma.apiKey.findMany({
       where: { websiteId },
@@ -122,10 +122,10 @@ export class WebsitesService {
   async createApiKey(
     websiteId: string,
     createApiKeyDto: { name?: string },
-    userId: string
+    workspaceId: string
   ) {
-    // Verify ownership
-    await this.findOne(websiteId, userId);
+    // Verify the website belongs to the workspace
+    await this.findOne(websiteId, workspaceId);
 
     // Generate a random API key
     const apiKey = crypto.randomBytes(32).toString("hex");
@@ -154,9 +154,9 @@ export class WebsitesService {
     };
   }
 
-  async deleteApiKey(websiteId: string, keyId: string, userId: string) {
-    // Verify ownership
-    await this.findOne(websiteId, userId);
+  async deleteApiKey(websiteId: string, keyId: string, workspaceId: string) {
+    // Verify the website belongs to the workspace
+    await this.findOne(websiteId, workspaceId);
 
     // Verify the API key belongs to this website
     const apiKey = await this.prisma.apiKey.findFirst({
@@ -172,7 +172,8 @@ export class WebsitesService {
     });
   }
 
-  // Validate API key for widget usage
+  // Validate API key for widget usage. Returns the owning website (with its
+  // workspaceId) so callers can scope realtime delivery to the workspace.
   async validateApiKey(apiKey: string, domain: string) {
     // Find all API keys and check them
     const apiKeys = await this.prisma.apiKey.findMany({

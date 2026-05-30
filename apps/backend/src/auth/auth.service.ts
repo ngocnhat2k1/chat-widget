@@ -4,9 +4,23 @@ import {
   ConflictException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { Role } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { RegisterDto, LoginDto } from "./dto/auth.dto";
 import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
+
+function slugify(input: string): string {
+  return (
+    input
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // strip diacritics
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "")
+      .slice(0, 32) || "workspace"
+  );
+}
 
 export interface AuthUser {
   id: string;
@@ -39,8 +53,32 @@ export class AuthService {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    const user = await this.prisma.user.create({
-      data: { email, passwordHash },
+    // Create user + their default workspace + OWNER membership atomically.
+    // A user who registers always owns at least one workspace.
+    const localPart = email.split("@")[0];
+    const slug = `${slugify(localPart)}-${crypto.randomBytes(3).toString("hex")}`;
+
+    const user = await this.prisma.$transaction(async (tx) => {
+      const createdUser = await tx.user.create({
+        data: { email, passwordHash },
+      });
+
+      const workspace = await tx.workspace.create({
+        data: {
+          name: `${localPart}'s Workspace`,
+          slug,
+        },
+      });
+
+      await tx.membership.create({
+        data: {
+          userId: createdUser.id,
+          workspaceId: workspace.id,
+          role: Role.OWNER,
+        },
+      });
+
+      return createdUser;
     });
 
     return this.buildAuthResponse(user);

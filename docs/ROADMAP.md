@@ -2,7 +2,7 @@
 
 > **Tài liệu chiến lược.** Giải thích _tại sao_ và _làm gì_ ở mỗi phase. Việc tick off cụ thể nằm trong [CHECKLIST.md](CHECKLIST.md).
 > **Last updated:** 2026-05-29
-> **Current phase:** Phase 0 ✅ hoàn thành → tiếp theo Phase 1 (Workspace Foundation)
+> **Current phase:** Phase 0 ✅ + Phase 1 ✅ (backend tenant-isolation verified; còn smoke widget↔admin qua browser) → tiếp theo Phase 2 (MVP Polish)
 
 ---
 
@@ -36,7 +36,7 @@ Ship **public beta** trong 6-8 tuần — deploy thật trên Vercel + Render, c
 ### ⚠️ Cần lưu ý
 
 - Duplicate routes: `apps/admin-dashboard/src/pages/` vs `src/routes/` — đang migrate dở
-- Schema thiếu `Workspace`, `Membership`, `Plan`, `Invitation`, `Attachment`, `Tag`
+- ~~Schema thiếu `Workspace`, `Membership`~~ → ✅ thêm ở Phase 1. Còn thiếu `Plan`, `Invitation`, `Attachment`, `Tag` (phase sau)
 - ~~Dev SQLite vs prod Postgres → enum behavior khác nhau~~ → ✅ Đã giải quyết ở Phase 0: dev dùng Postgres + native enum (`ConversationStatus`, `SenderType`)
 
 ---
@@ -46,7 +46,7 @@ Ship **public beta** trong 6-8 tuần — deploy thật trên Vercel + Render, c
 | Phase | Mục tiêu                                                                        | Tuần | Trạng thái                 |
 | ----- | ------------------------------------------------------------------------------- | ---- | -------------------------- |
 | 0     | Dev environment alignment (SQLite → Postgres)                                   | <1   | ✅ Hoàn thành (2026-05-29) |
-| 1     | Workspace foundation + dynamic CORS + WS auth                                   | 2-3  | ☐ Chưa bắt đầu             |
+| 1     | Workspace foundation + dynamic CORS + WS auth                                   | 2-3  | ✅ Hoàn thành (2026-05-29) |
 | 2     | MVP polish (customize UI, file upload, email, visitor info, Sentry, rate limit) | 2    | ☐ Chưa bắt đầu             |
 | 3     | Deploy (Vercel + Render + landing + docs)                                       | 1    | ☐ Chưa bắt đầu             |
 | 4     | Beta validation (Swagger, CI, smoke tests, onboard user)                        | 1-3  | ☐ Chưa bắt đầu             |

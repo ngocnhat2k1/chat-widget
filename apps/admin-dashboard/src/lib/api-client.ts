@@ -35,6 +35,18 @@ export interface ApiKey {
   lastUsed?: string;
 }
 
+export type WorkspaceRole = "OWNER" | "ADMIN" | "AGENT";
+
+export interface Workspace {
+  id: string;
+  name: string;
+  slug: string;
+  role?: WorkspaceRole;
+  createdAt: string;
+  websiteCount?: number;
+  memberCount?: number;
+}
+
 export interface Conversation {
   id: string;
   websiteId: string;
@@ -114,6 +126,13 @@ class ApiClient {
         const token = localStorage.getItem("accessToken");
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
+        }
+        // Attach the active workspace so the backend can scope the request.
+        // WorkspaceContext keeps this in sync; absent on the bootstrap
+        // /api/workspaces call (which doesn't require it).
+        const workspaceId = localStorage.getItem("currentWorkspaceId");
+        if (workspaceId) {
+          config.headers["X-Workspace-Id"] = workspaceId;
         }
         return config;
       },
@@ -329,6 +348,28 @@ class ApiClient {
 
     const response = await this.client.get<AnalyticsData>(
       `/api/analytics?${searchParams.toString()}`
+    );
+    return response.data;
+  }
+
+  // Workspace methods
+  async getWorkspaces(): Promise<Workspace[]> {
+    const response = await this.client.get<Workspace[]>("/api/workspaces");
+    return response.data;
+  }
+
+  async getWorkspace(id: string): Promise<Workspace> {
+    const response = await this.client.get<Workspace>(`/api/workspaces/${id}`);
+    return response.data;
+  }
+
+  async updateWorkspace(
+    id: string,
+    data: { name?: string; slug?: string }
+  ): Promise<Workspace> {
+    const response = await this.client.patch<Workspace>(
+      `/api/workspaces/${id}`,
+      data
     );
     return response.data;
   }

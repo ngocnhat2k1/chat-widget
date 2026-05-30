@@ -16,14 +16,16 @@ class SocketService {
     return SocketService.instance;
   }
 
-  connect(token: string): void {
+  connect(token: string, workspaceId: string): void {
     if (this.socket?.connected) return;
 
     const socketUrl =
       import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
 
+    // The server validates that this user is a member of workspaceId before
+    // joining the `admin:<workspaceId>` room.
     this.socket = io(socketUrl, {
-      auth: { token },
+      auth: { token, workspaceId },
       transports: ["websocket", "polling"],
     });
 

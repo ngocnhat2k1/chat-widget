@@ -1,7 +1,7 @@
 # Execution Checklist
 
 > Tactical TODO list. Tick `[x]` khi xong. _Tại sao_ làm từng việc → xem [ROADMAP.md](ROADMAP.md).
-> **Last updated:** 2026-05-29 — Phase 0 hoàn thành ✅
+> **Last updated:** 2026-05-29 — Phase 0 ✅ + Phase 1 (backend + admin UI) ✅; còn verify widget↔admin end-to-end qua browser
 
 ---
 
@@ -38,66 +38,64 @@
 
 ### Schema
 
-- [ ] Thêm model `Workspace` (id, name, slug @unique, createdAt)
-- [ ] Thêm model `Membership` (userId, workspaceId, role) + @@unique
-- [ ] Thêm enum `Role { OWNER ADMIN AGENT }`
-- [ ] Sửa `Website`: bỏ `userId`, thêm `workspaceId`
-- [ ] `pnpm prisma migrate dev --name add_workspace`
-- [ ] Update seed: demo user → demo workspace (OWNER) → demo websites
+- [x] Thêm model `Workspace` (id, name, slug @unique, createdAt)
+- [x] Thêm model `Membership` (userId, workspaceId, role) + @@unique([userId, workspaceId])
+- [x] Thêm enum `Role { OWNER ADMIN AGENT }`
+- [x] Sửa `Website`: bỏ `userId`, thêm `workspaceId` (+ `User.websites` → `User.memberships`)
+- [x] `pnpm prisma migrate dev --name add_workspace` (migration `20260529042336_add_workspace`)
+- [x] Update seed: demo user → demo workspace (OWNER) → demo website
 
 ### Backend modules mới
 
-- [ ] Tạo `apps/backend/src/workspaces/` module (controller, service, dto)
-  - [ ] `GET /api/workspaces` — list workspace user có membership
-  - [ ] `GET /api/workspaces/:id` — detail
-  - [ ] `PATCH /api/workspaces/:id` — update (chỉ OWNER/ADMIN)
-- [ ] Tạo `apps/backend/src/memberships/` (cho Phase sau, nhưng schema sẵn)
+- [x] Tạo `apps/backend/src/workspaces/` module (controller, service, dto)
+  - [x] `GET /api/workspaces` — list workspace user có membership (bootstrap, KHÔNG sau WorkspaceGuard)
+  - [x] `GET /api/workspaces/:workspaceId` — detail
+  - [x] `PATCH /api/workspaces/:workspaceId` — update (chỉ OWNER/ADMIN)
+- [ ] ~~Tạo `apps/backend/src/memberships/`~~ — hoãn: schema `Membership` đã sẵn, module để Phase invitation (chưa cần endpoint nào)
 
 ### Auth + Workspace context
 
-- [ ] Đăng ký user → auto-create Workspace + Membership(OWNER) trong transaction
-- [ ] Tạo decorator `@CurrentWorkspace()` resolve từ header `X-Workspace-Id`
-- [ ] Tạo `WorkspaceGuard` check Membership tồn tại
-- [ ] Tạo `WorkspaceRoleGuard(['OWNER', 'ADMIN'])` cho route nhạy cảm
-- [ ] Apply guard lên các route websites/conversations/analytics
+- [x] Đăng ký user → auto-create Workspace + Membership(OWNER) trong `prisma.$transaction`
+- [x] Tạo decorator `@CurrentWorkspace()` resolve từ header `X-Workspace-Id` (hoặc param `:workspaceId`)
+- [x] Tạo `WorkspaceGuard` check Membership tồn tại (param `:workspaceId` ưu tiên hơn header — tránh leak)
+- [x] Tạo `WorkspaceRoleGuard([OWNER, ADMIN])` (mixin) — dùng cho PATCH workspace
+- [x] Apply guard lên các route websites/conversations/analytics
 
 ### Refactor services sang workspace scope
 
-- [ ] `WebsitesService`: query theo `workspaceId` thay `userId`
-- [ ] `ConversationsService`: filter qua `website.workspaceId`
-- [ ] `AnalyticsService`: scope theo workspace
-- [ ] WebSocket gateway: room `admin:userId` → `admin:workspaceId`
+- [x] `WebsitesService`: query theo `workspaceId` thay `userId`
+- [x] `ConversationsService`: filter qua `website.workspaceId`
+- [x] `AnalyticsService`: scope theo workspace
+- [x] WebSocket gateway: room `admin:userId` → `admin:workspaceId`
+- [x] Xoá `chat.controller.ts` (REST `/conversations` dead-code + leak: `getWebsiteConversations` không check ownership)
 
 ### WebSocket auth (không có header)
 
-- [ ] Admin WS: parse `socket.handshake.auth.workspaceId` + validate membership
-- [ ] Widget WS: vẫn `handshake.auth = { apiKey, domain }`, server resolve workspaceId
-- [ ] Tạo helper `ApiKeysService.resolveWebsiteByApiKey(apiKey)` + in-memory cache 60s
+- [x] Admin WS: parse `socket.handshake.auth.workspaceId` + **validate membership** trước khi join room
+- [x] Widget WS: vẫn `handshake.auth = { apiKey, domain }`, server resolve workspaceId qua `validateApiKey` → `website.workspaceId`
+- [ ] ~~Helper `resolveWebsiteByApiKey` + cache 60s~~ — hoãn: `validateApiKey` hiện tại đủ dùng; cache là tối ưu hiệu năng, làm khi đo thấy chậm
 
 ### Dynamic CORS
 
-- [ ] Tạo middleware `WidgetCorsMiddleware`:
-  - [ ] Nhận `Origin` header
-  - [ ] Lookup `Website.domain` qua API key trong request
-  - [ ] Allow nếu khớp, reject nếu không
-- [ ] Apply cho route `/api/widget/*` và Socket.IO handshake
-- [ ] Admin routes vẫn dùng fixed `ADMIN_CORS_ORIGINS` env
+- [x] HTTP API: allowlist cố định qua `ADMIN_CORS_ORIGINS` (fallback `CORS_ORIGINS`) — API REST chỉ admin dùng
+- [x] WS gateway: reflect origin (`origin: true`) — widget nhúng domain bất kỳ; bảo mật thật = apiKey+domain validation trong handshake (đã có sẵn check `website.domain === domain`)
+- [ ] ~~`WidgetCorsMiddleware` lookup per-request~~ — hoãn sang Phase 2: chưa có route HTTP `/api/widget/*` nào để bảo vệ (config widget là việc 2.2)
 
 ### Admin Dashboard UI
 
-- [ ] Tạo `src/contexts/WorkspaceContext.tsx`
-- [ ] Persist `currentWorkspaceId` trong localStorage
-- [ ] Workspace switcher dropdown ở header layout
-- [ ] Update `src/lib/api-client.ts`: Axios interceptor gắn `X-Workspace-Id`
-- [ ] Update Socket.IO client: gửi workspaceId qua `auth` payload
-- [ ] Trang `/_authenticated/settings/workspace` (form: tên, slug)
+- [x] Tạo `src/contexts/workspace-context.tsx`
+- [x] Persist `currentWorkspaceId` trong localStorage
+- [x] Workspace switcher dropdown ở header layout (+ link sang workspace settings)
+- [x] Update `src/lib/api-client.ts`: interceptor gắn `X-Workspace-Id` + methods `getWorkspaces`/`updateWorkspace`
+- [x] Update Socket.IO client: gửi `workspaceId` qua `auth` payload; reconnect khi đổi workspace
+- [x] Trang `/_authenticated/settings/workspace` (form: tên, slug; chỉ OWNER/ADMIN sửa được)
 
 ### Verify Phase 1
 
-- [ ] Register user mới → workspace auto-tạo → có thể login
-- [ ] Tạo website trong workspace → API key gen ngon
-- [ ] Widget connect với API key + domain → vào đúng workspace
-- [ ] Admin inbox nhận real-time msg từ widget (cùng workspace)
+- [x] Register user mới → workspace auto-tạo → bootstrap `GET /api/workspaces` trả OWNER (test A/B)
+- [x] Tạo website trong workspace → API key gen ngon (scoped theo workspace)
+- [x] **Tenant isolation (mục tiêu chính): REST 13/13 + WS 4/4** — B không đọc/sửa được dữ liệu của A; admin socket claim workspace lạ bị disconnect
+- [ ] Widget connect + admin inbox real-time end-to-end qua browser — _chưa chạy thủ công_ (cần mở widget + admin, để verify khi chạy `./start-dev.sh`)
 
 ---
 
