@@ -45,6 +45,22 @@ export class ChatAPI {
     return newId;
   }
 
+  // Context the agent sees when replying — collected client-side, best-effort.
+  private collectVisitorInfo(): Record<string, string> {
+    const info: Record<string, string> = {};
+    try {
+      info.userAgent = navigator.userAgent;
+      info.language = navigator.language;
+      info.screen = `${window.screen.width}x${window.screen.height}`;
+      info.referrer = document.referrer || "";
+      info.currentPageUrl = window.location.href;
+      info.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    } catch {
+      // Some embedding contexts restrict these APIs — send what we have.
+    }
+    return info;
+  }
+
   getStoredConversationId(): string | null {
     return localStorage.getItem(this.conversationKey);
   }
@@ -104,6 +120,7 @@ export class ChatAPI {
         initialMessage,
         visitorName,
         visitorEmail,
+        visitorInfo: this.collectVisitorInfo(),
       });
 
       this.socket!.once("conversationCreated", (conversation: Conversation) => {

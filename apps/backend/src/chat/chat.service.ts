@@ -11,8 +11,14 @@ export class ChatService {
   constructor(private prisma: PrismaService) {}
 
   async createConversation(createConversationDto: CreateConversationDto) {
-    const { websiteId, visitorId, initialMessage, visitorName, visitorEmail } =
-      createConversationDto;
+    const {
+      websiteId,
+      visitorId,
+      initialMessage,
+      visitorName,
+      visitorEmail,
+      visitorInfo,
+    } = createConversationDto;
 
     // Check if there's already an active conversation for this visitor
     const existingConversation = await this.prisma.conversation.findFirst({
@@ -35,6 +41,7 @@ export class ChatService {
         status: "ACTIVE",
         ...(visitorName && { visitorName }),
         ...(visitorEmail && { visitorEmail }),
+        ...(visitorInfo && { metadata: visitorInfo }),
       },
     });
 

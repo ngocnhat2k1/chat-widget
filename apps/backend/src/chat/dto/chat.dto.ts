@@ -39,4 +39,7 @@ export class CreateConversationDto {
   @IsOptional()
   @IsString()
   visitorEmail?: string;
+
+  @IsOptional()
+  visitorInfo?: Record<string, string>;
 }

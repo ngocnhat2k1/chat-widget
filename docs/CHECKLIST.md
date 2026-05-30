@@ -101,12 +101,12 @@
 
 ## Phase 2 — MVP Polish
 
-### 2.1 Cleanup duplicate routes
+### 2.1 Cleanup duplicate routes ✅
 
-- [ ] Audit imports tới `apps/admin-dashboard/src/pages/`
-- [ ] Migrate những gì còn dùng sang `src/routes/`
-- [ ] Xoá `src/pages/`
-- [ ] Build + smoke test admin dashboard
+- [x] Audit imports tới `apps/admin-dashboard/src/pages/`
+- [x] Inline page component vào route file tương ứng (canonical TanStack layout)
+- [x] Xoá `src/pages/`
+- [x] Build + type-check admin dashboard pass
 
 ### 2.2 Widget customization UI có preview
 
@@ -130,12 +130,12 @@
 - [ ] Nút "Copy" → clipboard + toast
 - [ ] Đặt ở trang website detail
 
-### 2.4 Visitor info capture
+### 2.4 Visitor info capture ✅
 
-- [ ] Schema: `Conversation.metadata Json?`
-- [ ] Widget: gửi userAgent, language, screen, referrer, currentPageUrl, timezone khi `createConversation`
-- [ ] Backend: lưu vào `Conversation.metadata`
-- [ ] Admin inbox: panel phải hiển thị visitor info (browser, OS, current page)
+- [x] Schema: `Conversation.metadata Json?` (migration `20260530053113_add_conversation_metadata`)
+- [x] Widget: gửi userAgent, language, screen, referrer, currentPageUrl, timezone khi `createConversation`
+- [x] Backend: lưu vào `Conversation.metadata` (gateway → chat.service)
+- [x] Admin inbox: panel phải hiển thị visitor info (E2E test PASS: metadata lưu + admin đọc lại đúng)
 
 ### 2.5 File upload (image only)
 

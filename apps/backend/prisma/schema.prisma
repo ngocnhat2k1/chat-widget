@@ -91,6 +91,7 @@ model Conversation {
   visitorName  String?
   visitorEmail String?
   status       ConversationStatus @default(ACTIVE)
+  metadata     Json?     // visitor context: userAgent, language, screen, referrer, currentPageUrl, timezone
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

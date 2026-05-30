@@ -144,6 +144,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         initialMessage: data.initialMessage,
         visitorName: data.visitorName,
         visitorEmail: data.visitorEmail,
+        visitorInfo: data.visitorInfo,
       });
 
       client.emit("conversationCreated", conversation);

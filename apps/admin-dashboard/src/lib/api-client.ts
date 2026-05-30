@@ -54,6 +54,7 @@ export interface Conversation {
   visitorName?: string | null;
   visitorEmail?: string | null;
   status: "ACTIVE" | "CLOSED" | "ARCHIVED";
+  metadata?: Record<string, string> | null;
   createdAt: string;
   updatedAt: string;
   website: Website;
