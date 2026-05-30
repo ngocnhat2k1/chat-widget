@@ -9,6 +9,7 @@ import {
   HttpStatus,
   ValidationPipe,
 } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 import { AuthService, AuthResponse } from "./auth.service";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { RegisterDto, LoginDto } from "./dto/auth.dto";
@@ -17,6 +18,8 @@ import { RegisterDto, LoginDto } from "./dto/auth.dto";
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // Stricter than the global limit: 5 attempts / minute / IP to slow brute force.
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
   @Post("register")
   @HttpCode(HttpStatus.CREATED)
   async register(
@@ -25,6 +28,7 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
   @Post("login")
   @HttpCode(HttpStatus.OK)
   async login(@Body(ValidationPipe) loginDto: LoginDto): Promise<AuthResponse> {

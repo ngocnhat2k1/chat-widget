@@ -160,12 +160,13 @@
 
 ### 2.7 Rate limiting
 
-- [ ] Cài `@nestjs/throttler`
-- [ ] Config:
-  - [ ] Auth (`/api/auth/*`): 5/min/IP
-  - [ ] Upload: 10/min/user
-  - [ ] WS `sendMessage`: 30/min/conversation
-- [ ] Tested: hit limit → 429 response
+- [x] Cài `@nestjs/throttler`
+- [x] Config:
+  - [x] Global default: 100/min/IP (ThrottlerGuard là APP_GUARD)
+  - [x] Auth (`/api/auth/login|register`): 5/min/IP (`@Throttle`)
+  - [ ] ~~Upload: 10/min/user~~ — làm cùng 2.5 (chưa có upload module)
+  - [ ] ~~WS `sendMessage`: 30/min/conversation~~ — hoãn: throttler HTTP không cover WS gateway; cần custom WS throttle
+- [x] Tested: login 6 lần → lần 6 trả `429`
 
 ### 2.8 Sentry
 
