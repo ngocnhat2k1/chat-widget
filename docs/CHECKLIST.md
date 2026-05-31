@@ -123,12 +123,12 @@
 - [ ] Widget: fetch config từ backend trước khi mount React
 - [ ] Widget: merge order `{ ...baseline, ...dataAttrs }`
 
-### 2.3 Embed code copy UI
+### 2.3 Embed code copy UI ✅
 
-- [ ] Component `EmbedCodeBlock` với tabs HTML/React/WordPress
-- [ ] Snippet generator dựa trên website (api key + domain)
-- [ ] Nút "Copy" → clipboard + toast
-- [ ] Đặt ở trang website detail
+- [x] Component `EmbedCodeBlock` với tabs HTML/React/WordPress (data-attrs khớp widget auto-mount)
+- [x] Snippet generator dựa trên website (api key + domain)
+- [x] Nút "Copy" → clipboard + toast
+- [x] Đặt ở trang websites: modal reveal key (plaintext chỉ hiện 1 lần khi tạo) + nút Code xem mã nhúng (placeholder key)
 
 ### 2.4 Visitor info capture ✅
 
