@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
   useWebsites,
@@ -20,6 +20,7 @@ import {
   EyeOff,
   Code,
   X,
+  Palette,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { EmbedCodeBlock } from "../components/embed-code-block";
@@ -348,6 +349,14 @@ export function WebsitesPage() {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
+                    <Link
+                      to="/websites/$id/customize"
+                      params={{ id: website.id }}
+                      className="p-2 text-gray-400 hover:text-gray-500"
+                      title="Tuỳ chỉnh widget"
+                    >
+                      <Palette className="h-4 w-4" />
+                    </Link>
                     <button
                       onClick={() => setEmbedFor({ domain: website.domain })}
                       className="p-2 text-gray-400 hover:text-gray-500"

@@ -18,10 +18,19 @@ export interface AuthResponse {
   accessToken: string;
 }
 
+export interface WidgetConfig {
+  primaryColor?: string;
+  position?: "bottom-right" | "bottom-left";
+  welcomeMessage?: string;
+  agentName?: string;
+  theme?: "light" | "dark";
+}
+
 export interface Website {
   id: string;
   domain: string;
   name: string;
+  widgetConfig?: WidgetConfig | null;
   createdAt: string;
   updatedAt: string;
   apiKeys: ApiKey[];
@@ -241,6 +250,17 @@ class ApiClient {
 
   async deleteApiKey(websiteId: string, keyId: string): Promise<void> {
     await this.client.delete(`/api/websites/${websiteId}/api-keys/${keyId}`);
+  }
+
+  async updateWidgetConfig(
+    websiteId: string,
+    config: WidgetConfig
+  ): Promise<{ id: string; widgetConfig: WidgetConfig }> {
+    const response = await this.client.patch<{
+      id: string;
+      widgetConfig: WidgetConfig;
+    }>(`/api/websites/${websiteId}/widget-config`, config);
+    return response.data;
   }
 
   // Conversation methods

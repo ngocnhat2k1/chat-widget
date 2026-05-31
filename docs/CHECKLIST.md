@@ -108,20 +108,20 @@
 - [x] Xoá `src/pages/`
 - [x] Build + type-check admin dashboard pass
 
-### 2.2 Widget customization UI có preview
+### 2.2 Widget customization UI có preview ✅
 
-- [ ] Schema: thêm `Website.widgetConfig Json?`
-- [ ] Backend: `GET /api/widget/config?apiKey=...` (public, dynamic CORS)
-- [ ] Backend: `PATCH /api/websites/:id/widget-config` (admin auth)
-- [ ] Admin: trang `/_authenticated/websites/$id/customize`
-  - [ ] Color picker (primaryColor)
-  - [ ] Position select (bottom-left/right)
-  - [ ] Welcome message textarea
-  - [ ] Agent display name
-  - [ ] Save button
-- [ ] Live preview iframe (load widget với config hiện tại, postMessage để update)
-- [ ] Widget: fetch config từ backend trước khi mount React
-- [ ] Widget: merge order `{ ...baseline, ...dataAttrs }`
+- [x] Schema: thêm `Website.widgetConfig Json?` (migration `20260531113529_add_website_widget_config`)
+- [x] Backend: `GET /api/widget/config?apiKey=...` (public `WidgetController` + `WidgetCorsMiddleware` reflect-origin) — test PASS + CORS header
+- [x] Backend: `PATCH /api/websites/:id/widget-config` (admin auth, workspace-scoped, merge) — test PASS
+- [x] Admin: trang `/_authenticated/websites/$id/customize`
+  - [x] Color picker (primaryColor)
+  - [x] Position select (bottom-left/right)
+  - [x] Welcome message textarea
+  - [x] Agent display name
+  - [x] Theme (light/dark) + Save button
+- [x] Live preview — React mock `WidgetPreview` update real-time (thay iframe+postMessage: instant, không cần WS/apiKey)
+- [x] Widget: fetch config từ backend (`fetchServerConfig`) trước khi mount
+- [x] Widget: merge order `DEFAULT < server baseline < dataAttrs` (chỉ đọc data-attr customer thực sự set)
 
 ### 2.3 Embed code copy UI ✅
 

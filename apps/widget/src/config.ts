@@ -19,6 +19,7 @@ export interface WidgetConfig {
   position?: "bottom-right" | "bottom-left";
   primaryColor?: string;
   welcomeMessage?: string;
+  agentName?: string;
   // Simulate conversations locally without hitting the backend.
   // Useful for previewing the UI before provisioning an API key.
   demoMode?: boolean;

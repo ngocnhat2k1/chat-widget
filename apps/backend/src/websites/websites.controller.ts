@@ -10,7 +10,7 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { WebsitesService, UpdateWebsiteDto } from "./websites.service";
-import { CreateWebsiteDto } from "./dto/websites.dto";
+import { CreateWebsiteDto, UpdateWidgetConfigDto } from "./dto/websites.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { WorkspaceGuard } from "../workspaces/workspace.guard";
 import { CurrentWorkspace } from "../workspaces/current-workspace.decorator";
@@ -53,6 +53,15 @@ export class WebsitesController {
   @Delete(":id")
   remove(@CurrentWorkspace("id") workspaceId: string, @Param("id") id: string) {
     return this.websitesService.remove(id, workspaceId);
+  }
+
+  @Patch(":id/widget-config")
+  updateWidgetConfig(
+    @CurrentWorkspace("id") workspaceId: string,
+    @Param("id") websiteId: string,
+    @Body(ValidationPipe) dto: UpdateWidgetConfigDto
+  ) {
+    return this.websitesService.updateWidgetConfig(websiteId, workspaceId, dto);
   }
 
   @Get(":id/api-keys")

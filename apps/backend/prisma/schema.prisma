@@ -54,12 +54,13 @@ model Membership {
 }
 
 model Website {
-  id          String   @id @default(cuid())
-  workspaceId String
-  domain      String
-  name        String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  workspaceId  String
+  domain       String
+  name         String
+  widgetConfig Json?    // primaryColor, position, welcomeMessage, agentName, theme
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relations
   workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)

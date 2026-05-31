@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import ChatWidget from "./App";
-import { WidgetConfig, DEFAULT_CONFIG } from "./config";
+import { WidgetConfig, DEFAULT_CONFIG, API_CONFIG } from "./config";
 import "./index.css";
 
 declare global {
@@ -251,43 +251,67 @@ window.ChatWidget = {
   },
 };
 
+// Read only the data-* attributes the customer actually set, so they can
+// override the admin-configured baseline without re-introducing defaults.
+function readDataAttrs(script: Element): Partial<WidgetConfig> {
+  const attrs: Partial<WidgetConfig> = {};
+  const theme = script.getAttribute("data-chat-widget-theme");
+  if (theme === "light" || theme === "dark") attrs.theme = theme;
+  const position = script.getAttribute("data-chat-widget-position");
+  if (position === "bottom-right" || position === "bottom-left")
+    attrs.position = position;
+  const color = script.getAttribute("data-chat-widget-color");
+  if (color) attrs.primaryColor = color;
+  const welcome = script.getAttribute("data-chat-widget-welcome");
+  if (welcome) attrs.welcomeMessage = welcome;
+  const agent = script.getAttribute("data-chat-widget-agent");
+  if (agent) attrs.agentName = agent;
+  return attrs;
+}
+
+async function fetchServerConfig(
+  apiKey: string
+): Promise<Partial<WidgetConfig>> {
+  try {
+    const res = await fetch(
+      `${API_CONFIG.BASE_URL}/api/widget/config?apiKey=${encodeURIComponent(apiKey)}`
+    );
+    if (!res.ok) return {};
+    const data = await res.json();
+    return (data?.config as Partial<WidgetConfig>) || {};
+  } catch {
+    // Offline / unreachable backend — fall back to defaults + data attrs.
+    return {};
+  }
+}
+
 // Auto-mount if script has data attributes
 if (typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", () => {
     const scripts = document.querySelectorAll(
       "script[data-chat-widget-api-key]"
     );
-    scripts.forEach((script, index) => {
+    scripts.forEach(async (script, index) => {
       const apiKey = script.getAttribute("data-chat-widget-api-key");
+      if (!apiKey) return;
+
       const domain =
         script.getAttribute("data-chat-widget-domain") ||
         window.location.hostname;
-      const theme =
-        (script.getAttribute("data-chat-widget-theme") as "light" | "dark") ||
-        "light";
-      const position =
-        (script.getAttribute("data-chat-widget-position") as
-          | "bottom-right"
-          | "bottom-left") || "bottom-right";
-      const primaryColor =
-        script.getAttribute("data-chat-widget-color") || "#2563eb";
-      const welcomeMessage =
-        script.getAttribute("data-chat-widget-welcome") ||
-        "Xin chào! Tôi có thể giúp gì cho bạn?";
       const demoMode = script.getAttribute("data-chat-widget-demo") === "true";
 
-      if (apiKey) {
-        const containerId = `chat-widget-${index}`;
-        widgetManager.mount(containerId, {
-          apiKey,
-          domain,
-          theme,
-          position,
-          primaryColor,
-          welcomeMessage,
-          demoMode,
-        });
-      }
+      const dataAttrs = readDataAttrs(script);
+      // Merge order: DEFAULT_CONFIG (in mount) < server baseline < data attrs.
+      const serverConfig = await fetchServerConfig(apiKey);
+
+      const containerId = `chat-widget-${index}`;
+      widgetManager.mount(containerId, {
+        apiKey,
+        domain,
+        demoMode,
+        ...serverConfig,
+        ...dataAttrs,
+      });
     });
   });
 }

@@ -19,6 +19,7 @@ import { Route as AuthenticatedConversationsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated.analytics'
 import { Route as AuthenticatedSettingsWorkspaceRouteImport } from './routes/_authenticated.settings.workspace'
 import { Route as AuthenticatedConversationsConversationIdRouteImport } from './routes/_authenticated.conversations.$conversationId'
+import { Route as AuthenticatedWebsitesIdCustomizeRouteImport } from './routes/_authenticated.websites.$id.customize'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -72,6 +73,12 @@ const AuthenticatedConversationsConversationIdRoute =
     path: '/$conversationId',
     getParentRoute: () => AuthenticatedConversationsRoute,
   } as any)
+const AuthenticatedWebsitesIdCustomizeRoute =
+  AuthenticatedWebsitesIdCustomizeRouteImport.update({
+    id: '/$id/customize',
+    path: '/$id/customize',
+    getParentRoute: () => AuthenticatedWebsitesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,9 +87,10 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/conversations': typeof AuthenticatedConversationsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/websites': typeof AuthenticatedWebsitesRoute
+  '/websites': typeof AuthenticatedWebsitesRouteWithChildren
   '/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
   '/settings/workspace': typeof AuthenticatedSettingsWorkspaceRoute
+  '/websites/$id/customize': typeof AuthenticatedWebsitesIdCustomizeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,9 +99,10 @@ export interface FileRoutesByTo {
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/conversations': typeof AuthenticatedConversationsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/websites': typeof AuthenticatedWebsitesRoute
+  '/websites': typeof AuthenticatedWebsitesRouteWithChildren
   '/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
   '/settings/workspace': typeof AuthenticatedSettingsWorkspaceRoute
+  '/websites/$id/customize': typeof AuthenticatedWebsitesIdCustomizeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,9 +113,10 @@ export interface FileRoutesById {
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/conversations': typeof AuthenticatedConversationsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/websites': typeof AuthenticatedWebsitesRoute
+  '/_authenticated/websites': typeof AuthenticatedWebsitesRouteWithChildren
   '/_authenticated/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
   '/_authenticated/settings/workspace': typeof AuthenticatedSettingsWorkspaceRoute
+  '/_authenticated/websites/$id/customize': typeof AuthenticatedWebsitesIdCustomizeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/websites'
     | '/conversations/$conversationId'
     | '/settings/workspace'
+    | '/websites/$id/customize'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/websites'
     | '/conversations/$conversationId'
     | '/settings/workspace'
+    | '/websites/$id/customize'
   id:
     | '__root__'
     | '/'
@@ -143,6 +155,7 @@ export interface FileRouteTypes {
     | '/_authenticated/websites'
     | '/_authenticated/conversations/$conversationId'
     | '/_authenticated/settings/workspace'
+    | '/_authenticated/websites/$id/customize'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -224,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConversationsConversationIdRouteImport
       parentRoute: typeof AuthenticatedConversationsRoute
     }
+    '/_authenticated/websites/$id/customize': {
+      id: '/_authenticated/websites/$id/customize'
+      path: '/$id/customize'
+      fullPath: '/websites/$id/customize'
+      preLoaderRoute: typeof AuthenticatedWebsitesIdCustomizeRouteImport
+      parentRoute: typeof AuthenticatedWebsitesRoute
+    }
   }
 }
 
@@ -242,11 +262,24 @@ const AuthenticatedConversationsRouteWithChildren =
     AuthenticatedConversationsRouteChildren,
   )
 
+interface AuthenticatedWebsitesRouteChildren {
+  AuthenticatedWebsitesIdCustomizeRoute: typeof AuthenticatedWebsitesIdCustomizeRoute
+}
+
+const AuthenticatedWebsitesRouteChildren: AuthenticatedWebsitesRouteChildren = {
+  AuthenticatedWebsitesIdCustomizeRoute: AuthenticatedWebsitesIdCustomizeRoute,
+}
+
+const AuthenticatedWebsitesRouteWithChildren =
+  AuthenticatedWebsitesRoute._addFileChildren(
+    AuthenticatedWebsitesRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedConversationsRoute: typeof AuthenticatedConversationsRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedWebsitesRoute: typeof AuthenticatedWebsitesRoute
+  AuthenticatedWebsitesRoute: typeof AuthenticatedWebsitesRouteWithChildren
   AuthenticatedSettingsWorkspaceRoute: typeof AuthenticatedSettingsWorkspaceRoute
 }
 
@@ -254,7 +287,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedConversationsRoute: AuthenticatedConversationsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedWebsitesRoute: AuthenticatedWebsitesRoute,
+  AuthenticatedWebsitesRoute: AuthenticatedWebsitesRouteWithChildren,
   AuthenticatedSettingsWorkspaceRoute: AuthenticatedSettingsWorkspaceRoute,
 }
 

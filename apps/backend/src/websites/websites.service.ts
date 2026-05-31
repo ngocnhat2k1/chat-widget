@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateWebsiteDto } from "./dto/websites.dto";
+import { CreateWebsiteDto, UpdateWidgetConfigDto } from "./dto/websites.dto";
 import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
 
@@ -170,6 +171,47 @@ export class WebsitesService {
     return this.prisma.apiKey.delete({
       where: { id: keyId },
     });
+  }
+
+  // Admin: update a website's widget customization (workspace-scoped).
+  async updateWidgetConfig(
+    websiteId: string,
+    workspaceId: string,
+    config: UpdateWidgetConfigDto
+  ) {
+    const website = await this.findOne(websiteId, workspaceId);
+    const existing =
+      (website as { widgetConfig?: Record<string, unknown> }).widgetConfig ??
+      {};
+    const merged = { ...existing, ...config };
+
+    return this.prisma.website.update({
+      where: { id: websiteId },
+      data: { widgetConfig: merged as Prisma.InputJsonValue },
+      select: { id: true, widgetConfig: true },
+    });
+  }
+
+  // Public: the embedded widget fetches its baseline config by API key.
+  // Config is not secret, so this needs no auth — only a valid key.
+  async getPublicConfigByApiKey(apiKey: string) {
+    if (!apiKey) {
+      throw new NotFoundException("API key required");
+    }
+    const apiKeys = await this.prisma.apiKey.findMany({
+      include: { website: true },
+    });
+
+    for (const key of apiKeys) {
+      if (await bcrypt.compare(apiKey, key.hashedKey)) {
+        return {
+          config: key.website.widgetConfig ?? {},
+          domain: key.website.domain,
+        };
+      }
+    }
+
+    throw new NotFoundException("Invalid API key");
   }
 
   // Validate API key for widget usage. Returns the owning website (with its
