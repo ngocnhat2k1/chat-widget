@@ -177,12 +177,12 @@
 - [ ] Env: `SENTRY_DSN` (backend), `VITE_SENTRY_DSN` (widget + admin)
 - [ ] Test: throw sample error → verify lên Sentry dashboard
 
-### 2.9 Sound + browser notification (admin inbox)
+### 2.9 Sound + browser notification (admin inbox) ✅
 
-- [ ] Add file `apps/admin-dashboard/public/notification.mp3`
-- [ ] Khi tab không focus + có msg mới: `new Notification(...)` + play sound
-- [ ] Permission request flow
-- [ ] Toggle on/off trong workspace settings
+- [x] ~~File `notification.mp3`~~ → dùng Web Audio beep (`lib/notifications.ts`), không cần asset binary
+- [x] Khi tab không focus + có msg/conversation mới: `new Notification(...)` + beep (`alertNewActivity`)
+- [x] Permission request flow (`ensureNotifPermission`)
+- [x] Toggle on/off ở trang workspace settings (lưu localStorage)
 
 ### Verify Phase 2
 

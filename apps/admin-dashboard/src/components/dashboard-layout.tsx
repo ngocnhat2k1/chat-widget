@@ -3,6 +3,7 @@ import { Outlet, Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../contexts/auth-context";
 import { useWorkspace } from "../contexts/workspace-context";
 import { socketService } from "../lib/socket";
+import { alertNewActivity } from "../lib/notifications";
 import {
   LayoutDashboard,
   Globe,
@@ -48,11 +49,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     const handleNewMessage = () => {
       setNotifications((prev) => prev + 1);
       toast.success("New message received!");
+      alertNewActivity("Tin nhắn mới", "Bạn có tin nhắn mới trong inbox.");
     };
 
     const handleNewConversation = () => {
       setNotifications((prev) => prev + 1);
       toast.success("New conversation started!");
+      alertNewActivity("Hội thoại mới", "Một khách vừa bắt đầu chat.");
     };
 
     socketService.onMessageNotification(handleNewMessage);

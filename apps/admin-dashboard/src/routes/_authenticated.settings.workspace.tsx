@@ -2,9 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Building2, Save } from "lucide-react";
+import { Building2, Save, Bell } from "lucide-react";
 import { apiClient } from "../lib/api-client";
 import { useWorkspace } from "../contexts/workspace-context";
+import {
+  isNotifEnabled,
+  setNotifEnabled,
+  ensureNotifPermission,
+} from "../lib/notifications";
 
 export const Route = createFileRoute("/_authenticated/settings/workspace")({
   component: WorkspaceSettingsPage,
@@ -109,6 +114,70 @@ function WorkspaceSettingsPage() {
           </p>
         )}
       </form>
+
+      <NotificationSettings />
+    </div>
+  );
+}
+
+function NotificationSettings() {
+  const [enabled, setEnabled] = useState(isNotifEnabled());
+  const [permission, setPermission] = useState<string>(
+    typeof Notification !== "undefined"
+      ? Notification.permission
+      : "unsupported"
+  );
+
+  const toggle = async () => {
+    const next = !enabled;
+    setEnabled(next);
+    setNotifEnabled(next);
+    if (next) {
+      const granted = await ensureNotifPermission();
+      setPermission(
+        typeof Notification !== "undefined"
+          ? Notification.permission
+          : "unsupported"
+      );
+      if (!granted) {
+        toast("Bật âm thanh OK; trình duyệt chưa cho phép thông báo desktop.", {
+          icon: "🔔",
+        });
+      }
+    }
+  };
+
+  return (
+    <div className="bg-white shadow rounded-lg p-6 mt-6">
+      <div className="flex items-center mb-4">
+        <Bell className="h-5 w-5 text-blue-600 mr-2" />
+        <h2 className="text-lg font-medium text-gray-900">Thông báo inbox</h2>
+      </div>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-gray-700">
+            Âm thanh + thông báo trình duyệt khi có tin nhắn lúc tab chạy nền
+          </p>
+          {enabled && permission === "denied" && (
+            <p className="text-xs text-amber-600 mt-1">
+              Trình duyệt đang chặn thông báo desktop — chỉ có âm thanh.
+            </p>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={toggle}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+            enabled ? "bg-blue-600" : "bg-gray-300"
+          }`}
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+              enabled ? "translate-x-6" : "translate-x-1"
+            }`}
+          />
+        </button>
+      </div>
     </div>
   );
 }
