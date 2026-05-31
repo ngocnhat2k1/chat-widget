@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.0",
+    "@sentry/react": "^10.55.0",
     "@tanstack/react-query": "^5.0.0",
     "@tanstack/react-query-devtools": "^5.0.0",
     "@tanstack/react-router": "^1.45.0",

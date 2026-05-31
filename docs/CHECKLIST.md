@@ -168,14 +168,14 @@
   - [ ] ~~WS `sendMessage`: 30/min/conversation~~ — hoãn: throttler HTTP không cover WS gateway; cần custom WS throttle
 - [x] Tested: login 6 lần → lần 6 trả `429`
 
-### 2.8 Sentry
+### 2.8 Sentry ✅ (code-complete, DSN-guarded — cần DSN để test thật)
 
-- [ ] Backend: cài `@sentry/node`, init trong `main.ts`
-- [ ] Backend: NestJS exception filter forward sang Sentry
-- [ ] Widget: cài `@sentry/react`, init trong `widget.tsx` (chỉ track lỗi JS, KHÔNG track message content)
-- [ ] Admin: cài `@sentry/react`, init trong `main.tsx`
-- [ ] Env: `SENTRY_DSN` (backend), `VITE_SENTRY_DSN` (widget + admin)
-- [ ] Test: throw sample error → verify lên Sentry dashboard
+- [x] Backend: cài `@sentry/node`, init trong `src/instrument.ts` (import đầu tiên ở `main.ts`)
+- [x] Backend: `SentryExceptionFilter` (APP_FILTER) forward lỗi 5xx sang Sentry (bỏ qua 4xx)
+- [x] Widget: cài `@sentry/browser` (nhẹ hơn react cho IIFE), init trong `widget.tsx` — `sendDefaultPii:false` + bỏ Breadcrumbs (KHÔNG track message content)
+- [x] Admin: cài `@sentry/react`, init trong `main.tsx`
+- [x] Env: `SENTRY_DSN` (backend), `VITE_SENTRY_DSN` (widget + admin) — init **no-op nếu chưa set** (an toàn dev)
+- [ ] Test: throw sample error → verify lên Sentry dashboard — _cần bạn điền DSN vào `.env` rồi test_
 
 ### 2.9 Sound + browser notification (admin inbox) ✅
 

@@ -1,8 +1,22 @@
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import ChatWidget from "./App";
+import * as Sentry from "@sentry/browser";
 import { WidgetConfig, DEFAULT_CONFIG, API_CONFIG } from "./config";
 import "./index.css";
+
+// Error tracking only — no PII, no message content. No-op without a DSN.
+if (import.meta.env.VITE_SENTRY_DSN) {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    environment: import.meta.env.MODE,
+    sendDefaultPii: false,
+    tracesSampleRate: 0,
+    // Don't record DOM input / chat text as breadcrumbs.
+    integrations: (defaults) =>
+      defaults.filter((i) => i.name !== "Breadcrumbs"),
+  });
+}
 
 declare global {
   interface Window {

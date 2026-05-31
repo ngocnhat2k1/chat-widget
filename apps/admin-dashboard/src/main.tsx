@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import * as Sentry from "@sentry/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
@@ -8,6 +9,15 @@ import { AuthProvider } from "./contexts/auth-context";
 import { WorkspaceProvider } from "./contexts/workspace-context";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
+
+// Error tracking — no-op when VITE_SENTRY_DSN is unset.
+if (import.meta.env.VITE_SENTRY_DSN) {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    environment: import.meta.env.MODE,
+    tracesSampleRate: 0,
+  });
+}
 
 // Create a new router instance
 const router = createRouter({ routeTree });

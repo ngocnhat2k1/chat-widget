@@ -1,9 +1,10 @@
 import { Module } from "@nestjs/common";
-import { APP_GUARD } from "@nestjs/core";
+import { APP_GUARD, APP_FILTER } from "@nestjs/core";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
+import { SentryExceptionFilter } from "./sentry.filter";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -44,6 +45,10 @@ import { ChatModule } from "./chat/chat.module";
     ChatModule,
   ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_FILTER, useClass: SentryExceptionFilter },
+  ],
 })
 export class AppModule {}
