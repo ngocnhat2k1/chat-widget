@@ -78,6 +78,8 @@ export interface Message {
   conversationId: string;
   senderType: "VISITOR" | "AGENT" | "SYSTEM";
   content: string;
+  attachmentUrl?: string | null;
+  attachmentType?: string | null;
   readAt?: string | null;
   createdAt: string;
 }

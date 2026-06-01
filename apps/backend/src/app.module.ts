@@ -14,6 +14,7 @@ import { WebsitesModule } from "./websites/websites.module";
 import { ConversationsModule } from "./conversations/conversations.module";
 import { AnalyticsModule } from "./analytics/analytics.module";
 import { ChatModule } from "./chat/chat.module";
+import { UploadsModule } from "./uploads/uploads.module";
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { ChatModule } from "./chat/chat.module";
     ConversationsModule,
     AnalyticsModule,
     ChatModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [

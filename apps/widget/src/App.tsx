@@ -27,6 +27,7 @@ export default function ChatWidget({ config }: Props) {
 
   const chatAPI = useRef<ChatAPI | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const typingDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Initialize chat API
@@ -204,6 +205,44 @@ export default function ChatWidget({ config }: Props) {
     } catch (err) {
       console.error("Failed to send message:", err);
       setError("Không thể gửi tin nhắn. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file
+    if (!file || !conversation) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Ảnh tối đa 5MB.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      if (demoMode || !chatAPI.current) {
+        // Demo mode: preview locally without hitting the backend.
+        const localUrl = URL.createObjectURL(file);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `msg-${Date.now()}`,
+            conversationId: conversation.id,
+            content: "",
+            senderType: "VISITOR",
+            attachmentUrl: localUrl,
+            attachmentType: file.type,
+            createdAt: new Date().toISOString(),
+          },
+        ]);
+      } else {
+        const uploaded = await chatAPI.current.uploadImage(file);
+        chatAPI.current.sendMessage(conversation.id, "", uploaded);
+      }
+    } catch (err) {
+      console.error("Failed to upload image:", err);
+      setError("Không tải được ảnh. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
@@ -460,6 +499,19 @@ export default function ChatWidget({ config }: Props) {
                           backgroundColor: isVisitor ? primaryColor : undefined,
                         }}
                       >
+                        {message.attachmentUrl && (
+                          <a
+                            href={message.attachmentUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <img
+                              src={message.attachmentUrl}
+                              alt="attachment"
+                              className="rounded-md max-h-40 w-auto mb-1"
+                            />
+                          </a>
+                        )}
                         {message.content}
                         <div
                           className={`text-xs mt-1 ${
@@ -517,6 +569,33 @@ export default function ChatWidget({ config }: Props) {
           {!showInfoForm && (
             <div className="p-4 border-t border-gray-200 bg-white">
               <div className="flex space-x-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/gif,image/webp"
+                  onChange={handleFileSelect}
+                  style={{ display: "none" }}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={!isConnected || isLoading}
+                  title="Gửi ảnh"
+                  className="px-2 py-2 rounded-lg text-gray-500 hover:text-gray-700 disabled:opacity-50"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                  </svg>
+                </button>
                 <input
                   type="text"
                   value={newMessage}

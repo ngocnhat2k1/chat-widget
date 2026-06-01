@@ -14,6 +14,14 @@ export class SendMessageDto {
 
   @IsEnum(SenderType)
   senderType: SenderType;
+
+  @IsOptional()
+  @IsString()
+  attachmentUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  attachmentType?: string;
 }
 
 export class JoinConversationDto {

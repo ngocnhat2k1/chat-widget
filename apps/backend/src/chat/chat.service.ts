@@ -58,13 +58,20 @@ export class ChatService {
   }
 
   async createMessage(sendMessageDto: SendMessageDto) {
-    const { conversationId, content, senderType } = sendMessageDto;
+    const {
+      conversationId,
+      content,
+      senderType,
+      attachmentUrl,
+      attachmentType,
+    } = sendMessageDto;
 
     const message = await this.prisma.message.create({
       data: {
         conversationId,
         content,
         senderType,
+        ...(attachmentUrl && { attachmentUrl, attachmentType }),
       },
     });
 

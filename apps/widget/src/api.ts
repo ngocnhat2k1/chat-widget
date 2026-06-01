@@ -6,6 +6,8 @@ export interface Message {
   conversationId: string;
   content: string;
   senderType: "VISITOR" | "AGENT" | "SYSTEM";
+  attachmentUrl?: string | null;
+  attachmentType?: string | null;
   readAt?: string | null;
   createdAt: string;
 }
@@ -140,14 +142,36 @@ export class ChatAPI {
     this.socket.emit("joinConversation", { conversationId });
   }
 
-  sendMessage(conversationId: string, content: string): void {
+  sendMessage(
+    conversationId: string,
+    content: string,
+    attachment?: { url: string; type: string }
+  ): void {
     if (!this.socket?.connected) return;
 
     this.socket.emit("sendMessage", {
       conversationId,
       content,
       senderType: "VISITOR",
+      ...(attachment && {
+        attachmentUrl: attachment.url,
+        attachmentType: attachment.type,
+      }),
     });
+  }
+
+  // Upload an image to the backend and get back its hosted URL.
+  async uploadImage(file: File): Promise<{ url: string; type: string }> {
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch(`${API_CONFIG.BASE_URL}/api/uploads/image`, {
+      method: "POST",
+      body: form,
+    });
+    if (!res.ok) {
+      throw new Error("Upload failed");
+    }
+    return res.json();
   }
 
   sendTyping(conversationId: string): void {

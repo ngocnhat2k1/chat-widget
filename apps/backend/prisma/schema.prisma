@@ -108,6 +108,8 @@ model Message {
   conversationId String
   senderType     SenderType
   content        String
+  attachmentUrl  String?
+  attachmentType String?   // mime type, e.g. image/png
   readAt         DateTime?
   createdAt      DateTime  @default(now())
 

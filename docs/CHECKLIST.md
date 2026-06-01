@@ -137,16 +137,16 @@
 - [x] Backend: lưu vào `Conversation.metadata` (gateway → chat.service)
 - [x] Admin inbox: panel phải hiển thị visitor info (E2E test PASS: metadata lưu + admin đọc lại đúng)
 
-### 2.5 File upload (image only)
+### 2.5 File upload (image only) ✅ (code-complete — cần CLOUDINARY_* để upload thật)
 
-- [ ] Tạo `apps/backend/src/uploads/` module
-- [ ] Cài `multer`, `sharp`, Cloudinary SDK
-- [ ] Env: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
-- [ ] `POST /api/uploads/image` (multipart, max 5MB, validate mime + dimension)
-- [ ] Schema: `Message` thêm `attachmentUrl String?`, `attachmentType String?`
-- [ ] Widget UI: nút paperclip → file input → preview → send
-- [ ] Admin inbox: render image trong bubble (click → full view)
-- [ ] Dynamic CORS apply cho `/api/uploads/*`
+- [x] Tạo `apps/backend/src/uploads/` module
+- [x] Cài `sharp` + Cloudinary SDK (`multer` qua `@nestjs/platform-express` FileInterceptor)
+- [x] Env: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` — chưa set → endpoint trả `503` (đã verify)
+- [x] `POST /api/uploads/image` (multipart, max 5MB, `FileTypeValidator` mime + `sharp` validate dimension ≤4000px) + rate limit 10/min
+- [x] Schema: `Message` thêm `attachmentUrl String?`, `attachmentType String?` (migration `20260531121134_add_message_attachment`); WS `sendMessage` mang attachment
+- [x] Widget UI: nút paperclip → file input → upload → send (demo mode preview local)
+- [x] Admin inbox: render image trong bubble (click → mở tab mới)
+- [x] Dynamic CORS apply cho `/api/uploads/*` (WidgetCorsMiddleware reflect-origin, GET/POST — verified header)
 
 ### 2.6 Email notification (offline)
 

@@ -283,7 +283,23 @@ export function ConversationDetailPage() {
                         {format(new Date(message.createdAt), "HH:mm")}
                       </span>
                     </div>
-                    <p className="text-sm">{message.content}</p>
+                    {message.attachmentUrl && (
+                      <a
+                        href={message.attachmentUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block mb-1"
+                      >
+                        <img
+                          src={message.attachmentUrl}
+                          alt="attachment"
+                          className="rounded-md max-h-48 w-auto"
+                        />
+                      </a>
+                    )}
+                    {message.content && (
+                      <p className="text-sm">{message.content}</p>
+                    )}
                   </div>
                 </div>
               ))
