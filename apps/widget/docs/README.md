@@ -9,18 +9,19 @@ Embeddable React chat widget. **IIFE single bundle** với CSS inlined, render v
 
 ## Key files
 
-| File | Trách nhiệm |
-|---|---|
+| File             | Trách nhiệm                                                                                        |
+| ---------------- | -------------------------------------------------------------------------------------------------- |
 | `src/widget.tsx` | `ChatWidgetManager` class, đăng ký `window.ChatWidget` global, đọc config từ `<script>` data-attrs |
-| `src/App.tsx` | `ChatWidget` React component, handle connection/messages/theming |
-| `src/api.ts` | `ChatAPI` class wrap Socket.IO, quản lý visitor ID trong localStorage |
-| `src/config.ts` | `WidgetConfig` interface + defaults |
+| `src/App.tsx`    | `ChatWidget` React component, handle connection/messages/theming                                   |
+| `src/api.ts`     | `ChatAPI` class wrap Socket.IO, quản lý visitor ID trong localStorage                              |
+| `src/config.ts`  | `WidgetConfig` interface + defaults                                                                |
 
 ---
 
 ## Embedding
 
 ### Script tag (chính)
+
 ```html
 <script
   src="https://widget.yourapp.com/widget.js"
@@ -30,6 +31,7 @@ Embeddable React chat widget. **IIFE single bundle** với CSS inlined, render v
 ```
 
 ### Programmatic mount
+
 ```js
 window.ChatWidget.mount("container-id", {
   apiKey: "...",
@@ -38,6 +40,7 @@ window.ChatWidget.mount("container-id", {
 ```
 
 ### Config attributes
+
 - `data-chat-widget-api-key` (required)
 - `data-chat-widget-domain` (required) — phải khớp `Website.domain` server-side
 - `data-chat-widget-color`
@@ -49,6 +52,7 @@ window.ChatWidget.mount("container-id", {
 ## Bundle
 
 Vite config:
+
 - **IIFE output** (KHÔNG dùng dynamic import / code-splitting — phải single file)
 - CSS inlined vào JS
 - Terser minify, strip `console.*`

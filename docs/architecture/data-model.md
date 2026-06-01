@@ -22,13 +22,13 @@ Message
 
 ### Models
 
-| Model | Fields chính | Note |
-|---|---|---|
-| `User` | id, email (unique), passwordHash, timestamps | Owner trực tiếp Website |
-| `Website` | id, userId, domain, name, timestamps | Sẽ đổi sang `workspaceId` ở Phase 1 |
-| `ApiKey` | id, websiteId, hashedKey, name?, createdAt, lastUsed? | bcrypt-hashed, raw key chỉ show 1 lần khi tạo |
+| Model          | Fields chính                                                              | Note                                                                        |
+| -------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `User`         | id, email (unique), passwordHash, timestamps                              | Owner trực tiếp Website                                                     |
+| `Website`      | id, userId, domain, name, timestamps                                      | Sẽ đổi sang `workspaceId` ở Phase 1                                         |
+| `ApiKey`       | id, websiteId, hashedKey, name?, createdAt, lastUsed?                     | bcrypt-hashed, raw key chỉ show 1 lần khi tạo                               |
 | `Conversation` | id, websiteId, visitorId, visitorName?, visitorEmail?, status, timestamps | status hiện là `String` (SQLite workaround), sẽ thành native enum ở Phase 0 |
-| `Message` | id, conversationId, senderType, content, readAt?, createdAt | senderType: VISITOR / AGENT / SYSTEM |
+| `Message`      | id, conversationId, senderType, content, readAt?, createdAt               | senderType: VISITOR / AGENT / SYSTEM                                        |
 
 **Cascade**: xoá `Website` → cascade `Conversation` + `ApiKey`. Xoá `Conversation` → cascade `Message`.
 
@@ -82,11 +82,11 @@ enum Role { OWNER ADMIN AGENT }
 
 ## DB providers
 
-| Env | Provider | Lý do |
-|---|---|---|
-| Dev (hiện tại) | SQLite | Đơn giản, không cần Docker |
+| Env               | Provider                    | Lý do                                           |
+| ----------------- | --------------------------- | ----------------------------------------------- |
+| Dev (hiện tại)    | SQLite                      | Đơn giản, không cần Docker                      |
 | Dev (sau Phase 0) | PostgreSQL local qua Docker | Match prod → tránh bug drift (vd: enum support) |
-| Prod | PostgreSQL trên Render | Managed, có backup |
+| Prod              | PostgreSQL trên Render      | Managed, có backup                              |
 
 **Phase 0** chuyển dev sang Postgres để dev = prod environment. Cho phép dùng native Prisma enum thay vì `String` workaround.
 

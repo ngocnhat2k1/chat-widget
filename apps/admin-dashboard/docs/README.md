@@ -14,6 +14,7 @@ File-based qua TanStack Router. Route files trong `src/routes/`.
 ⚠️ **`src/routeTree.gen.ts` là auto-generated** — plugin Vite tự sinh mỗi lần dev/build. KHÔNG sửa tay.
 
 Nhóm route:
+
 - `_authenticated/*` — yêu cầu JWT
 - `login`, `register` — public
 
@@ -21,12 +22,12 @@ Nhóm route:
 
 ## Key files
 
-| File | Trách nhiệm |
-|---|---|
-| `src/contexts/auth-context.tsx` | `AuthContext` — login/register/logout; JWT trong localStorage; auto-validate token khi load |
-| `src/lib/api-client.ts` | Axios singleton; all CRUD endpoints; interceptor gắn JWT + redirect login khi 401 |
-| `src/hooks/api.ts` | React Query hooks (stale 5 phút) |
-| `src/components/dashboard-layout.tsx` | Layout chính với sidebar |
+| File                                  | Trách nhiệm                                                                                 |
+| ------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `src/contexts/auth-context.tsx`       | `AuthContext` — login/register/logout; JWT trong localStorage; auto-validate token khi load |
+| `src/lib/api-client.ts`               | Axios singleton; all CRUD endpoints; interceptor gắn JWT + redirect login khi 401           |
+| `src/hooks/api.ts`                    | React Query hooks (stale 5 phút)                                                            |
+| `src/components/dashboard-layout.tsx` | Layout chính với sidebar                                                                    |
 
 ---
 

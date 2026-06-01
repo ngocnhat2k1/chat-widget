@@ -9,10 +9,10 @@ The widget runs on arbitrary customer domains, so these are **public**, gated by
 API key / rate limit, and get reflect-origin CORS via `WidgetCorsMiddleware`
 (applied to `api/widget` + `api/uploads`):
 
-| Endpoint | Purpose | Gate |
-|---|---|---|
-| `GET /api/widget/config?apiKey=` | Widget baseline config (2.2) | valid API key → 404 otherwise |
-| `POST /api/uploads/image` | Image upload → `{ url, type }` (2.5) | 5MB + mime + `sharp` dims; 10/min/IP; 503 if Cloudinary unset |
+| Endpoint                         | Purpose                              | Gate                                                          |
+| -------------------------------- | ------------------------------------ | ------------------------------------------------------------- |
+| `GET /api/widget/config?apiKey=` | Widget baseline config (2.2)         | valid API key → 404 otherwise                                 |
+| `POST /api/uploads/image`        | Image upload → `{ url, type }` (2.5) | 5MB + mime + `sharp` dims; 10/min/IP; 503 if Cloudinary unset |
 
 Everything else stays admin-only (`JwtAuthGuard` + `WorkspaceGuard`, fixed
 `ADMIN_CORS_ORIGINS`).

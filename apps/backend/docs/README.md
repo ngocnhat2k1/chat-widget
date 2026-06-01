@@ -9,14 +9,14 @@ NestJS 10 modular API + Socket.IO WebSocket server. Each domain is a self-contai
 
 ## Module map
 
-| Module | Trách nhiệm |
-|---|---|
-| `auth/` | login, register, JWT strategy, guard, `@GetUser()` decorator |
-| `websites/` | CRUD + API key generate/validate |
-| `conversations/` | conversation lifecycle (status: ACTIVE/CLOSED/ARCHIVED) |
-| `chat/` | message storage (REST) + WebSocket gateway |
-| `analytics/` | tổng quan, daily stats, top websites |
-| `prisma/` | shared `PrismaService` module |
+| Module           | Trách nhiệm                                                  |
+| ---------------- | ------------------------------------------------------------ |
+| `auth/`          | login, register, JWT strategy, guard, `@GetUser()` decorator |
+| `websites/`      | CRUD + API key generate/validate                             |
+| `conversations/` | conversation lifecycle (status: ACTIVE/CLOSED/ARCHIVED)      |
+| `chat/`          | message storage (REST) + WebSocket gateway                   |
+| `analytics/`     | tổng quan, daily stats, top websites                         |
+| `prisma/`        | shared `PrismaService` module                                |
 
 **Pattern**: mỗi feature module có `module.ts`, `service.ts`, `controller.ts`, `dto/feature.dto.ts`. Register trong `app.module.ts`.
 
@@ -27,6 +27,7 @@ NestJS 10 modular API + Socket.IO WebSocket server. Each domain is a self-contai
 ## WebSocket (Socket.IO)
 
 ### Events client → server
+
 - `createConversation` — widget mở chat mới
 - `joinConversation` — admin/widget join room `conversation:{id}`
 - `sendMessage` — broadcast vào room
@@ -34,6 +35,7 @@ NestJS 10 modular API + Socket.IO WebSocket server. Each domain is a self-contai
 - `typing` — typing indicator
 
 ### Events server → client
+
 - `conversationCreated`
 - `conversationHistory`
 - `receiveMessage`
@@ -41,6 +43,7 @@ NestJS 10 modular API + Socket.IO WebSocket server. Each domain is a self-contai
 - `error`
 
 ### Rooms
+
 - `conversation:{id}` — visitor + admin trong conversation
 - `admin:{userId}` — admin user room (sẽ đổi thành `admin:{workspaceId}` ở Phase 1 — xem [ROADMAP](../../../docs/ROADMAP.md))
 
@@ -48,11 +51,11 @@ NestJS 10 modular API + Socket.IO WebSocket server. Each domain is a self-contai
 
 ## Authentication
 
-| Loại client | Cơ chế | Where |
-|---|---|---|
-| Widget | API key + domain validation | `socket.handshake.auth = { apiKey, domain }` |
-| Admin REST | JWT Bearer token | `Authorization: Bearer <token>` |
-| Admin WebSocket | JWT trong handshake | `socket.handshake.auth = { token }` |
+| Loại client     | Cơ chế                      | Where                                        |
+| --------------- | --------------------------- | -------------------------------------------- |
+| Widget          | API key + domain validation | `socket.handshake.auth = { apiKey, domain }` |
+| Admin REST      | JWT Bearer token            | `Authorization: Bearer <token>`              |
+| Admin WebSocket | JWT trong handshake         | `socket.handshake.auth = { token }`          |
 
 JWT: HS256, 7-day expiry, signed bằng `JWT_SECRET`.
 
@@ -79,6 +82,7 @@ PORT=3001
 ```
 
 Env sẽ thêm ở các phase tiếp:
+
 - Phase 2: `RESEND_API_KEY`, `EMAIL_FROM`, `CLOUDINARY_*`, `SENTRY_DSN`
 - Phase 3: `ADMIN_CORS_ORIGINS`
 

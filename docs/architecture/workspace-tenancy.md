@@ -25,13 +25,13 @@ User 1──M Membership M──1 Workspace 1──M Website 1──M ApiKey / C
 
 JWT vẫn chỉ chứa `userId` (stateless, cho phép user thuộc nhiều workspace + switch không cần đổi token). Workspace là **context động**:
 
-| Kênh | Nguồn workspace | Validation |
-|---|---|---|
-| REST (admin) | header `X-Workspace-Id` | `WorkspaceGuard` check Membership tồn tại |
-| REST `/api/workspaces/:workspaceId` | route param (ưu tiên hơn header) | như trên |
-| `GET /api/workspaces` | — (bootstrap) | chỉ `JwtAuthGuard`, KHÔNG WorkspaceGuard |
-| WS admin | `socket.handshake.auth.workspaceId` | verify JWT → check Membership → mới join `admin:<workspaceId>` |
-| WS widget | `auth.{apiKey, domain}` | `validateApiKey` → `website.workspaceId` (không bao giờ tin client) |
+| Kênh                                | Nguồn workspace                     | Validation                                                          |
+| ----------------------------------- | ----------------------------------- | ------------------------------------------------------------------- |
+| REST (admin)                        | header `X-Workspace-Id`             | `WorkspaceGuard` check Membership tồn tại                           |
+| REST `/api/workspaces/:workspaceId` | route param (ưu tiên hơn header)    | như trên                                                            |
+| `GET /api/workspaces`               | — (bootstrap)                       | chỉ `JwtAuthGuard`, KHÔNG WorkspaceGuard                            |
+| WS admin                            | `socket.handshake.auth.workspaceId` | verify JWT → check Membership → mới join `admin:<workspaceId>`      |
+| WS widget                           | `auth.{apiKey, domain}`             | `validateApiKey` → `website.workspaceId` (không bao giờ tin client) |
 
 ### Guards & decorator (`apps/backend/src/workspaces/`)
 
@@ -44,6 +44,7 @@ Apply: `@UseGuards(JwtAuthGuard, WorkspaceGuard)` trên controllers websites / c
 ### Service scope
 
 Mọi query admin-facing đổi từ `userId` → `workspaceId`:
+
 - `WebsitesService`: `where: { workspaceId }`
 - `ConversationsService` / `AnalyticsService`: `where: { website: { workspaceId } }`
 - WS gateway: room `admin:<workspaceId>` (trước là `admin:<userId>`); helper `resolveWorkspaceId`.

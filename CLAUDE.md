@@ -6,11 +6,11 @@ pnpm monorepo cho **live chat widget SaaS**. Customer nhúng widget vào website
 
 ## Apps
 
-| Path | Mô tả | Docs |
-|---|---|---|
-| [`apps/backend`](apps/backend) | NestJS API + Socket.IO | [apps/backend/docs/README.md](apps/backend/docs/README.md) |
-| [`apps/widget`](apps/widget) | Embeddable React widget (IIFE + Shadow DOM) | [apps/widget/docs/README.md](apps/widget/docs/README.md) |
-| [`apps/admin-dashboard`](apps/admin-dashboard) | Admin SPA (TanStack Router) | [apps/admin-dashboard/docs/README.md](apps/admin-dashboard/docs/README.md) |
+| Path                                           | Mô tả                                       | Docs                                                                       |
+| ---------------------------------------------- | ------------------------------------------- | -------------------------------------------------------------------------- |
+| [`apps/backend`](apps/backend)                 | NestJS API + Socket.IO                      | [apps/backend/docs/README.md](apps/backend/docs/README.md)                 |
+| [`apps/widget`](apps/widget)                   | Embeddable React widget (IIFE + Shadow DOM) | [apps/widget/docs/README.md](apps/widget/docs/README.md)                   |
+| [`apps/admin-dashboard`](apps/admin-dashboard) | Admin SPA (TanStack Router)                 | [apps/admin-dashboard/docs/README.md](apps/admin-dashboard/docs/README.md) |
 
 **Packages**: `packages/ui` (Button + cn), `packages/eslint-config-custom`, `packages/tsconfig`.
 
@@ -20,31 +20,31 @@ pnpm monorepo cho **live chat widget SaaS**. Customer nhúng widget vào website
 
 ## Tech Stack
 
-| Layer | Tech |
-|---|---|
-| FE framework | React 18 + TypeScript strict |
-| Admin routing | TanStack Router (file-based) |
-| Server state | TanStack Query v5 |
-| Forms | react-hook-form + yup |
-| Styling | Tailwind 3 |
-| HTTP | Axios singleton + JWT interceptors |
-| Real-time | Socket.IO |
-| Widget bundler | Vite (IIFE, CSS inlined) |
-| Backend | NestJS 10 |
-| ORM | Prisma 5 — xem [docs/architecture/data-model.md](docs/architecture/data-model.md) |
-| Auth | JWT 7d, localStorage |
-| Validation | class-validator + class-transformer |
-| Package manager | **pnpm** only |
+| Layer           | Tech                                                                              |
+| --------------- | --------------------------------------------------------------------------------- |
+| FE framework    | React 18 + TypeScript strict                                                      |
+| Admin routing   | TanStack Router (file-based)                                                      |
+| Server state    | TanStack Query v5                                                                 |
+| Forms           | react-hook-form + yup                                                             |
+| Styling         | Tailwind 3                                                                        |
+| HTTP            | Axios singleton + JWT interceptors                                                |
+| Real-time       | Socket.IO                                                                         |
+| Widget bundler  | Vite (IIFE, CSS inlined)                                                          |
+| Backend         | NestJS 10                                                                         |
+| ORM             | Prisma 5 — xem [docs/architecture/data-model.md](docs/architecture/data-model.md) |
+| Auth            | JWT 7d, localStorage                                                              |
+| Validation      | class-validator + class-transformer                                               |
+| Package manager | **pnpm** only                                                                     |
 
 ---
 
 ## Ports
 
-| Service | Port |
-|---|---|
-| Backend | 3001 |
-| Widget dev | 5173 |
-| Admin dev | 5174 |
+| Service           | Port |
+| ----------------- | ---- |
+| Backend           | 3001 |
+| Widget dev        | 5173 |
+| Admin dev         | 5174 |
 | Postgres (Docker) | 5432 |
 
 ---
@@ -103,12 +103,12 @@ Project tracks long-term work trong [`docs/`](docs/). Keep sync as work happens.
 
 Mọi feature non-trivial có docs riêng. Template: [`docs/_FEATURE_DOC_TEMPLATE.md`](docs/_FEATURE_DOC_TEMPLATE.md).
 
-| App | Location |
-|---|---|
-| Backend module | `apps/backend/src/<feature>/docs/README.md` |
-| Widget feature | `apps/widget/docs/features/<feature>.md` |
-| Admin feature | `apps/admin-dashboard/docs/features/<feature>.md` |
-| Cross-cutting | `docs/architecture/<topic>.md` |
+| App            | Location                                          |
+| -------------- | ------------------------------------------------- |
+| Backend module | `apps/backend/src/<feature>/docs/README.md`       |
+| Widget feature | `apps/widget/docs/features/<feature>.md`          |
+| Admin feature  | `apps/admin-dashboard/docs/features/<feature>.md` |
+| Cross-cutting  | `docs/architecture/<topic>.md`                    |
 
 ### When finishing a task (AI checklist)
 

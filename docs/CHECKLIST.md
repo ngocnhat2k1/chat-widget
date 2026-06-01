@@ -137,7 +137,7 @@
 - [x] Backend: lưu vào `Conversation.metadata` (gateway → chat.service)
 - [x] Admin inbox: panel phải hiển thị visitor info (E2E test PASS: metadata lưu + admin đọc lại đúng)
 
-### 2.5 File upload (image only) ✅ (code-complete — cần CLOUDINARY_* để upload thật)
+### 2.5 File upload (image only) ✅ (code-complete — cần CLOUDINARY\_\* để upload thật)
 
 - [x] Tạo `apps/backend/src/uploads/` module
 - [x] Cài `sharp` + Cloudinary SDK (`multer` qua `@nestjs/platform-express` FileInterceptor)

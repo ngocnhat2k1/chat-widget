@@ -1,6 +1,7 @@
 # Feature: <Name>
 
 > Copy this template when adding a new feature. Save as:
+>
 > - **Backend module**: `apps/backend/src/<feature>/docs/README.md`
 > - **Widget feature**: `apps/widget/docs/features/<feature>.md`
 > - **Admin feature**: `apps/admin-dashboard/docs/features/<feature>.md`

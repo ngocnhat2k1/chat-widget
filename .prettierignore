@@ -1,0 +1,6 @@
+# Generated / vendored — not hand-edited, so don't format-check them.
+**/routeTree.gen.ts
+**/dist/
+**/coverage/
+**/.vite/
+pnpm-lock.yaml
