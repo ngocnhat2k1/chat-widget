@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Backend imports @prisma/client, which must be generated before tsc/build.
+      - name: Prisma generate
+        run: pnpm --filter @chat-widget/backend db:generate
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Type check
+        run: pnpm -r type-check
+
+      - name: Unit tests
+        run: pnpm --filter @chat-widget/backend test
+
+      - name: Build
+        run: pnpm -r build
+
+      # NOTE: `lint` is intentionally omitted. The shared eslint-config-custom
+      # extends a missing config and the .eslintrc.js files are CJS inside ESM
+      # packages — fix that setup, then add `pnpm -r lint` here.
