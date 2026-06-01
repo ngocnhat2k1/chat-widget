@@ -13,6 +13,7 @@ import { JwtService } from "@nestjs/jwt";
 import { ChatService } from "./chat.service";
 import { WebsitesService } from "../websites/websites.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import {
   CreateConversationDto,
   JoinConversationDto,
@@ -36,12 +37,35 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private readonly logger = new Logger(ChatGateway.name);
 
+  // Which admin sockets are online per workspace (in-memory, single-instance
+  // beta). Used to decide whether a visitor message needs an offline email.
+  private readonly presence = new Map<string, Set<string>>();
+
   constructor(
     private chatService: ChatService,
     private websitesService: WebsitesService,
     private prisma: PrismaService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private notificationsService: NotificationsService
   ) {}
+
+  private addPresence(workspaceId: string, socketId: string) {
+    if (!this.presence.has(workspaceId)) {
+      this.presence.set(workspaceId, new Set());
+    }
+    this.presence.get(workspaceId)!.add(socketId);
+  }
+
+  private removePresence(workspaceId: string, socketId: string) {
+    const set = this.presence.get(workspaceId);
+    if (!set) return;
+    set.delete(socketId);
+    if (set.size === 0) this.presence.delete(workspaceId);
+  }
+
+  private hasOnlineAdmin(workspaceId: string): boolean {
+    return (this.presence.get(workspaceId)?.size ?? 0) > 0;
+  }
 
   async handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
@@ -107,6 +131,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.data.workspaceId = workspaceId;
         client.data.isAdmin = true;
         await client.join(`admin:${workspaceId}`);
+        this.addPresence(workspaceId, client.id);
+        // An agent is back — reset offline-email cooldowns.
+        this.notificationsService.clearCooldownForWorkspace();
         this.logger.log(
           `Admin ${userId} connected to workspace ${workspaceId} via socket ${client.id}`
         );
@@ -124,6 +151,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(client: Socket) {
+    if (client.data.isAdmin && client.data.workspaceId) {
+      this.removePresence(client.data.workspaceId, client.id);
+    }
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
@@ -205,6 +235,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       );
       if (workspaceId) {
         this.server.to(`admin:${workspaceId}`).emit("receiveMessage", message);
+
+        // Visitor messaged while no agent is online → email the workspace.
+        const fromVisitor = client.data.isWidget === true;
+        if (fromVisitor && !this.hasOnlineAdmin(workspaceId)) {
+          await this.notificationsService.notifyOfflineAgents({
+            workspaceId,
+            conversationId: data.conversationId,
+            snippet: message.content || "[hình ảnh]",
+            nowMs: Date.now(),
+          });
+        }
       }
 
       this.logger.log(`Message sent in conversation: ${data.conversationId}`);

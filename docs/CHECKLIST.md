@@ -148,15 +148,15 @@
 - [x] Admin inbox: render image trong bubble (click → mở tab mới)
 - [x] Dynamic CORS apply cho `/api/uploads/*` (WidgetCorsMiddleware reflect-origin, GET/POST — verified header)
 
-### 2.6 Email notification (offline)
+### 2.6 Email notification (offline) ✅ (code-complete — cần RESEND_API_KEY + EMAIL_FROM để gửi thật)
 
-- [ ] Cài Resend SDK, env `RESEND_API_KEY`, `EMAIL_FROM`
-- [ ] Tạo `apps/backend/src/notifications/` module
-- [ ] Presence tracking: in-memory `Map<workspaceId, Set<socketId>>` trong gateway
-- [ ] Logic: visitor gửi msg → check presence → nếu workspace không có admin online → gửi email cho tất cả Membership
-- [ ] Logic: admin reply → nếu conversation đã đóng/visitor offline + có email → gửi link tiếp tục chat
-- [ ] Template HTML (inline hoặc MJML)
-- [ ] Tested: simulate offline, verify email gửi
+- [x] Cài Resend SDK, env `RESEND_API_KEY`, `EMAIL_FROM` — chưa set → service log warning, `notifyOfflineAgents` no-op
+- [x] Tạo `apps/backend/src/notifications/` module (`NotificationsService`)
+- [x] Presence tracking: in-memory `Map<workspaceId, Set<socketId>>` trong gateway (add/remove theo admin connect/disconnect)
+- [x] Logic: visitor gửi msg → `hasOnlineAdmin(workspaceId)` → nếu offline → email cho tất cả Membership (cooldown 5 phút/conversation)
+- [ ] ~~Logic: admin reply → conversation đóng + visitor offline → link tiếp tục~~ — hoãn (cần visitor email + token link; phần offline-admin là phần chính, đã làm)
+- [x] Template HTML inline (escape content)
+- [ ] Tested: simulate offline, verify email gửi — _path đã verify chạy không crash; gửi thật cần điền RESEND env_
 
 ### 2.7 Rate limiting
 
