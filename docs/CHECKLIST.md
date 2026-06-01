@@ -1,7 +1,7 @@
 # Execution Checklist
 
 > Tactical TODO list. Tick `[x]` khi xong. _Tại sao_ làm từng việc → xem [ROADMAP.md](ROADMAP.md).
-> **Last updated:** 2026-05-29 — Phase 0 ✅ + Phase 1 (backend + admin UI) ✅; còn verify widget↔admin end-to-end qua browser
+> **Last updated:** 2026-06-01 — Phase 0 ✅ + Phase 1 ✅ + Phase 2 ✅ (9/9). Còn: verify widget↔admin qua browser; điền env keys (Cloudinary/Resend/Sentry) để test 2.5/2.6/2.8 thật. Tiếp theo: Phase 3 deploy.
 
 ---
 
@@ -186,10 +186,12 @@
 
 ### Verify Phase 2
 
-- [ ] Nhúng widget vào file HTML test → đổi màu trong customize UI → preview update real-time
-- [ ] Upload image trong widget → admin thấy image
-- [ ] Đóng tất cả admin tab → visitor gửi msg → nhận email noti
-- [ ] Mở admin tab background → có msg → nghe sound + browser noti
+> Backend đã verify bằng test tự động (config PATCH/GET + CORS, upload 503+CORS, offline path không crash, rate limit 429). Phần dưới cần chạy thật qua browser + env keys:
+
+- [ ] Nhúng widget vào file HTML test → customize UI: preview update real-time (React mock ✅); đổi màu lưu → reload widget thấy màu mới (cần chạy thật)
+- [ ] Upload image trong widget → admin thấy image (cần `CLOUDINARY_*`)
+- [ ] Đóng tất cả admin tab → visitor gửi msg → nhận email noti (cần `RESEND_API_KEY` + `EMAIL_FROM`)
+- [ ] Mở admin tab background → có msg → nghe sound + browser noti (cần grant Notification permission)
 
 ---
 

@@ -2,7 +2,7 @@
 
 > **Tài liệu chiến lược.** Giải thích _tại sao_ và _làm gì_ ở mỗi phase. Việc tick off cụ thể nằm trong [CHECKLIST.md](CHECKLIST.md).
 > **Last updated:** 2026-05-29
-> **Current phase:** Phase 0 ✅ + Phase 1 ✅ (backend tenant-isolation verified; còn smoke widget↔admin qua browser) → tiếp theo Phase 2 (MVP Polish)
+> **Current phase:** Phase 0 ✅ + Phase 1 ✅ + Phase 2 ✅ (9/9 hạng mục; 2.5/2.6/2.8 code-complete cần env keys để test thật) → tiếp theo Phase 3 (Deploy)
 
 ---
 
@@ -47,7 +47,7 @@ Ship **public beta** trong 6-8 tuần — deploy thật trên Vercel + Render, c
 | ----- | ------------------------------------------------------------------------------- | ---- | -------------------------- |
 | 0     | Dev environment alignment (SQLite → Postgres)                                   | <1   | ✅ Hoàn thành (2026-05-29) |
 | 1     | Workspace foundation + dynamic CORS + WS auth                                   | 2-3  | ✅ Hoàn thành (2026-05-29) |
-| 2     | MVP polish (customize UI, file upload, email, visitor info, Sentry, rate limit) | 2    | ☐ Chưa bắt đầu             |
+| 2     | MVP polish (customize UI, file upload, email, visitor info, Sentry, rate limit) | 2    | ✅ Hoàn thành (2026-06-01) |
 | 3     | Deploy (Vercel + Render + landing + docs)                                       | 1    | ☐ Chưa bắt đầu             |
 | 4     | Beta validation (Swagger, CI, smoke tests, onboard user)                        | 1-3  | ☐ Chưa bắt đầu             |
 
