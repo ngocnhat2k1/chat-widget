@@ -2,7 +2,25 @@
 import "./instrument";
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+
+function setupSwagger(app: Parameters<typeof SwaggerModule.setup>[1]) {
+  // Off in production unless explicitly enabled, to avoid exposing the schema.
+  const enabled =
+    process.env.NODE_ENV !== "production" ||
+    process.env.ENABLE_SWAGGER === "true";
+  if (!enabled) return;
+
+  const config = new DocumentBuilder()
+    .setTitle("Chat Widget API")
+    .setDescription("REST API for the chat widget SaaS")
+    .setVersion("1.0")
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup("api/docs", app, document);
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -31,6 +49,8 @@ async function bootstrap() {
     origin: adminOrigins,
     credentials: true,
   });
+
+  setupSwagger(app);
 
   const port = process.env.PORT || 3001;
   await app.listen(port, "0.0.0.0");

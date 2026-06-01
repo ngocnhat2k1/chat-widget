@@ -15,7 +15,9 @@ export default function ChatWidget({ config }: Props) {
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [visitorTypingActive, setVisitorTypingActive] = useState(false); // admin is typing (not used in widget)
+  // Placeholder for an "agent is typing" indicator. The backend doesn't emit
+  // agent-typing to the widget yet, so this stays false (the setter is omitted).
+  const [visitorTypingActive] = useState(false);
   const [messagesRead, setMessagesRead] = useState(false);
 
   // Visitor info form
