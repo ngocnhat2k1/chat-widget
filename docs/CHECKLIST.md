@@ -1,7 +1,7 @@
 # Execution Checklist
 
 > Tactical TODO list. Tick `[x]` khi xong. _Tại sao_ làm từng việc → xem [ROADMAP.md](ROADMAP.md).
-> **Last updated:** 2026-06-01 — Phase 0 ✅ + Phase 1 ✅ + Phase 2 ✅ (9/9). Còn: verify widget↔admin qua browser; điền env keys (Cloudinary/Resend/Sentry) để test 2.5/2.6/2.8 thật. Tiếp theo: Phase 3 deploy.
+> **Last updated:** 2026-06-01 — Phase 0-2 ✅; Phase 3 (deploy + landing + /docs) ✅; Phase 4: Swagger + CI + unit tests ✅, còn e2e/Playwright + onboard beta. Còn lại: verify production qua browser; điền env keys; bật branch protection; fix lint setup.
 
 ---
 
@@ -245,29 +245,28 @@
 
 ## Phase 4 — Beta Validation
 
-### Swagger
+### Swagger ✅
 
-- [ ] Cài `@nestjs/swagger`
-- [ ] Decorator DTO + controller + ApiTags
-- [ ] Setup Swagger module trong `main.ts`
-- [ ] Expose `/api/docs` (basic auth nếu `NODE_ENV === production`)
+- [x] Cài `@nestjs/swagger@7` (khớp Nest 10, không phải v11)
+- [ ] ~~Decorator DTO + controller + ApiTags~~ — auto-discover routes đủ dùng; decorate sau cho đẹp
+- [x] Setup Swagger trong `main.ts` (`setupSwagger`)
+- [x] Expose `/api/docs` — tắt ở production trừ khi `ENABLE_SWAGGER=true` (verified: `/api/docs` 200, `/api/docs-json` có paths)
 
-### CI (GitHub Actions)
+### CI (GitHub Actions) ✅ (lint hoãn)
 
-- [ ] Tạo `.github/workflows/ci.yml`
-- [ ] Trigger: PR + push main
-- [ ] Steps: checkout → setup pnpm + node → install → format:check → lint → type-check → build
-- [ ] Branch protection: require CI pass trước khi merge
+- [x] Tạo `.github/workflows/ci.yml`
+- [x] Trigger: PR + push main
+- [x] Steps: checkout → pnpm + node 20 → install → prisma generate → format:check → type-check → unit test → build (mọi bước verify xanh local)
+- [ ] ~~lint~~ — hoãn: `packages/eslint-config-custom` extends config sai + `.eslintrc.js` CJS trong package ESM; fix setup rồi thêm `pnpm -r lint`. Và `--max-warnings 0` sẽ đỏ vì nhiều `any` → cần cleanup
+- [ ] Branch protection: require CI pass trước khi merge — _bật trong GitHub repo settings (việc của bạn)_
 
 ### Critical-path tests
 
-- [ ] Backend e2e (`apps/backend/test/`):
-  - [ ] register → create website → create API key → widget WS connect → send message → admin receive
-- [ ] Backend unit:
-  - [ ] `WebsitesService.validateApiKey` (valid/invalid/expired)
-  - [ ] `AuthService.login` (correct/wrong password/non-existent)
-- [ ] Widget Playwright:
-  - [ ] open widget → pre-chat form → submit → send message → receive auto-reply (demo mode)
+- [ ] Backend e2e (`apps/backend/test/`): register → website → API key → WS connect → send → admin receive — _chưa làm (cần test DB + server; nặng hơn)_
+- [x] Backend unit (6 tests pass):
+  - [x] `WebsitesService.validateApiKey` (valid / wrong-domain / invalid)
+  - [x] `AuthService.login` (correct / wrong password / non-existent)
+- [ ] Widget Playwright: open → pre-chat → send → auto-reply (demo mode) — _chưa làm_
 
 ### Onboard beta user
 

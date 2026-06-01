@@ -2,7 +2,7 @@
 
 > **Tài liệu chiến lược.** Giải thích _tại sao_ và _làm gì_ ở mỗi phase. Việc tick off cụ thể nằm trong [CHECKLIST.md](CHECKLIST.md).
 > **Last updated:** 2026-05-29
-> **Current phase:** Phase 0-2 ✅ + Phase 3 đang làm (deploy Render+Vercel ✅ do user; landing + /docs ✅) → còn verify production end-to-end, rồi Phase 4 (Swagger, CI, tests, onboard beta)
+> **Current phase:** Phase 0-3 ✅ (deploy + landing + /docs) + Phase 4 đang làm (Swagger + CI + unit tests ✅) → còn e2e/Playwright, onboard 3-5 beta user, verify production qua browser
 
 ---
 
@@ -43,13 +43,13 @@ Ship **public beta** trong 6-8 tuần — deploy thật trên Vercel + Render, c
 
 ## Roadmap tổng quan
 
-| Phase | Mục tiêu                                                                        | Tuần | Trạng thái                 |
-| ----- | ------------------------------------------------------------------------------- | ---- | -------------------------- |
-| 0     | Dev environment alignment (SQLite → Postgres)                                   | <1   | ✅ Hoàn thành (2026-05-29) |
-| 1     | Workspace foundation + dynamic CORS + WS auth                                   | 2-3  | ✅ Hoàn thành (2026-05-29) |
-| 2     | MVP polish (customize UI, file upload, email, visitor info, Sentry, rate limit) | 2    | ✅ Hoàn thành (2026-06-01) |
-| 3     | Deploy (Vercel + Render + landing + docs)                                       | 1    | ☐ Chưa bắt đầu             |
-| 4     | Beta validation (Swagger, CI, smoke tests, onboard user)                        | 1-3  | ☐ Chưa bắt đầu             |
+| Phase | Mục tiêu                                                                        | Tuần | Trạng thái                                                     |
+| ----- | ------------------------------------------------------------------------------- | ---- | -------------------------------------------------------------- |
+| 0     | Dev environment alignment (SQLite → Postgres)                                   | <1   | ✅ Hoàn thành (2026-05-29)                                     |
+| 1     | Workspace foundation + dynamic CORS + WS auth                                   | 2-3  | ✅ Hoàn thành (2026-05-29)                                     |
+| 2     | MVP polish (customize UI, file upload, email, visitor info, Sentry, rate limit) | 2    | ✅ Hoàn thành (2026-06-01)                                     |
+| 3     | Deploy (Vercel + Render + landing + docs)                                       | 1    | ✅ Hoàn thành (2026-06-01)                                     |
+| 4     | Beta validation (Swagger, CI, smoke tests, onboard user)                        | 1-3  | 🔄 Đang làm (Swagger+CI+unit ✅; còn e2e/Playwright + onboard) |
 
 > Phase 1 đụng vào auth + mọi service + WS gateway + admin client → realistic 2-3 tuần cho solo, không phải 1-2. Đừng coi slippage là thất bại.
 
