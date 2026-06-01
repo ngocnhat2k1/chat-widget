@@ -223,16 +223,17 @@
 - [ ] Env: `VITE_API_URL=https://api.yourapp.com`, `VITE_SENTRY_DSN`
 - [ ] Custom domain `app.yourapp.com`
 
-### Public landing + docs
+### Public landing + docs ✅
 
-- [ ] Đổi route `/` từ redirect → landing page component
-- [ ] Hero, features, pricing "Coming soon", embed code preview
-- [ ] Tạo route `/docs` với:
-  - [ ] Quick start (HTML embed)
-  - [ ] React integration
-  - [ ] WordPress plugin instruction
-  - [ ] Link sang Swagger (sẽ có ở Phase 4)
-- [ ] Verify public route không bị `_authenticated` guard
+- [x] Đổi route `/` từ redirect → landing page component
+- [x] Hero, features (6), 3 bước nhúng, pricing Beta/Pro "Coming soon", embed snippet preview, CTA
+- [x] Tạo route `/docs` với:
+  - [x] Quick start (HTML embed qua `EmbedCodeBlock`)
+  - [x] React integration (tab trong EmbedCodeBlock)
+  - [x] WordPress instruction
+  - [x] Bảng `data-*` attributes + thứ tự merge config
+  - [x] Link sang Swagger `/api/docs` (ghi "sắp ra mắt" — Phase 4)
+- [x] Verify public route không bị `_authenticated` guard (route top-level, `__root` chỉ Outlet) + `vercel.json` đã có SPA rewrite
 
 ### Verify Phase 3
 

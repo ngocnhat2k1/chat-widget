@@ -2,7 +2,7 @@
 
 > **Tài liệu chiến lược.** Giải thích _tại sao_ và _làm gì_ ở mỗi phase. Việc tick off cụ thể nằm trong [CHECKLIST.md](CHECKLIST.md).
 > **Last updated:** 2026-05-29
-> **Current phase:** Phase 0 ✅ + Phase 1 ✅ + Phase 2 ✅ (9/9 hạng mục; 2.5/2.6/2.8 code-complete cần env keys để test thật) → tiếp theo Phase 3 (Deploy)
+> **Current phase:** Phase 0-2 ✅ + Phase 3 đang làm (deploy Render+Vercel ✅ do user; landing + /docs ✅) → còn verify production end-to-end, rồi Phase 4 (Swagger, CI, tests, onboard beta)
 
 ---
 
