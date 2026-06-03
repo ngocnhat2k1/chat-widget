@@ -37,6 +37,32 @@ function onceEvent<T = unknown>(
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+// The widget is only marked authenticated after the server finishes an async
+// apiKey check (bcrypt, cost 12 — noticeably slower on CI). Until then,
+// createConversation is rejected with an "error". Retry (using the handler's
+// ack — Nest returns the conversation) until it lands, instead of racing a
+// fixed delay. The handler dedupes by (websiteId, visitorId), so retries are
+// idempotent.
+async function createConversationWhenReady(
+  widget: Socket,
+  payload: Record<string, unknown>,
+  deadlineMs = 12000
+): Promise<{ id: string }> {
+  const stopAt = Date.now() + deadlineMs;
+  while (Date.now() < stopAt) {
+    const ack = await new Promise<{ id?: string } | null>((resolve) => {
+      widget
+        .timeout(1000)
+        .emit("createConversation", payload, (err: unknown, res: unknown) =>
+          resolve(err ? null : (res as { id?: string }))
+        );
+    });
+    if (ack && ack.id) return ack as { id: string };
+    await delay(100);
+  }
+  throw new Error("createConversation never succeeded (widget never ready)");
+}
+
 // Full critical path against a real Postgres + real Socket.IO server:
 // register → workspace → website → API key (REST), then widget → admin realtime.
 describe("Chat flow (e2e)", () => {
@@ -141,25 +167,17 @@ describe("Chat flow (e2e)", () => {
 
     try {
       await Promise.all([waitConnect(admin), waitConnect(widget)]);
-      // Give the gateway a beat to finish joining the admin room before we emit.
-      await delay(200);
 
-      // Listeners registered before the emit so we never miss the broadcast.
-      const adminConversation = onceEvent(admin, "conversationCreated");
-      const widgetConversation = onceEvent<{ id: string }>(
-        widget,
-        "conversationCreated"
-      );
-
-      widget.emit("createConversation", {
+      // Retry until the widget's async auth has settled (see helper). The admin
+      // room join has no bcrypt, so it's done well before this returns.
+      const created = await createConversationWhenReady(widget, {
         websiteId,
         visitorId: "visitor-e2e",
       });
-
-      const created = await widgetConversation;
-      await adminConversation; // admin is notified of the new conversation too
       expect(created.id).toBeTruthy();
 
+      // The core assertion: a visitor message must reach the admin's room.
+      // Listener is registered before the emit so we never miss the broadcast.
       const adminMessage = onceEvent<{ content: string; senderType: string }>(
         admin,
         "receiveMessage"
