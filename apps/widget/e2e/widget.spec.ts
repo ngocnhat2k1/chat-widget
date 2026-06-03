@@ -44,16 +44,11 @@ test("demo mode: open → welcome → send → auto-reply", async ({ page }) => 
   await expect(page.getByText(WELCOME)).toBeVisible();
 
   // The input is disabled until connected; fill() auto-waits for it.
-  const input = page.getByPlaceholder("Nhập tin nhắn...");
-  await input.fill("Xin chào e2e");
-  // Typing a value enables the send button (exact: avoid the "Gửi ảnh" button).
-  await expect(
-    page.getByRole("button", { name: "Gửi", exact: true })
-  ).toBeEnabled();
-  // Send via Enter (handleKeyPress). The Send button is correctly positioned in
-  // the real Tailwind build but lands off-screen here because the Shadow-DOM
-  // getWidgetCSS() subset omits `.bottom-16`/`.right-0`, so we avoid clicking it.
-  await input.press("Enter");
+  await page.getByPlaceholder("Nhập tin nhắn...").fill("Xin chào e2e");
+  // Clicking the real Send button also verifies the chat window is positioned
+  // inside the viewport — it regressed when the Shadow-DOM styles were a
+  // hand-written subset missing `.bottom-16`/`.right-0` (exact: avoid "Gửi ảnh").
+  await page.getByRole("button", { name: "Gửi", exact: true }).click();
 
   // Visitor message is echoed immediately...
   await expect(page.getByText("Xin chào e2e")).toBeVisible();

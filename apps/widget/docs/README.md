@@ -66,7 +66,11 @@ pnpm build:widget
 
 ## Shadow DOM
 
-Widget render vào Shadow root → CSS bên ngoài không leak vào, và ngược lại. Tailwind classes phải được inject vào shadow root (không dùng global stylesheet).
+Widget render vào Shadow root → CSS bên ngoài không leak vào, và ngược lại. Global stylesheet (document `<head>`) KHÔNG áp dụng bên trong shadow root, nên Tailwind phải được inject thẳng vào shadow root.
+
+Cách làm (`src/widget.tsx`): import **Tailwind đã compile** dưới dạng string qua `import widgetCss from "./index.css?inline"` rồi gán vào `<style>` của shadow root. `?inline` cho ra đúng CSS mà Vite/PostCSS sinh từ `index.css` (Tailwind scan `src/**` trong `tailwind.config.js`), nên mọi class mà `App.tsx` dùng đều có mặt.
+
+> ⚠️ Trước đây chỗ này là một **subset Tailwind viết tay** (`getWidgetCSS()`). Nó thiếu class (vd `.bottom-16`, `.right-0`) khiến cửa sổ chat của bản IIFE bị lệch khỏi viewport — bản dev (`main.tsx`, render ngoài shadow DOM) không lộ. Bug này bị bắt bởi Playwright e2e (click nút "Gửi" → off-screen). Đừng quay lại subset thủ công; luôn dùng CSS compiled.
 
 ---
 
