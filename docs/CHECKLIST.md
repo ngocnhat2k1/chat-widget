@@ -281,7 +281,7 @@
 
 ### Verify Phase 4
 
-- [ ] CI green trên main
+- [x] CI green trên main (run #26875122589: `ci` + `e2e-widget` + `e2e-backend` ✅)
 - [ ] 3 beta user đã connect widget vào website của họ
 - [ ] Sentry không có unhandled exception trong 48h
 - [ ] Có feedback bằng văn bản từ ít nhất 2 user
