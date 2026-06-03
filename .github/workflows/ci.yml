@@ -42,3 +42,29 @@ jobs:
 
       - name: Build
         run: pnpm -r build
+
+  # Widget smoke tests (Playwright) run in their own job so the chromium
+  # download doesn't slow the core checks above. The webServer in
+  # playwright.config.ts starts Vite automatically.
+  e2e-widget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright chromium
+        run: pnpm --filter @chat-widget/widget exec playwright install --with-deps chromium
+
+      - name: Widget e2e
+        run: pnpm --filter @chat-widget/widget test:e2e

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Widget E2E host</title>
+  </head>
+  <body>
+    <main>
+      <h1>Widget E2E host page</h1>
+      <p>
+        Loads the widget bundle so <code>window.ChatWidget</code> is exposed.
+        The test drives <code>window.ChatWidget.mount(...)</code> with the
+        config it needs (demo / non-demo). No <code>data-*</code> attributes
+        here, so the bundle does not auto-mount.
+      </p>
+    </main>
+    <!-- Source entry through Vite (transforms TSX/JSX). Exposes window.ChatWidget. -->
+    <script type="module" src="/src/widget.tsx"></script>
+  </body>
+</html>

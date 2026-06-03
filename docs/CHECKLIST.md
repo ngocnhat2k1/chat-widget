@@ -1,7 +1,7 @@
 # Execution Checklist
 
 > Tactical TODO list. Tick `[x]` khi xong. _Tại sao_ làm từng việc → xem [ROADMAP.md](ROADMAP.md).
-> **Last updated:** 2026-06-03 — Phase 0-2 ✅; Phase 3 (deploy + landing + /docs) ✅; Phase 4: Swagger + CI + unit tests + **lint trong CI** ✅, còn e2e/Playwright + onboard beta. Còn lại: verify production qua browser; điền env keys; bật branch protection.
+> **Last updated:** 2026-06-03 — Phase 0-2 ✅; Phase 3 (deploy + landing + /docs) ✅; Phase 4: Swagger + CI + unit tests + **lint trong CI** + **Widget Playwright (2 tests)** ✅, còn backend e2e + onboard beta. Còn lại: verify production qua browser; điền env keys; bật branch protection; fix bug Shadow-DOM CSS của widget IIFE (xem mục Critical-path tests).
 
 ---
 
@@ -266,7 +266,8 @@
 - [x] Backend unit (6 tests pass):
   - [x] `WebsitesService.validateApiKey` (valid / wrong-domain / invalid)
   - [x] `AuthService.login` (correct / wrong password / non-existent)
-- [ ] Widget Playwright: open → pre-chat → send → auto-reply (demo mode) — _chưa làm_
+- [x] Widget Playwright (2 tests pass, chromium): demo mode open → welcome → send → auto-reply; non-demo pre-chat form render + name validation. Setup: `apps/widget/playwright.config.ts` + `e2e/host.html` (expose `window.ChatWidget`, không auto-mount) + `e2e/widget.spec.ts`; webServer tự khởi động Vite; CI job riêng `e2e-widget`.
+  - ⚠️ **Bug phát hiện qua test**: `getWidgetCSS()` trong `src/widget.tsx` (Shadow DOM) là subset Tailwind viết tay, **thiếu `.bottom-16`/`.right-0`** → cửa sổ chat của bản **IIFE embed thật** bị lệch khỏi viewport (dev `main.tsx` không lộ vì render ngoài Shadow DOM, dùng full Tailwind). Cần fix riêng (inline compiled Tailwind vào shadow root, hoặc bổ sung class). Test gửi bằng Enter để né nút off-screen.
 
 ### Onboard beta user
 
