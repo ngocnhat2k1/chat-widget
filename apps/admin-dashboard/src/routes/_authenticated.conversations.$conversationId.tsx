@@ -134,7 +134,7 @@ export function ConversationDetailPage() {
             Conversation not found
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            The conversation you're looking for doesn't exist.
+            The conversation you&apos;re looking for doesn&apos;t exist.
           </p>
           <Link
             to="/conversations"

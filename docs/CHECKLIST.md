@@ -1,7 +1,7 @@
 # Execution Checklist
 
 > Tactical TODO list. Tick `[x]` khi xong. _Tại sao_ làm từng việc → xem [ROADMAP.md](ROADMAP.md).
-> **Last updated:** 2026-06-01 — Phase 0-2 ✅; Phase 3 (deploy + landing + /docs) ✅; Phase 4: Swagger + CI + unit tests ✅, còn e2e/Playwright + onboard beta. Còn lại: verify production qua browser; điền env keys; bật branch protection; fix lint setup.
+> **Last updated:** 2026-06-03 — Phase 0-2 ✅; Phase 3 (deploy + landing + /docs) ✅; Phase 4: Swagger + CI + unit tests + **lint trong CI** ✅, còn e2e/Playwright + onboard beta. Còn lại: verify production qua browser; điền env keys; bật branch protection.
 
 ---
 
@@ -256,8 +256,8 @@
 
 - [x] Tạo `.github/workflows/ci.yml`
 - [x] Trigger: PR + push main
-- [x] Steps: checkout → pnpm + node 20 → install → prisma generate → format:check → type-check → unit test → build (mọi bước verify xanh local)
-- [ ] ~~lint~~ — hoãn: `packages/eslint-config-custom` extends config sai + `.eslintrc.js` CJS trong package ESM; fix setup rồi thêm `pnpm -r lint`. Và `--max-warnings 0` sẽ đỏ vì nhiều `any` → cần cleanup
+- [x] Steps: checkout → pnpm + node 20 → install → prisma generate → format:check → **lint** → type-check → unit test → build (mọi bước verify xanh local)
+- [x] lint — fix `eslint-config-custom` (extends `plugin:@typescript-eslint/recommended`) + đổi `.eslintrc.js`→`.eslintrc.cjs` cho widget/admin (`type:module`); bỏ `--max-warnings 0` → CI fail trên _error_, không chặn trên _warn_ (`any` cố ý là warn, xem CLAUDE.md). Còn ~25 `any` warnings non-blocking để cleanup dần. Backend `lint` bỏ `--fix` (thêm `lint:fix` riêng cho local)
 - [ ] Branch protection: require CI pass trước khi merge — _bật trong GitHub repo settings (việc của bạn)_
 
 ### Critical-path tests

@@ -30,6 +30,10 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
+      # Fails on errors only; `any` is intentionally a warning (see CLAUDE.md).
+      - name: Lint
+        run: pnpm -r lint
+
       - name: Type check
         run: pnpm -r type-check
 
@@ -38,7 +42,3 @@ jobs:
 
       - name: Build
         run: pnpm -r build
-
-      # NOTE: `lint` is intentionally omitted. The shared eslint-config-custom
-      # extends a missing config and the .eslintrc.js files are CJS inside ESM
-      # packages — fix that setup, then add `pnpm -r lint` here.
