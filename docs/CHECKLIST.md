@@ -1,7 +1,7 @@
 # Execution Checklist
 
 > Tactical TODO list. Tick `[x]` khi xong. _Tại sao_ làm từng việc → xem [ROADMAP.md](ROADMAP.md).
-> **Last updated:** 2026-06-03 — Phase 0-2 ✅; Phase 3 (deploy + landing + /docs) ✅; Phase 4: Swagger + CI + unit tests + **lint trong CI** + **Widget Playwright (2 tests)** + **fix bug Shadow-DOM CSS widget IIFE** ✅, còn backend e2e + onboard beta. Còn lại: verify production qua browser; điền env keys; bật branch protection.
+> **Last updated:** 2026-06-03 — Phase 0-2 ✅; Phase 3 (deploy + landing + /docs) ✅; Phase 4: Swagger + CI (lint/type-check/unit/build + **Widget Playwright** + **Backend e2e**) ✅ + **fix bug Shadow-DOM CSS widget IIFE** ✅. Còn: onboard beta (thủ công); verify production qua browser; điền env keys; bật branch protection.
 
 ---
 
@@ -262,7 +262,7 @@
 
 ### Critical-path tests
 
-- [ ] Backend e2e (`apps/backend/test/`): register → website → API key → WS connect → send → admin receive — _chưa làm (cần test DB + server; nặng hơn)_
+- [x] Backend e2e (`apps/backend/test/chat-flow.e2e-spec.ts`, 2 tests pass): register → workspace → website → API key (REST) + widget→admin realtime (WS connect → createConversation → sendMessage → admin nhận `receiveMessage`). Chạy app thật (`app.listen(0)`) + socket.io-client. Test DB `chat_widget_test` (tách khỏi dev) tự tạo+sync qua `prisma db push` ở `globalSetup`; `setup-e2e.ts` ép `DATABASE_URL`/`JWT_SECRET` trước khi app load. CI: job `e2e-backend` với Postgres service (env `DATABASE_URL_TEST`).
 - [x] Backend unit (6 tests pass):
   - [x] `WebsitesService.validateApiKey` (valid / wrong-domain / invalid)
   - [x] `AuthService.login` (correct / wrong password / non-existent)

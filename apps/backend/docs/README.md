@@ -115,8 +115,9 @@ node dist/main.js
 
 ## Testing
 
-Jest + Supertest đã cài, **chưa có test file**. Plan ở Phase 4 — xem [CHECKLIST](../../../docs/CHECKLIST.md).
+Jest + Supertest + socket.io-client.
 
-- Unit: `src/**/*.spec.ts`
-- E2E: `test/`
-- Run: `pnpm test`
+- **Unit** (`src/**/*.spec.ts`, mock Prisma): `pnpm test` — `validateApiKey`, `login`.
+- **E2E** (`test/*.e2e-spec.ts`, Postgres thật + Socket.IO thật): `pnpm test:e2e`
+  - `chat-flow.e2e-spec.ts`: register → workspace → website → API key (REST) → widget kết nối WS → `createConversation`/`sendMessage` → admin nhận `receiveMessage` realtime.
+  - **Test DB tách biệt** `chat_widget_test` (KHÔNG đụng dev): `globalSetup` chạy `prisma db push` để tạo + sync schema; `setup-e2e.ts` ép `DATABASE_URL`/`JWT_SECRET` trước khi app load (@nestjs/config không override env đã set). Local cần docker-compose Postgres chạy; CI override qua `DATABASE_URL_TEST` (job `e2e-backend` có Postgres service).

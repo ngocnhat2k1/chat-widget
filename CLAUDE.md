@@ -85,8 +85,8 @@ Critical rules — vi phạm sẽ break:
 
 ### Known gaps (open work, planned)
 
-- No tests, no CI/CD — Phase 4 trong [ROADMAP](docs/ROADMAP.md).
-- Duplicate `src/pages/` ↔ `src/routes/` trong admin — dùng `src/routes/`. Cleanup ở Phase 2.1.
+- Tests + CI đã có (Phase 4): GitHub Actions chạy format/lint/type-check/unit + Widget Playwright (`apps/widget/e2e/`) + Backend e2e (`apps/backend/test/`, cần Postgres). Còn thiếu: phủ test rộng hơn, onboard beta user — xem [CHECKLIST](docs/CHECKLIST.md).
+- ~25 `any` warnings (non-blocking, `any` cố ý là ESLint warn) để cleanup dần.
 
 ---
 

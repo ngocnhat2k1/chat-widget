@@ -68,3 +68,44 @@ jobs:
 
       - name: Widget e2e
         run: pnpm --filter @chat-widget/widget test:e2e
+
+  # Backend e2e (register → website → API key → WS send → admin receive) needs a
+  # real Postgres, so it gets its own job with a Postgres service container.
+  e2e-backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: chatuser
+          POSTGRES_PASSWORD: chatpass123
+          POSTGRES_DB: chat_widget_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U chatuser -d chat_widget_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL_TEST: postgresql://chatuser:chatpass123@localhost:5432/chat_widget_test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Prisma generate
+        run: pnpm --filter @chat-widget/backend db:generate
+
+      - name: Backend e2e
+        run: pnpm --filter @chat-widget/backend test:e2e
