@@ -1,7 +1,7 @@
 # Execution Checklist
 
 > Tactical TODO list. Tick `[x]` khi xong. _Tại sao_ làm từng việc → xem [ROADMAP.md](ROADMAP.md).
-> **Last updated:** 2026-06-03 — Phase 0-2 ✅; Phase 3 (deploy + landing + /docs) ✅; Phase 4: Swagger + CI (lint/type-check/unit/build + **Widget Playwright** + **Backend e2e**) ✅ + **fix bug Shadow-DOM CSS widget IIFE** ✅. Còn: onboard beta (thủ công); verify production qua browser; điền env keys; bật branch protection.
+> **Last updated:** 2026-06-04 — Phase 0-2 ✅; Phase 3 **deploy LIVE** ✅ (backend Render `chat-widget-api-5x5b.onrender.com` + admin `chat-widget-admin-dashboard.vercel.app` + widget `chat-widget-widget.vercel.app` — đã wire + verify); Phase 4 CI + tests + bug fixes ✅. Còn: verify chat real-time end-to-end qua browser; onboard beta (thủ công); bật branch protection; (sau) custom domains + env keys thật (Cloudinary/Resend/Sentry); Postgres free hết hạn **2026-06-27**.
 
 ---
 
@@ -197,31 +197,29 @@
 
 ## Phase 3 — Deploy
 
-### Backend → Render
+### Backend → Render ✅ (live)
 
-- [ ] Tạo Render account
-- [ ] Tạo PostgreSQL instance (chọn paid $7 hoặc free + reminder ngày 80)
-- [ ] Tạo Web Service từ GitHub repo
-- [ ] Build command: `cd apps/backend && pnpm install && pnpm prisma generate && pnpm build`
-- [ ] Start command: `cd apps/backend && pnpm prisma migrate deploy && node dist/main.js`
-- [ ] Env vars: `DATABASE_URL`, `JWT_SECRET`, `RESEND_API_KEY`, `EMAIL_FROM`, `CLOUDINARY_*`, `SENTRY_DSN`, `ADMIN_CORS_ORIGINS`
-- [ ] Custom domain `api.yourapp.com` + SSL
-- [ ] Health check `/health` enabled
+- [x] **Live:** `https://chat-widget-api-5x5b.onrender.com` (region Singapore, free plan, Docker via `apps/backend/Dockerfile`, autoDeploy on `main`)
+- [x] Postgres free (`chat-widget`, Singapore) — **expires 2026-06-27** (free tier ~30 ngày, cần backup/nâng paid trước hạn)
+- [x] Build/start qua Dockerfile (multi-stage; CMD: `prisma db push --skip-generate && node dist/main.js`)
+- [x] Env: `DATABASE_URL` (internal, đã link), `JWT_SECRET`, `NODE_ENV=production`, `ENABLE_SWAGGER=true`. Chưa set: `RESEND_API_KEY`/`EMAIL_FROM`/`CLOUDINARY_*`/`SENTRY_DSN` (defer — feature graceful-off)
+- [x] CORS: `ADMIN_CORS_ORIGINS` cho phép admin Vercel origin (verified preflight 204 + `access-control-allow-origin`)
+- [ ] Custom domain `api.yourapp.com` — _defer, dùng URL `.onrender.com` cho beta_
+- [ ] Health check `/health` — _chưa có route `/health`; login 401 đã chứng minh app+DB OK_
 
-### Widget → Vercel
+### Widget → Vercel ✅ (live)
 
-- [ ] Build: `cd apps/widget && pnpm build:widget` → output `dist/widget.iife.js`
-- [ ] Tạo Vercel project (root: `apps/widget`)
-- [ ] `vercel.json`: header `Cache-Control: public, max-age=3600, s-maxage=86400`
-- [ ] Custom domain `widget.yourapp.com`
-- [ ] Verify: `curl https://widget.yourapp.com/widget.js`
+- [x] **Live:** `https://chat-widget-widget.vercel.app/chat-widget.iife.js` (HTTP 200, `Cache-Control: public, max-age=3600, s-maxage=86400`, baked `VITE_API_URL` → backend)
+- [x] Vercel project `chat-widget-widget` (deploy qua CLI từ `apps/widget`, `vercel.json` standalone: `npm install` + `build:widget`)
+- [x] Fix: thêm `terser` vào widget devDeps (Vite 5 coi terser optional → standalone `npm install` thiếu → build fail)
+- [ ] Custom domain `widget.yourapp.com` — _defer_
+- [ ] Git-integration auto-deploy — _hiện deploy thủ công qua `vercel --prod`; có thể connect git (root `apps/widget`) sau_
 
-### Admin Dashboard → Vercel
+### Admin Dashboard → Vercel ✅ (live)
 
-- [ ] Verify `vercel.json` root config
-- [ ] Tạo Vercel project (root: `apps/admin-dashboard`)
-- [ ] Env: `VITE_API_URL=https://api.yourapp.com`, `VITE_SENTRY_DSN`
-- [ ] Custom domain `app.yourapp.com`
+- [x] **Live:** `https://chat-widget-admin-dashboard.vercel.app` (git-integrated, root `apps/admin-dashboard`, autoDeploy on `main`)
+- [x] Env: `VITE_API_URL` → backend (baked, verified); `VITE_WIDGET_URL` → widget URL (set, redeploy khi push để embed snippet đúng)
+- [ ] Custom domain `app.yourapp.com` — _defer_
 
 ### Public landing + docs ✅
 

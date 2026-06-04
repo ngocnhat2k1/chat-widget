@@ -305,6 +305,9 @@ importers:
       tailwindcss:
         specifier: ^3.3.6
         version: 3.4.19
+      terser:
+        specifier: ^5.48.0
+        version: 5.48.0
       typescript:
         specifier: ^5.2.2
         version: 5.9.3
