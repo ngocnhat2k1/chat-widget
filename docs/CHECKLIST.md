@@ -1,7 +1,7 @@
 # Execution Checklist
 
 > Tactical TODO list. Tick `[x]` khi xong. _Tại sao_ làm từng việc → xem [ROADMAP.md](ROADMAP.md).
-> **Last updated:** 2026-06-04 — Phase 0-2 ✅; Phase 3 **deploy LIVE** ✅ (backend Render `chat-widget-api-5x5b.onrender.com` + admin `chat-widget-admin-dashboard.vercel.app` + widget `chat-widget-widget.vercel.app` — đã wire + verify); Phase 4 CI + tests + bug fixes ✅. Còn: verify chat real-time end-to-end qua browser; onboard beta (thủ công); bật branch protection; (sau) custom domains + env keys thật (Cloudinary/Resend/Sentry); Postgres free hết hạn **2026-06-27**.
+> **Last updated:** 2026-06-06 — Phase 0-2 ✅; Phase 3 **deploy LIVE** ✅ (backend Render `chat-widget-api-5x5b.onrender.com` + admin `chat-widget-admin-dashboard.vercel.app` + widget `chat-widget-widget.vercel.app` — đã wire + verify); Phase 4 CI + tests + bug fixes ✅; onboarding dashboard checklist + Plausible analytics support ✅. Còn: tìm beta user, setup Plausible domain + Sentry DSN thật, verify chat real-time end-to-end qua browser; bật branch protection; (sau) custom domains + env keys thật (Cloudinary/Resend); Postgres free hết hạn **2026-06-27**.
 
 ---
 
@@ -269,11 +269,11 @@
 
 ### Onboard beta user
 
-- [ ] Chuẩn bị landing page có CTA signup
+- [x] Chuẩn bị landing page có CTA signup (đã có từ Phase 3 — `/register` CTAs)
 - [ ] Tìm 3-5 user (cá nhân, dự án nhỏ, ưu tiên có website thật)
-- [ ] Onboarding doc / video ngắn
+- [x] Onboarding guide in-app: dashboard hiện 5-step checklist (tài khoản → website → API key → embed → first chat) tự dismiss khi có conversation đầu tiên
 - [ ] Google Form feedback (UX issues, missing features, bugs)
-- [ ] Setup analytics (Plausible/Umami free) cho landing
+- [x] Setup analytics: Plausible support — inject script khi `VITE_PLAUSIBLE_DOMAIN` set (no-op nếu không set, tương tự Sentry guard); cần bạn tạo site trên plausible.io + set env var trên Vercel
 - [ ] Tuần 1: monitor Sentry, fix critical bugs
 - [ ] Tuần 2: tổng hợp feedback → quyết định phase 5 (Stripe? More features?)
 
