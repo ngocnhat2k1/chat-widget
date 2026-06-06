@@ -19,6 +19,15 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
+// Landing analytics — no-op when VITE_PLAUSIBLE_DOMAIN is unset.
+if (import.meta.env.VITE_PLAUSIBLE_DOMAIN) {
+  const script = document.createElement("script");
+  script.defer = true;
+  script.setAttribute("data-domain", import.meta.env.VITE_PLAUSIBLE_DOMAIN);
+  script.src = "https://plausible.io/js/script.js";
+  document.head.appendChild(script);
+}
+
 // Create a new router instance
 const router = createRouter({ routeTree });
 

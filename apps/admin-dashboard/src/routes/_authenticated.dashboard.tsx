@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useAnalytics } from "../hooks/api";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useAnalytics, useWebsites } from "../hooks/api";
 import {
   MessageCircle,
   TrendingUp,
@@ -7,6 +7,9 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Activity,
+  CheckCircle2,
+  Circle,
+  ArrowRight,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -21,8 +24,125 @@ import {
   Bar,
 } from "recharts";
 
+function OnboardingGuide({
+  hasWebsite,
+  hasApiKey,
+}: {
+  hasWebsite: boolean;
+  hasApiKey: boolean;
+}) {
+  const steps = [
+    {
+      id: 1,
+      title: "Tạo tài khoản",
+      description: "Đăng ký và đăng nhập vào dashboard.",
+      done: true,
+      link: null as string | null,
+      linkLabel: "",
+    },
+    {
+      id: 2,
+      title: "Thêm website",
+      description: "Đăng ký domain website bạn muốn gắn chat widget.",
+      done: hasWebsite,
+      link: "/websites",
+      linkLabel: "Thêm website",
+    },
+    {
+      id: 3,
+      title: "Tạo API key",
+      description: "Tạo key để widget xác thực với backend.",
+      done: hasApiKey,
+      link: "/websites",
+      linkLabel: "Tạo API key",
+    },
+    {
+      id: 4,
+      title: "Nhúng widget vào website",
+      description: "Copy snippet và paste vào thẻ <head> của website.",
+      done: false,
+      link: "/docs",
+      linkLabel: "Xem hướng dẫn",
+    },
+    {
+      id: 5,
+      title: "Nhận cuộc hội thoại đầu tiên",
+      description: "Vào website của bạn và thử chat để kiểm tra.",
+      done: false,
+      link: null,
+      linkLabel: "",
+    },
+  ];
+
+  const completedCount = steps.filter((s) => s.done).length;
+  const pct = Math.round((completedCount / steps.length) * 100);
+
+  return (
+    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <h2 className="text-base font-semibold text-blue-900">
+            Bắt đầu với Chat Widget
+          </h2>
+          <p className="text-sm text-blue-700 mt-0.5">
+            {completedCount}/{steps.length} bước hoàn thành
+          </p>
+        </div>
+        <span className="text-sm font-medium text-blue-600">{pct}%</span>
+      </div>
+
+      <div className="w-full bg-blue-200 rounded-full h-1.5 mb-5">
+        <div
+          className="bg-blue-600 h-1.5 rounded-full transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      <div className="space-y-3">
+        {steps.map((step) => (
+          <div key={step.id} className="flex items-start space-x-3">
+            <div className="flex-shrink-0 mt-0.5">
+              {step.done ? (
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+              ) : (
+                <Circle className="h-5 w-5 text-blue-300" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p
+                className={`text-sm font-medium ${
+                  step.done ? "line-through text-gray-400" : "text-gray-800"
+                }`}
+              >
+                {step.title}
+              </p>
+              <p className="text-xs text-gray-500 mt-0.5">{step.description}</p>
+            </div>
+            {!step.done && step.link && (
+              <Link
+                to={step.link}
+                className="flex-shrink-0 flex items-center text-xs font-medium text-blue-600 hover:text-blue-700 whitespace-nowrap"
+              >
+                {step.linkLabel}
+                <ArrowRight className="h-3 w-3 ml-1" />
+              </Link>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function DashboardPage() {
   const { data: analytics, isLoading, error } = useAnalytics();
+  const { data: websites } = useWebsites();
+
+  const isNewUser =
+    !isLoading && !error && (analytics?.totalConversations ?? 0) === 0;
+  const hasWebsite = (websites?.length ?? 0) > 0;
+  const hasApiKey =
+    websites?.some((w) => (w.apiKeys?.length ?? 0) > 0) ?? false;
 
   if (isLoading) {
     return (
@@ -100,6 +220,11 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Onboarding checklist — visible until first conversation arrives */}
+      {isNewUser && (
+        <OnboardingGuide hasWebsite={hasWebsite} hasApiKey={hasApiKey} />
+      )}
+
       {/* Stats cards */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((item) => (
