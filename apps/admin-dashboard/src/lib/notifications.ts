@@ -15,7 +15,9 @@ export function setNotifEnabled(value: boolean): void {
 export function playBeep(): void {
   try {
     const Ctx =
-      window.AudioContext || (window as unknown as any).webkitAudioContext;
+      window.AudioContext ||
+      (window as Window & { webkitAudioContext?: typeof AudioContext })
+        .webkitAudioContext;
     if (!Ctx) return;
     const ctx = new Ctx();
     const osc = ctx.createOscillator();

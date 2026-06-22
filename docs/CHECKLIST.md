@@ -1,7 +1,7 @@
 # Execution Checklist
 
 > Tactical TODO list. Tick `[x]` khi xong. _Tại sao_ làm từng việc → xem [ROADMAP.md](ROADMAP.md).
-> **Last updated:** 2026-06-06 — Phase 0-2 ✅; Phase 3 **deploy LIVE** ✅ (backend Render `chat-widget-api-5x5b.onrender.com` + admin `chat-widget-admin-dashboard.vercel.app` + widget `chat-widget-widget.vercel.app` — đã wire + verify); Phase 4 CI + tests + bug fixes ✅; onboarding dashboard checklist + Plausible analytics support ✅. Còn: tìm beta user, setup Plausible domain + Sentry DSN thật, verify chat real-time end-to-end qua browser; bật branch protection; (sau) custom domains + env keys thật (Cloudinary/Resend); Postgres free hết hạn **2026-06-27**.
+> **Last updated:** 2026-06-22 — Phase 0-2 ✅; Phase 3 **deploy LIVE** ✅ (backend Render `chat-widget-api-5x5b.onrender.com` + admin `chat-widget-admin-dashboard.vercel.app` + widget `chat-widget-widget.vercel.app`); Phase 4 CI + tests ✅; onboarding dashboard checklist + Plausible analytics support ✅; branch protection trên `main` ✅; widget git auto-deploy (root `apps/widget` + `VITE_API_URL`) ✅; dọn sạch `no-explicit-any` ✅; `/health` live (200). Còn: verify chat real-time end-to-end qua browser; onboard beta thật (tìm user + Plausible domain + Sentry DSN thật); Postgres free hết hạn **2026-06-27**.
 
 ---
 
@@ -205,7 +205,7 @@
 - [x] Env: `DATABASE_URL` (internal, đã link), `JWT_SECRET`, `NODE_ENV=production`, `ENABLE_SWAGGER=true`. Chưa set: `RESEND_API_KEY`/`EMAIL_FROM`/`CLOUDINARY_*`/`SENTRY_DSN` (defer — feature graceful-off)
 - [x] CORS: `ADMIN_CORS_ORIGINS` cho phép admin Vercel origin (verified preflight 204 + `access-control-allow-origin`)
 - [ ] Custom domain `api.yourapp.com` — _defer, dùng URL `.onrender.com` cho beta_
-- [ ] Health check `/health` — _chưa có route `/health`; login 401 đã chứng minh app+DB OK_
+- [x] Health check `/health` — `AppController` `@Get("health")` (root, không prefix); verified prod `GET /health` → 200 `{status:"ok",...}`
 
 ### Widget → Vercel ✅ (live)
 
@@ -213,7 +213,7 @@
 - [x] Vercel project `chat-widget-widget` (deploy qua CLI từ `apps/widget`, `vercel.json` standalone: `npm install` + `build:widget`)
 - [x] Fix: thêm `terser` vào widget devDeps (Vite 5 coi terser optional → standalone `npm install` thiếu → build fail)
 - [ ] Custom domain `widget.yourapp.com` — _defer_
-- [ ] Git-integration auto-deploy — _hiện deploy thủ công qua `vercel --prod`; có thể connect git (root `apps/widget`) sau_
+- [x] Git-integration auto-deploy — connect Vercel project `chat-widget-widget` với repo `ngocnhat2k1/chat-widget` (root `apps/widget`, prod branch `main`); thêm env `VITE_API_URL`→backend (prod+preview) để git build bake đúng (CLI deploy cũ bake thủ công, git build đọc project env). Verified: git-sourced deploy READY + prod JS có `onrender.com`, 0 localhost ref
 
 ### Admin Dashboard → Vercel ✅ (live)
 
@@ -255,8 +255,8 @@
 - [x] Tạo `.github/workflows/ci.yml`
 - [x] Trigger: PR + push main
 - [x] Steps: checkout → pnpm + node 20 → install → prisma generate → format:check → **lint** → type-check → unit test → build (mọi bước verify xanh local)
-- [x] lint — fix `eslint-config-custom` (extends `plugin:@typescript-eslint/recommended`) + đổi `.eslintrc.js`→`.eslintrc.cjs` cho widget/admin (`type:module`); bỏ `--max-warnings 0` → CI fail trên _error_, không chặn trên _warn_ (`any` cố ý là warn, xem CLAUDE.md). Còn ~25 `any` warnings non-blocking để cleanup dần. Backend `lint` bỏ `--fix` (thêm `lint:fix` riêng cho local)
-- [ ] Branch protection: require CI pass trước khi merge — _bật trong GitHub repo settings (việc của bạn)_
+- [x] lint — fix `eslint-config-custom` (extends `plugin:@typescript-eslint/recommended`) + đổi `.eslintrc.js`→`.eslintrc.cjs` cho widget/admin (`type:module`); bỏ `--max-warnings 0` → CI fail trên _error_, không chặn trên _warn_ (`any` cố ý là warn, xem CLAUDE.md). **Cleaned up (2026-06-08):** đã dọn hết ~22 `no-explicit-any` warnings (admin onError → helper `lib/errors.ts` `getErrorMessage`; widget `focusRingColor`→`--tw-ring-color` fix luôn focus-ring; backend req/payload/visitorInfo typed). Còn 2 `react-hooks/exhaustive-deps` cố ý giữ (thêm dep gây reconnect loop). Backend `lint` bỏ `--fix` (thêm `lint:fix` riêng cho local)
+- [x] Branch protection: require CI pass (`ci`+`e2e-widget`+`e2e-backend`) + strict (up-to-date) + chặn force-push/delete trên `main` (set qua `gh api`; `required_approving_review_count: 0` vì solo — không tự approve PR mình được, CI gate là lớp chính)
 
 ### Critical-path tests
 

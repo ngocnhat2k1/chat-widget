@@ -6,6 +6,7 @@ import {
   ReactNode,
 } from "react";
 import { apiClient, AuthUser, AuthResponse } from "../lib/api-client";
+import { getErrorMessage } from "../lib/errors";
 import toast from "react-hot-toast";
 
 interface AuthContextType {
@@ -66,9 +67,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       toast.success("Login successful!");
       return true;
-    } catch (error: any) {
-      const message = error.response?.data?.message || "Login failed";
-      toast.error(message);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Login failed"));
       return false;
     } finally {
       setIsLoading(false);
@@ -90,9 +90,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       toast.success("Registration successful!");
       return true;
-    } catch (error: any) {
-      const message = error.response?.data?.message || "Registration failed";
-      toast.error(message);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Registration failed"));
       return false;
     } finally {
       setIsLoading(false);

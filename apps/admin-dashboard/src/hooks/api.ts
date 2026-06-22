@@ -1,14 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "../lib/api-client";
+import { getErrorMessage } from "../lib/errors";
 import toast from "react-hot-toast";
 
 // Query Keys
 export const queryKeys = {
   websites: ["websites"] as const,
   website: (id: string) => ["website", id] as const,
-  conversations: (params?: any) => ["conversations", params] as const,
+  conversations: (params?: Record<string, unknown>) =>
+    ["conversations", params] as const,
   conversation: (id: string) => ["conversation", id] as const,
-  messages: (conversationId: string, params?: any) =>
+  messages: (conversationId: string, params?: Record<string, unknown>) =>
     ["messages", conversationId, params] as const,
   analytics: (websiteId?: string) => ["analytics", websiteId] as const,
 };
@@ -40,10 +42,8 @@ export function useCreateWebsite() {
       queryClient.invalidateQueries({ queryKey: queryKeys.websites });
       toast.success("Website created successfully!");
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || "Failed to create website";
-      toast.error(message);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to create website"));
     },
   });
 }
@@ -66,10 +66,8 @@ export function useUpdateWebsite() {
       });
       toast.success("Website updated successfully!");
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || "Failed to update website";
-      toast.error(message);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to update website"));
     },
   });
 }
@@ -83,10 +81,8 @@ export function useDeleteWebsite() {
       queryClient.invalidateQueries({ queryKey: queryKeys.websites });
       toast.success("Website deleted successfully!");
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || "Failed to delete website";
-      toast.error(message);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to delete website"));
     },
   });
 }
@@ -104,10 +100,8 @@ export function useCreateApiKey() {
       queryClient.invalidateQueries({ queryKey: queryKeys.websites });
       toast.success("API key created successfully!");
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || "Failed to create API key";
-      toast.error(message);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to create API key"));
     },
   });
 }
@@ -125,10 +119,8 @@ export function useDeleteApiKey() {
       queryClient.invalidateQueries({ queryKey: queryKeys.websites });
       toast.success("API key deleted successfully!");
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || "Failed to delete API key";
-      toast.error(message);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to delete API key"));
     },
   });
 }
@@ -174,10 +166,8 @@ export function useUpdateConversation() {
       });
       toast.success("Conversation updated successfully!");
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || "Failed to update conversation";
-      toast.error(message);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to update conversation"));
     },
   });
 }
@@ -191,10 +181,8 @@ export function useDeleteConversation() {
       queryClient.invalidateQueries({ queryKey: queryKeys.conversations() });
       toast.success("Conversation deleted successfully!");
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || "Failed to delete conversation";
-      toast.error(message);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to delete conversation"));
     },
   });
 }
@@ -232,9 +220,8 @@ export function useCreateMessage() {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.conversations() });
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || "Failed to send message";
-      toast.error(message);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to send message"));
     },
   });
 }
@@ -256,10 +243,8 @@ export function useDeleteMessage() {
       });
       toast.success("Message deleted successfully!");
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || "Failed to delete message";
-      toast.error(message);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Failed to delete message"));
     },
   });
 }

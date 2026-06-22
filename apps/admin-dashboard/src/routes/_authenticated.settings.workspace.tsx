@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Building2, Save, Bell } from "lucide-react";
 import { apiClient } from "../lib/api-client";
+import { getErrorMessage } from "../lib/errors";
 import { useWorkspace } from "../contexts/workspace-context";
 import {
   isNotifEnabled,
@@ -38,10 +39,8 @@ function WorkspaceSettingsPage() {
       await refreshWorkspaces();
       toast.success("Đã lưu workspace");
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || "Không lưu được workspace";
-      toast.error(Array.isArray(message) ? message.join(", ") : message);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Không lưu được workspace"));
     },
   });
 

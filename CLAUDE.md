@@ -86,7 +86,7 @@ Critical rules — vi phạm sẽ break:
 ### Known gaps (open work, planned)
 
 - Tests + CI đã có (Phase 4): GitHub Actions chạy format/lint/type-check/unit + Widget Playwright (`apps/widget/e2e/`) + Backend e2e (`apps/backend/test/`, cần Postgres). Còn thiếu: phủ test rộng hơn, onboard beta user — xem [CHECKLIST](docs/CHECKLIST.md).
-- ~25 `any` warnings (non-blocking, `any` cố ý là ESLint warn) để cleanup dần.
+- ESLint: `no-explicit-any` đã dọn sạch (2026-06-08). Còn 2 `react-hooks/exhaustive-deps` cố ý giữ (thêm dep gây reconnect/re-subscribe loop).
 
 ---
 
