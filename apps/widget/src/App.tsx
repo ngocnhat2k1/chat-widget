@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { ChatAPI, Message, Conversation } from "./api";
 import { WidgetConfig } from "./config";
 
@@ -409,7 +409,7 @@ export default function ChatWidget({ config }: Props) {
                     placeholder="Họ và tên *"
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-opacity-50"
-                    style={{ focusRingColor: primaryColor } as any}
+                    style={{ "--tw-ring-color": primaryColor } as CSSProperties}
                   />
                 </div>
                 <div>

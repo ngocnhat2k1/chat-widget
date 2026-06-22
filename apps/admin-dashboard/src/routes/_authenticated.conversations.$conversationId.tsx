@@ -59,7 +59,7 @@ export function ConversationDetailPage() {
     // Join the conversation room (also triggers mark-as-read on backend)
     socketService.joinConversation(conversationId);
 
-    const handleNewMessage = (data: any) => {
+    const handleNewMessage = (data: { conversationId: string }) => {
       if (data.conversationId === conversationId) {
         refetchMessages();
       }

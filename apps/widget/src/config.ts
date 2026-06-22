@@ -1,7 +1,7 @@
 // API Configuration
-const RUNTIME_API_URL = (window as any).__CHAT_WIDGET_API_URL__ as
-  | string
-  | undefined;
+const RUNTIME_API_URL = (
+  window as Window & { __CHAT_WIDGET_API_URL__?: string }
+).__CHAT_WIDGET_API_URL__;
 const BUILD_API_URL = import.meta.env.VITE_API_URL as string | undefined;
 const RESOLVED_API_URL =
   RUNTIME_API_URL || BUILD_API_URL || "http://localhost:3001";

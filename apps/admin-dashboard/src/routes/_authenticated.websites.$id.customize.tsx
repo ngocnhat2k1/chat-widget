@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { ArrowLeft, Save } from "lucide-react";
 import { apiClient, type WidgetConfig } from "../lib/api-client";
+import { getErrorMessage } from "../lib/errors";
 import { useWebsite, queryKeys } from "../hooks/api";
 import { WidgetPreview } from "../components/widget-preview";
 
@@ -40,9 +41,8 @@ function CustomizeWidgetPage() {
       queryClient.invalidateQueries({ queryKey: queryKeys.websites });
       toast.success("Đã lưu giao diện widget");
     },
-    onError: (e: any) => {
-      const m = e.response?.data?.message || "Không lưu được";
-      toast.error(Array.isArray(m) ? m.join(", ") : m);
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, "Không lưu được"));
     },
   });
 

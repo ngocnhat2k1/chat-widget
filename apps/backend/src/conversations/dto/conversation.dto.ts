@@ -2,7 +2,7 @@ export interface CreateConversationDto {
   websiteId: string;
   visitorName?: string;
   visitorEmail?: string;
-  visitorInfo?: any;
+  visitorInfo?: Record<string, unknown>;
 }
 
 export interface JoinConversationDto {
