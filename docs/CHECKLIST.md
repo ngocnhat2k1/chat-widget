@@ -1,7 +1,7 @@
 # Execution Checklist
 
 > Tactical TODO list. Tick `[x]` khi xong. _Tại sao_ làm từng việc → xem [ROADMAP.md](ROADMAP.md).
-> **Last updated:** 2026-06-22 — Phase 0-2 ✅; Phase 3 **deploy LIVE** ✅ (backend Render `chat-widget-api-5x5b.onrender.com` + admin `chat-widget-admin-dashboard.vercel.app` + widget `chat-widget-widget.vercel.app`); Phase 4 CI + tests ✅; onboarding dashboard checklist + Plausible analytics support ✅; branch protection trên `main` ✅; widget git auto-deploy (root `apps/widget` + `VITE_API_URL`) ✅; dọn sạch `no-explicit-any` ✅; `/health` live (200). Còn: verify chat real-time end-to-end qua browser; onboard beta thật (tìm user + Plausible domain + Sentry DSN thật); Postgres free hết hạn **2026-06-27**.
+> **Last updated:** 2026-06-22 — Phase 0-3 ✅; Phase 4 gần xong. CI + tests ✅ (PR #4 `no-explicit-any` cleanup merged); **production critical-path verified end-to-end** (REST + WS realtime chạy thật trên prod — xem [BETA_ONBOARDING.md](BETA_ONBOARDING.md) §8); onboarding in-app + operator runbook ✅; Plausible support ✅; branch protection + widget git auto-deploy + `/health` ✅. **Còn (cần bạn / không tự động hóa được):** ① **Postgres free hết hạn 2026-06-27** → migrate Neon free / nâng paid (backup trước!); ② tìm 3-5 beta user thật; ③ env keys thật (Cloudinary/Resend/Sentry DSN/Plausible domain) để bật upload/email/error-tracking/analytics.
 
 ---
 
@@ -95,7 +95,7 @@
 - [x] Register user mới → workspace auto-tạo → bootstrap `GET /api/workspaces` trả OWNER (test A/B)
 - [x] Tạo website trong workspace → API key gen ngon (scoped theo workspace)
 - [x] **Tenant isolation (mục tiêu chính): REST 13/13 + WS 4/4** — B không đọc/sửa được dữ liệu của A; admin socket claim workspace lạ bị disconnect
-- [ ] Widget connect + admin inbox real-time end-to-end qua browser — _chưa chạy thủ công_ (cần mở widget + admin, để verify khi chạy `./start-dev.sh`)
+- [x] Widget connect + admin inbox real-time end-to-end — verified **trên production** 2026-06-22 qua script socket.io-client (widget WS `createConversation`→`sendMessage` → admin nhận `receiveMessage` real-time, đúng content+senderType) + CI `e2e-widget` (Playwright browser render). Còn lại optional: nhúng vào website thật bên ngoài qua browser thủ công.
 
 ---
 
@@ -235,9 +235,9 @@
 
 ### Verify Phase 3
 
-- [ ] Từ máy khác nhúng widget vào website thật (HTML file)
-- [ ] Chat → admin reply → real-time hoạt động qua production URL
-- [ ] Test offline email noti production
+- [ ] Từ máy khác nhúng widget vào website thật (HTML file) — _manual, chưa làm_
+- [x] Real-time qua production URL — verified 2026-06-22: visitor→admin `receiveMessage` chạy thật trên prod (script socket.io). Chiều admin→visitor reply dùng **cùng gateway broadcast** (chưa test riêng qua browser). Xem [BETA_ONBOARDING.md](BETA_ONBOARDING.md) §8.
+- [ ] Test offline email noti production — _cần `RESEND_API_KEY` + `EMAIL_FROM`_
 
 ---
 
@@ -272,7 +272,8 @@
 - [x] Chuẩn bị landing page có CTA signup (đã có từ Phase 3 — `/register` CTAs)
 - [ ] Tìm 3-5 user (cá nhân, dự án nhỏ, ưu tiên có website thật)
 - [x] Onboarding guide in-app: dashboard hiện 5-step checklist (tài khoản → website → API key → embed → first chat) tự dismiss khi có conversation đầu tiên
-- [ ] Google Form feedback (UX issues, missing features, bugs)
+- [x] Operator runbook: [BETA_ONBOARDING.md](BETA_ONBOARDING.md) — URLs prod, onboarding flow, embed snippets, free-tier caveats, kế hoạch outreach + mẫu tin nhắn mời (video ngắn defer)
+- [ ] Google Form feedback (UX issues, missing features, bugs) — _bộ câu hỏi sẵn ở [BETA_ONBOARDING.md](BETA_ONBOARDING.md) §6; cần tạo Form thật trên Google_
 - [x] Setup analytics: Plausible support — inject script khi `VITE_PLAUSIBLE_DOMAIN` set (no-op nếu không set, tương tự Sentry guard); cần bạn tạo site trên plausible.io + set env var trên Vercel
 - [ ] Tuần 1: monitor Sentry, fix critical bugs
 - [ ] Tuần 2: tổng hợp feedback → quyết định phase 5 (Stripe? More features?)
